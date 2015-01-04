@@ -29,6 +29,7 @@
 #include "chemoper_selectors.h"
 #include "chem/fingerprintStrategy/FingerprintStrategy.h"
 #include "chem/simCoefStrategy/SimCoefStrategy.h"
+#include "chem/scaffold/Scaffold.hpp"
 #include "MolpherMolecule.h"
 #include "MorphingData.h"
 #include "chem/morphingStrategy/MorphingStrategy.h"
@@ -42,8 +43,11 @@ public:
         std::vector<MorphingStrategy *> &strategies,
         ChemOperSelector *opers,
         RDKit::RWMol **newMols,
+        RDKit::RWMol **newScaffMols,
         std::string *smiles,
         std::string *formulas,
+        std::string *scaffSmiles,
+        Scaffold *scaff,
         double *weights,
         double *sascores,
         tbb::atomic<unsigned int> &kekulizeFailureCount,
@@ -59,8 +63,11 @@ private:
 
     ChemOperSelector *mOpers;
     RDKit::RWMol **mNewMols;
+    RDKit::RWMol **mNewScaffMols;
     std::string *mSmiles;
     std::string *mFormulas;
+    std::string *mScaffSmiles;
+    Scaffold *mScaff;
     double *mWeights;
     double *mSascore;
     tbb::atomic<unsigned int> &mKekulizeFailureCount;

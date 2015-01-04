@@ -30,6 +30,14 @@
 #include "boost/property_tree/xml_parser.hpp"
 #include "boost/algorithm/string/predicate.hpp"
 
+#include <GraphMol/FileParsers/MolSupplier.h>
+#include <GraphMol/FileParsers/MolWriters.h>
+#include <GraphMol/Descriptors/MolDescriptors.h>
+#include <GraphMol/SmilesParse/SmilesParse.h>
+#include <GraphMol/SmilesParse/SmilesWrite.h>
+#include <GraphMol/MolOps.h>
+#include <RDGeneral/BadFileException.h>
+
 #include "inout.h"
 #include "iteration_serializer.hpp"
 #include "fingerprint_selectors.h"
@@ -147,6 +155,36 @@ bool loadXml(const std::string &file, IterationSnapshot &snp) {
     return true;    
 }
 
+int toInt(const std::string& str) {
+    std::stringstream ss;
+    ss << str;
+    int result;
+    ss >> result;
+    return result;
+}
+
+/**
+ * Create molecule from given smile. The smile may change as it's 
+ * RDKit smile
+ * @param inSmile
+ * @return 
+ */
+MolpherMolecule createMoleculeFromSmile(const std::string& inSmile) {
+    RDKit::RWMol* mol = RDKit::SmilesToMol(inSmile);
+    try {
+        RDKit::MolOps::Kekulize(*mol);
+    } catch (const ValueErrorException &exc) {
+        SynchCout("Cannot kekulize input molecule.");
+    }
+    
+    std::string smile(RDKit::MolToSmiles(*mol));
+    std::string formula(RDKit::Descriptors::calcMolFormula(*mol));    
+    
+    SynchCout("Parse molecule " + inSmile + " >> " + smile);
+    
+    return MolpherMolecule(smile, formula);
+}
+
 /**
  * Based on given template fetch data into given snapshot. Values
  * that are not specified in the template are ignored.
@@ -160,18 +198,19 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
     
     BOOST_FOREACH( boost::property_tree::ptree::value_type const& v, pt.get_child("iteration") ) {
         
-        if (v.first == "source") {
-            snp.source.smile = v.second.get<std::string>("smile");
-            boost::optional<std::string> formula = v.second.get_optional<std::string>("formula");
-            if (! (!formula)) {
-                snp.source.formula = formula.get();
-            }
+        if (v.first == "inputActivityDataDir") {
+            snp.inputActivityDataDir = v.second.data() + "/";
+        } else if (v.first == "activesSDF") {
+            snp.activesSDFFile = v.second.data();
+            snp.proteinTargetName = snp.activesSDFFile.substr(0, snp.activesSDFFile.find("_"));
+            snp.activesDescriptorsFile = snp.activesSDFFile.substr(0, snp.activesSDFFile.find(".")) + snp.descriptorDataFileSuffix;
+        } else if (v.first == "inactivesSDF") {
+//            snp.inactivesSDFFile = v.second.data();
+//            snp.inactivesDescriptorsFile = snp.inactivesSDFFile.substr(0, snp.inactivesSDFFile.find(".")) + snp.descriptorDataFileSuffix;
+        } else if (v.first == "source") {
+            snp.source = createMoleculeFromSmile(v.second.get<std::string>("smile"));
         } else if (v.first == "target") {
-            snp.target.smile = v.second.get<std::string>("smile");
-            boost::optional<std::string> formula = v.second.get_optional<std::string>("formula");
-            if (! (!formula)) {
-                snp.target.formula = formula.get();
-            }
+            snp.target = createMoleculeFromSmile(v.second.get<std::string>("smile"));
         } else if (v.first == "fingerprint") {
             snp.fingerprintSelector = FingerprintParse(v.second.data());
         } else if (v.first == "similarity") {
@@ -183,12 +222,72 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
                 if (v.first == "syntetizedFeasibility") {
                     snp.params.useSyntetizedFeasibility = 
                             v.second.data() == "1" || v.second.data() == "true";
-                } // else if (v.first == "substructureRestriction") {
+                }  else if(v.first == "useVisualisation") {
+                    snp.params.useVisualisation = 
+                            v.second.data() == "1" || v.second.data() == "true";
+                } else if (v.first == "acceptMin") {
+                    snp.params.cntCandidatesToKeep = toInt(v.second.data());
+                } else if (v.first == "acceptMax") {
+                    snp.params.cntCandidatesToKeepMax = toInt(v.second.data());
+                } else if (v.first == "farProduce") {
+                    snp.params.cntMorphs = toInt(v.second.data());
+                } else if (v.first == "closeProduce") {
+                    snp.params.cntMorphsInDepth = toInt(v.second.data());
+                } else if (v.first == "farCloseThreashold") {
+                    std::stringstream ss;
+                    ss << v.second.data();
+                    ss >> snp.params.distToTargetDepthSwitch;
+                } else if (v.first == "maxMorhpsTotal") {
+                    snp.params.cntMaxMorphs = toInt(v.second.data());
+                } else if (v.first == "nonProducingSurvive") {
+                    snp.params.itThreshold = toInt(v.second.data());
+                } else if (v.first == "iterMax") {
+                    snp.params.cntIterations = toInt(v.second.data());
+                } else if (v.first == "maxTimeMinutes") {
+                    snp.params.timeMaxSeconds = toInt(v.second.data()) * 60;
+                } else if (v.first == "weightMin") {                 
+                    snp.params.minAcceptableMolecularWeight = toInt(v.second.data());
+                } else if (v.first == "weightMax") {                 
+                    snp.params.maxAcceptableMolecularWeight = toInt(v.second.data());
+                } else if (v.first == "startMolMaxCount") {                 
+                    snp.params.startMolMaxCount = toInt(v.second.data());
+                } else if (v.first == "maxAcceptableEtalonDistance") {                 
+                    snp.params.maxAcceptableEtalonDistance= toInt(v.second.data());
+                } else if (v.first == "activityMorphing") {
+                    snp.params.activityMorphing = 
+                            v.second.data() == "1" || v.second.data() == "true";
+                }                
             }
         } else {
             // unexpected token
         }
     }
+
+    // printout some statistics .. first prepare the report
+    std::stringstream ss;
+    ss << "The new iteration has been created from template: " << std::endl;
+    ss << "\tsource: " << snp.source.smile << std::endl;
+    ss << "\ttarget: " << snp.target.smile << std::endl;
+    ss << "\tfingerprint: " << FingerprintLongDesc(snp.fingerprintSelector) << std::endl;
+    ss << "\tsimilarity: " << SimCoeffLongDesc(snp.simCoeffSelector) << std::endl;
+    // morphing parameters
+    ss << "\tcandidates to keep: " << snp.params.cntCandidatesToKeep << std::endl;
+    ss << "\tcandidates to keep max: " << snp.params.cntCandidatesToKeepMax << std::endl;
+    ss << "\tfar produce at most: " << snp.params.cntMorphs << std::endl;
+    ss << "\tclose produce at most: " << snp.params.cntMorphsInDepth << std::endl;
+    ss << "\twhen is close to target: " << snp.params.distToTargetDepthSwitch << std::endl;
+    ss << "\tmax morphs per run: " << snp.params.cntMaxMorphs << std::endl;
+    ss << "\tnon producing survive for: " << snp.params.itThreshold << std::endl;
+    ss << "\tmax iterations: " << snp.params.cntIterations << std::endl;
+    ss << "\tmax time(min): " << snp.params.timeMaxSeconds / 60 << std::endl;
+    ss << "\tmin weight: " << snp.params.minAcceptableMolecularWeight << std::endl;
+    ss << "\tmax weight: " << snp.params.maxAcceptableMolecularWeight << std::endl;
+    // logical values
+    ss << "\tsyntetized feasibility: " << snp.params.useSyntetizedFeasibility << std::endl;
+    ss << "\tcompute visualization: " << snp.params.useVisualisation << std::endl;
+    ss << "\tactivity morphing: " << snp.params.activityMorphing;
+    // and print ..
+    SynchCout(ss.str());
 }
 
 bool loadXmlTemplate(const std::string &file, IterationSnapshot &snp) {

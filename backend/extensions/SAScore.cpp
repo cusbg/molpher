@@ -25,17 +25,17 @@ SAScore * SAScore::instance = NULL;
  */
 void SAScore::loadData() {
     std::cout << "loading SAScore.dat ... ";
-    
+
     SAScore* inst = getInstance();
     std::ifstream myfile;
-    // This file must be in the same directory as exe file of server.
+    // This file must be in the same directory where server is called.
     myfile.open("SAScore.dat");
     if (!myfile.good()) {
         // problem when opening the file
         throw std::runtime_error("Can't load sascore file SAScore.dat");
         return;
     }
-    
+
     char array[31];
     myfile.getline(array, 31);
 
@@ -61,7 +61,7 @@ SAScore* SAScore::getInstance()
 {
     if (instance == NULL) {
         instance = new SAScore();
-    }    
+    }
     return instance;
 }
 
@@ -131,11 +131,11 @@ double SAScore::getScore(RDKit::ROMol& mol)
 
     // release data
     delete fp;
-    fp = 0;    
-    
+    fp = 0;
+
     if (macroCycleCount>1) {
         // some bigger value than max allowed score (6)
-        
+
         // TODO: Use some well defined value here instead
         return 10;
     } else {
@@ -149,8 +149,8 @@ SAScore::~SAScore()
 }
 
 SAScore* SAScore::destroyInstance()
-{    
-    if (instance != NULL) 
+{
+    if (instance != NULL)
     {
         delete instance;
     }

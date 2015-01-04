@@ -19,12 +19,16 @@
 
 #include <string>
 #include <set>
+#include <map>
+#include <vector>
 #include <cfloat>
+#include <cmath>
 
 #include <boost/cstdint.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/tracking.hpp>
 #include <boost/serialization/level.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 
 #include <iostream>
 
@@ -32,7 +36,9 @@ struct MolpherMolecule
 {
     MolpherMolecule() :
         parentChemOper(0),
+        scaffoldLevelCreation(0),
         distToTarget(DBL_MAX),
+        distToEtalon(DBL_MAX),
         distToClosestDecoy(0),
         molecularWeight(0.0),
         sascore(0.0),
@@ -45,7 +51,34 @@ struct MolpherMolecule
     MolpherMolecule(std::string &smile) :
         smile(smile),
         parentChemOper(0),
+        scaffoldLevelCreation(0),
         distToTarget(DBL_MAX),
+        distToEtalon(DBL_MAX),
+        distToClosestDecoy(0),
+        molecularWeight(0.0),
+        sascore(0.0),
+        itersWithoutDistImprovement(0),
+        posX(0),
+        posY(0)
+    {
+    }
+    
+    MolpherMolecule(const std::string &smile,
+        const std::string &id,
+        const std::vector<double> &descriptors,
+        const std::string &descriptorsFilePath,
+        const std::vector<std::string> &relevantDescriptorNames
+    ) :
+        smile(smile),
+        id(id),
+        descriptorValues(descriptors),
+        descriptorsFilePath(descriptorsFilePath),
+//        relevantDescriptorIndices(relevantDescriptorIndices),
+        relevantDescriptorNames(relevantDescriptorNames),
+        parentChemOper(0),
+        scaffoldLevelCreation(0),
+        distToTarget(DBL_MAX),
+        distToEtalon(DBL_MAX),
         distToClosestDecoy(0),
         molecularWeight(0.0),
         sascore(0.0),
@@ -59,7 +92,9 @@ struct MolpherMolecule
         smile(smile),
         formula(formula),
         parentChemOper(0),
+        scaffoldLevelCreation(0),
         distToTarget(DBL_MAX),
+        distToEtalon(DBL_MAX),
         distToClosestDecoy(0),
         molecularWeight(0.0),
         sascore(0.0),
@@ -71,13 +106,18 @@ struct MolpherMolecule
 
     MolpherMolecule(std::string &smile, std::string &formula,
         std::string &parentSmile, boost::int32_t parentChemOper,
-        double distToTarget, double distToClosestDecoy, double molecularWeight, double sascore
+        std::string &scaffoldSmile, boost::int32_t scaffoldLevelCreation,
+        double distToTarget, double distToClosestDecoy, double molecularWeight,
+        double sascore
         ) :
         smile(smile),
         formula(formula),
         parentChemOper(parentChemOper),
         parentSmile(parentSmile),
+        scaffoldSmile(scaffoldSmile),
+        scaffoldLevelCreation(scaffoldLevelCreation),
         distToTarget(distToTarget),
+        distToEtalon(DBL_MAX),
         distToClosestDecoy(distToClosestDecoy),
         molecularWeight(molecularWeight),
         sascore(sascore),
@@ -86,29 +126,109 @@ struct MolpherMolecule
         posY(0)
     {
     }
-    
+
     friend class boost::serialization::access;
     template<typename Archive>
     void serialize(Archive &ar, const unsigned int version)
     {
         // usage of BOOST_SERIALIZATION_NVP enable us to use xml serialisation
-        ar & BOOST_SERIALIZATION_NVP(smile) & 
-            BOOST_SERIALIZATION_NVP(formula) & 
-            BOOST_SERIALIZATION_NVP(parentChemOper) & 
-            BOOST_SERIALIZATION_NVP(parentSmile) & 
+        ar & BOOST_SERIALIZATION_NVP(smile) &
+            BOOST_SERIALIZATION_NVP(formula) &
+            BOOST_SERIALIZATION_NVP(parentChemOper) &
+            BOOST_SERIALIZATION_NVP(parentSmile) &
             BOOST_SERIALIZATION_NVP(descendants) &
-            BOOST_SERIALIZATION_NVP(historicDescendants) & 
-            BOOST_SERIALIZATION_NVP(distToTarget) & 
+            BOOST_SERIALIZATION_NVP(historicDescendants) &
+            BOOST_SERIALIZATION_NVP(scaffoldSmile) &
+            BOOST_SERIALIZATION_NVP(scaffoldLevelCreation) &
+            BOOST_SERIALIZATION_NVP(distToTarget) &
+            BOOST_SERIALIZATION_NVP(distToEtalon) &
             BOOST_SERIALIZATION_NVP(distToClosestDecoy) &
-            BOOST_SERIALIZATION_NVP(molecularWeight) & 
-            BOOST_SERIALIZATION_NVP(itersWithoutDistImprovement) & 
-            BOOST_SERIALIZATION_NVP(posX) & 
+            BOOST_SERIALIZATION_NVP(molecularWeight) &
+            BOOST_SERIALIZATION_NVP(itersWithoutDistImprovement) &
+            BOOST_SERIALIZATION_NVP(posX) &
+            BOOST_SERIALIZATION_NVP(etalonDistances) &
+//            BOOST_SERIALIZATION_NVP(relevantDescriptorIndices) &
+            BOOST_SERIALIZATION_NVP(relevantDescriptorNames) &
+            BOOST_SERIALIZATION_NVP(descriptorValues) &
+            BOOST_SERIALIZATION_NVP(descriptorsFilePath) &
+            BOOST_SERIALIZATION_NVP(id) &
             BOOST_SERIALIZATION_NVP(posY);
     }
 
     bool IsValid()
     {
         return (!smile.empty());
+    }
+    
+    void SaveDescriptors(std::map<std::string, double> &descriptors) {
+        unsigned int si = relevantDescriptorNames.size();
+        for (std::vector<std::string>::iterator it = relevantDescriptorNames.begin(); it != relevantDescriptorNames.end(); it++ ) {
+            descriptorValues.push_back(descriptors[*it]);
+        }
+    }
+    
+    void normalizeDescriptors(std::vector<std::pair<double, double> > &norm_coefs) {
+        assert(descriptorValues.size() == norm_coefs.size());
+        std::vector<double>::iterator it;
+        unsigned int idx = 0;
+        for (it = descriptorValues.begin(); it != descriptorValues.end(); it++, idx++) {
+            double A = norm_coefs[idx].first;
+            double B = norm_coefs[idx].second;
+            if ( ((boost::math::isnan)(A)) || ((boost::math::isnan)(B)) ) {
+                continue;
+            }
+            *it = A * (*it) + B;
+        }
+    }
+    
+    void ComputeEtalonDistances(std::vector<double> &etalon, std::vector<double> &some_active_desc) {
+        assert(descriptorValues.size() == etalon.size() && descriptorValues.size() == some_active_desc.size());
+        double max_value = 1000; // TODO: convert these to global options
+        double min_value = 0;
+        double sum_dist_squared = 0;
+        std::vector<double>::iterator it;
+        unsigned int idx = 0;
+        for (it = etalon.begin(); it != etalon.end(); it++, idx++) {
+            double morph_value = descriptorValues[idx];
+            if (((boost::math::isnan)(morph_value))) {
+                etalonDistances.push_back(max_value);
+                sum_dist_squared += std::pow(max_value, 2);
+                continue;
+            }
+            double etalon_value = *it;
+            double squared_distance = 0;
+            if ( ((boost::math::isnan)(etalon_value)) ) { // if this is true, all actives have one single value for this descriptor
+                double active_value = some_active_desc[idx];
+                if (active_value == morph_value) {
+                    etalonDistances.push_back(0);
+                } else {
+                    double maximum;
+                    double minimum;
+                    if (active_value > morph_value) {
+                        maximum = active_value;
+                        minimum = morph_value;
+                    } else {
+                        maximum = morph_value;
+                        minimum = active_value;
+                    }
+                    double A = (max_value - min_value) / (maximum - minimum);
+                    double B = min_value - A * minimum;
+                    morph_value = A * morph_value + B;
+                    active_value = A * active_value + B;
+                    squared_distance = std::pow((active_value - morph_value) / 2, 2);
+                    assert(!((boost::math::isnan)(squared_distance)));
+                    etalonDistances.push_back(std::sqrt(squared_distance));
+                }
+            } else {
+                squared_distance = std::pow(etalon_value - morph_value, 2);
+                assert(!((boost::math::isnan)(squared_distance)));
+                etalonDistances.push_back(std::sqrt(squared_distance));
+            }
+            sum_dist_squared += squared_distance;
+        }
+        distToEtalon = std::sqrt(sum_dist_squared);
+        assert(!((boost::math::isnan)(distToEtalon)));
+        assert(descriptorValues.size() == etalonDistances.size());
     }
 
     std::string smile;
@@ -118,31 +238,40 @@ struct MolpherMolecule
     std::set<std::string> descendants;
     std::set<std::string> historicDescendants;
 
+    std::string scaffoldSmile;
+    boost::int32_t scaffoldLevelCreation;
+
     double distToTarget;
-    
+    double distToEtalon;
+    std::vector<double> etalonDistances;
+    std::vector<std::string> relevantDescriptorNames;
+    std::vector<double> descriptorValues;
+    std::string descriptorsFilePath;
+    std::string id;
+
     /**
-     * Hold distance to the nextDecoy. Value -1 say that 
+     * Hold distance to the nextDecoy. Value -1 say that
      * there is decoy that we should visit.
      */
     double distToClosestDecoy;
     double molecularWeight;
-    
+
     /**
-     * Keep sascore for filter, computed in generate morphs, 
+     * Keep sascore for filter, computed in generate morphs,
      * constructors updated. The value is not serialised.
      */
     double sascore;
-    
+
     boost::uint32_t itersWithoutDistImprovement;
 
     double posX;
     double posY;
-    
+
     /**
-     * Store index of next decoy that should be visited by 
-     * this molecule. If greater then number of decoys 
+     * Store index of next decoy that should be visited by
+     * this molecule. If greater then number of decoys
      * then molecule can go straight for the target.
-     * 
+     *
      * The value is not serialised.
      */
     // int nextDecoy;

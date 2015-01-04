@@ -24,6 +24,7 @@
 
 #include "global_types.h"
 #include "chemoper_selectors.h"
+#include "scaffold_selectors.hpp"
 
 class MorphingData
 {
@@ -31,19 +32,20 @@ public:
     MorphingData(
         RDKit::ROMol &molecule,
         RDKit::ROMol &target,
-        std::vector<ChemOperSelector> &operators
+        std::vector<ChemOperSelector> &operators,
+        ScaffoldSelector scaffLevel
         );
     ~MorphingData();
 
 protected:
     void InitAddAtom();
     void InitAddBond();
-    void InitMutateAtom();
+    void InitMutateAtom(ScaffoldSelector scaffLevel);
     void InitRemoveAtom();
     void InitRemoveBond();
-    void InitInterlayAtom();
-    void InitBondReroute();
-    void InitBondContraction();
+    void InitInterlayAtom(ScaffoldSelector scaffLevel);
+    void InitBondReroute(ScaffoldSelector scaffLevel);
+    void InitBondContraction(ScaffoldSelector scaffLevel);
 
 public:
     RDKit::ROMol &mol;

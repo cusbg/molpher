@@ -57,6 +57,80 @@ void PathFinderContext::ContextToSnapshot(
             it != ctx.prunedDuringThisIter.end(); it++) {
         snp.prunedDuringThisIter.push_back(*it);
     }
+    
+    snp.actives.clear();
+    for (PathFinderContext::CandidateMap::const_iterator it = ctx.actives.begin();
+            it != ctx.actives.end(); it++) {
+        snp.actives.insert(*it);
+    }
+    
+    snp.activesIDs.clear();
+    snp.activesIDs.reserve(ctx.activesIDs.size());
+    for (PathFinderContext::ConcStringVector::const_iterator it = ctx.activesIDs.begin();
+            it != ctx.activesIDs.end(); it++) {
+        snp.activesIDs.push_back(*it);
+    }
+    
+    snp.etalonValues.clear();
+    snp.etalonValues.reserve(ctx.etalonValues.size());
+    for (PathFinderContext::ConcDoubleVector::const_iterator it = ctx.etalonValues.begin();
+            it != ctx.etalonValues.end(); it++) {
+        snp.etalonValues.push_back(*it);
+    }
+    
+    snp.activesDescriptors.clear();
+    snp.activesDescriptors.reserve(ctx.activesDescriptors.size());
+    for (PathFinderContext::ConcDoubleMatrix::const_iterator it = ctx.activesDescriptors.begin();
+            it != ctx.activesDescriptors.end(); it++) {
+        snp.activesDescriptors.push_back(*it);
+    }
+    
+    snp.normalizationCoefficients.clear();
+    snp.normalizationCoefficients.reserve(ctx.normalizationCoefficients.size());
+    for (PathFinderContext::ConcDoublePairVector::const_iterator it = ctx.normalizationCoefficients.begin();
+            it != ctx.normalizationCoefficients.end(); it++) {
+        snp.normalizationCoefficients.push_back(*it);
+    }
+    
+    snp.relevantDescriptorNames.clear();
+    snp.relevantDescriptorNames.reserve(ctx.relevantDescriptorNames.size());
+    for (PathFinderContext::ConcStringVector::const_iterator it = ctx.relevantDescriptorNames.begin();
+            it != ctx.relevantDescriptorNames.end(); it++) {
+        snp.relevantDescriptorNames.push_back(*it);
+    }
+    
+//    snp.relevantDescriptorIndices.clear();
+//    snp.relevantDescriptorIndices.reserve(ctx.relevantDescriptorIndices.size());
+//    for (PathFinderContext::ConcBoolVector::const_iterator it = ctx.relevantDescriptorIndices.begin();
+//            it != ctx.relevantDescriptorIndices.end(); it++) {
+//        snp.relevantDescriptorIndices.push_back(*it);
+//    }
+    
+    snp.activityMorphingInitialized = ctx.activityMorphingInitialized;
+    snp.inputActivityDataDir = ctx.inputActivityDataDir;
+    snp.activesSDFFile = ctx.activesSDFFile;
+//    snp.inactivesSDFFile = ctx.inactivesSDFFile;
+    snp.proteinTargetName = ctx.proteinTargetName;
+    snp.activesDescriptorsFile = ctx.activesDescriptorsFile;
+//    snp.inactivesDescriptorsFile = ctx.inactivesDescriptorsFile;
+    snp.descriptorDataFileSuffix = ctx.descriptorDataFileSuffix;
+    snp.analysisResultsSuffix = ctx.analysisResultsSuffix;
+
+    snp.tempSource = ctx.tempSource;
+    snp.scaffoldSelector = ctx.scaffoldSelector;
+    snp.pathMolecules = ctx.pathMolecules;
+
+    snp.pathScaffoldMolecules.clear();
+    for (ScaffoldSmileMap::const_iterator it = ctx.pathScaffoldMolecules.begin();
+            it != ctx.pathScaffoldMolecules.end(); it++) {
+        snp.pathScaffoldMolecules.insert(*it);
+    }
+
+    snp.candidateScaffoldMolecules.clear();
+    for (ScaffoldSmileMap::const_iterator it = ctx.candidateScaffoldMolecules.begin();
+            it != ctx.candidateScaffoldMolecules.end(); it++) {
+        snp.candidateScaffoldMolecules.insert(*it);
+    }
 }
 
 void PathFinderContext::SnapshotToContext(
@@ -100,6 +174,80 @@ void PathFinderContext::SnapshotToContext(
             it != snp.prunedDuringThisIter.end(); it++) {
         ctx.prunedDuringThisIter.push_back(*it);
     }
+    
+    ctx.actives.clear();
+    for (IterationSnapshot::CandidateMap::const_iterator it = snp.actives.begin();
+            it != snp.actives.end(); it++) {
+        ctx.actives.insert(*it);
+    }
+    
+    ctx.activesIDs.clear();
+    ctx.activesIDs.reserve(snp.activesIDs.size());
+    for (std::vector<std::string>::const_iterator it = snp.activesIDs.begin();
+            it != snp.activesIDs.end(); it++) {
+        ctx.activesIDs.push_back(*it);
+    }
+    
+    ctx.etalonValues.clear();
+    ctx.etalonValues.reserve(snp.etalonValues.size());
+    for (std::vector<double>::const_iterator it = snp.etalonValues.begin();
+            it != snp.etalonValues.end(); it++) {
+        ctx.etalonValues.push_back(*it);
+    }
+    
+    ctx.activesDescriptors.clear();
+    ctx.activesDescriptors.reserve(snp.activesDescriptors.size());
+    for (std::vector<std::vector<double> >::const_iterator it = snp.activesDescriptors.begin();
+            it != snp.activesDescriptors.end(); it++) {
+        ctx.activesDescriptors.push_back(*it);
+    }
+    
+    ctx.normalizationCoefficients.clear();
+    ctx.normalizationCoefficients.reserve(snp.normalizationCoefficients.size());
+    for (std::vector<std::pair<double, double> >::const_iterator it = snp.normalizationCoefficients.begin();
+            it != snp.normalizationCoefficients.end(); it++) {
+        ctx.normalizationCoefficients.push_back(*it);
+    }
+    
+    ctx.relevantDescriptorNames.clear();
+    ctx.relevantDescriptorNames.reserve(snp.relevantDescriptorNames.size());
+    for (std::vector<std::string>::const_iterator it = snp.relevantDescriptorNames.begin();
+            it != snp.relevantDescriptorNames.end(); it++) {
+        ctx.relevantDescriptorNames.push_back(*it);
+    }
+    
+//    ctx.relevantDescriptorIndices.clear();
+//    ctx.relevantDescriptorIndices.reserve(snp.relevantDescriptorIndices.size());
+//    for (std::vector<bool>::const_iterator it = snp.relevantDescriptorIndices.begin();
+//            it != snp.relevantDescriptorIndices.end(); it++) {
+//        ctx.relevantDescriptorIndices.push_back(*it);
+//    }
+    
+    ctx.activityMorphingInitialized = snp.activityMorphingInitialized;
+    ctx.inputActivityDataDir = snp.inputActivityDataDir;
+    ctx.activesSDFFile = snp.activesSDFFile;
+//    ctx.inactivesSDFFile = snp.inactivesSDFFile;
+    ctx.proteinTargetName = snp.proteinTargetName;
+    ctx.activesDescriptorsFile = snp.activesDescriptorsFile;
+//    ctx.inactivesDescriptorsFile = snp.inactivesDescriptorsFile;
+    ctx.descriptorDataFileSuffix = snp.descriptorDataFileSuffix;
+    ctx.analysisResultsSuffix = snp.analysisResultsSuffix;
+
+    ctx.tempSource = snp.tempSource;
+    ctx.scaffoldSelector = (ScaffoldSelector) snp.scaffoldSelector;
+    ctx.pathMolecules = snp.pathMolecules;
+
+    ctx.pathScaffoldMolecules.clear();
+    for (IterationSnapshot::ScaffoldSmileMap::const_iterator it = snp.pathScaffoldMolecules.begin();
+            it != snp.pathScaffoldMolecules.end(); it++) {
+        ctx.pathScaffoldMolecules.insert(*it);
+    }
+
+    ctx.candidateScaffoldMolecules.clear();
+    for (IterationSnapshot::ScaffoldSmileMap::const_iterator it = snp.candidateScaffoldMolecules.begin();
+            it != snp.candidateScaffoldMolecules.end(); it++) {
+        ctx.candidateScaffoldMolecules.insert(*it);
+    }
 }
 
 void PathFinderContext::ContextToLightSnapshot(
@@ -126,12 +274,7 @@ void PathFinderContext::ContextToLightSnapshot(
     snp.decoys = ctx.decoys;
 }
 
-void PathFinderContext::clear()
+bool PathFinderContext::ScaffoldMode() const
 {
-    chemOperSelectors.clear();
-    decoys.clear();
-    candidates.clear();
-    morphDerivations.clear();
-    prunedDuringThisIter.clear();
-    prunedDuringThisIter.shrink_to_fit();
+    return (scaffoldSelector != SF_NONE);
 }

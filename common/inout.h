@@ -34,12 +34,27 @@ IterationSnapshot Materialize(IterationSnapshotProxy &proxy);
 
 std::string GenerateFilename(std::string &base,
     JobId jobId, unsigned int iterIdx);
+std::string GenerateSmilesFilename(
+        std::string &base, unsigned int iterIdx);
 std::string GenerateFilename(std::string &base,
     JobId jobId, std::string name);
 std::string GenerateDirname(std::string &base, JobId jobId);
+std::string GenerateDirname(std::string &base, const std::string& targetId);
+std::string GenerateDirname(std::string &base, JobId jobId, const std::string& targetId);
+
+template<typename Number>
+std::string NumberToString(Number number);
+
+template<typename Number>
+std::string NumberToString(Number number) {
+    std::stringstream out;
+    out << number;
+    return out.str();
+}
 
 void WriteMolpherPath(const std::string &file, const std::string &targetSmile,
-    const IterationSnapshot::CandidateMap &candidates);
+    const IterationSnapshot::CandidateMap &candidates,
+    const std::vector<MolpherMolecule> &pathMols);
 
 void WriteSnapshotToFile(const std::string &file, const IterationSnapshot &snp);
 bool ReadSnapshotFromFile(const std::string &file, IterationSnapshot &snp);

@@ -30,7 +30,7 @@
 #include "chem/SimCoefCalculator.hpp"
 
 // TODO: merge into one?
-// include similarities 
+// include similarities
 #include "chem/simCoefStrategy/AllBitSimCoef.hpp"
 #include "chem/simCoefStrategy/AsymmetricSimCoef.hpp"
 #include "chem/simCoefStrategy/BraunBlanquetSimCoef.hpp"
@@ -256,6 +256,7 @@ Fingerprint *SimCoefCalculator::Extend(RDKit::ROMol *mol, Fingerprint *fp)
 	RDKit::Atom *atom;
     for (unsigned int i = 0; i < mol->getNumAtoms(); ++i) {
         atom = mol->getAtomWithIdx(i);
+        assert(mAtomTypesToIdx.find(atom->getAtomicNum()) != mAtomTypesToIdx.end());
         ++cntAtomType[mAtomTypesToIdx[atom->getAtomicNum()]];
     }
 
@@ -267,6 +268,8 @@ Fingerprint *SimCoefCalculator::Extend(RDKit::ROMol *mol, Fingerprint *fp)
         AtomicNum typeEnd = bond->getEndAtom()->getAtomicNum();
 		int bo = static_cast<int>(bond->getBondType());
 
+        assert(mAtomTypesToIdx.find(typeBegin) != mAtomTypesToIdx.end());
+        assert(mAtomTypesToIdx.find(typeEnd) != mAtomTypesToIdx.end());
 		connectionTab[mAtomTypesToIdx[typeBegin]][mAtomTypesToIdx[typeEnd]] += bo;
 		connectionTab[mAtomTypesToIdx[typeEnd]][mAtomTypesToIdx[typeBegin]] += bo;
 		if (bo < maxBondOrder) {

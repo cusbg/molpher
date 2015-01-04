@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="90">
+<configurationDescriptor version="95">
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Win32_Debug" type="1">
@@ -80,7 +80,7 @@
     <conf name="Linux64_Release" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <platform>3</platform>
+        <platform>2</platform>
       </toolsSet>
       <dbx_gdbdebugger version="1">
         <gdb_pathmaps>
@@ -88,6 +88,8 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
+        <gdb_signals>
+        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
@@ -100,16 +102,15 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -I false -J TestFiles/templates/test-template.xml -T 1</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -I false -J TestFiles/templates/test-template.xml -T 2</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <runcommand>"${OUTPUT_PATH}" -I false -J TestFiles/templates/test-template.xml -T 2</runcommand>
         <rundir></rundir>
         <buildfirst>false</buildfirst>
-        <console-type>1</console-type>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>
-          <variable name="Path"
-                    value="../dependencies/mingw;../dependencies/tbb/build/windows_ia32_gcc_mingw_release"/>
         </environment>
       </runprofile>
     </conf>

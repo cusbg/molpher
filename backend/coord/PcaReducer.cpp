@@ -20,7 +20,6 @@
 #include <cmath>
 #include <cfloat>
 #include <algorithm>
-// remove
 #include <iostream>
 #include <math.h>
 #include <limits>
@@ -56,8 +55,7 @@ bool inline ValidDouble(const double& value)
 int FileNumber(const std::string& prefix, const std::string& suffix)
 {
     int number = 1;
-    bool found = false;
-    
+
     while(true)
     {
         std::stringstream ss;
@@ -82,10 +80,17 @@ int FileNumber(const std::string& prefix, const std::string& suffix)
 
 /**
  * Return square of maximum value of error which is feasible when
- * caltulating eigen vectors. 
+ * calculating eigen vectors. 
  * @return double Square of maximum error.
  */
 double inline MaxError() { return 0.00001 * 0.00001; }
+
+/**
+ * Return minimal improvement value that must be reached in order to do 
+ * next iteration in eigen calculation.
+ * @return 
+ */
+double inline MinStep() { return 0.005; }
 
 /**
  * Multiply square matrix with vector. Matrix
@@ -216,7 +221,7 @@ void PcaReducer::Reduce(
         tbb::task_group_context &tbbCtx) {
     
     // check if we have some input data, 
-    // alse prevent division by zero when calculating coordinates mean
+    // else prevent division by zero when calculating coordinates mean
     if (mols.size() == 0 || mols.size() == 1) {
         return;
     }
@@ -224,11 +229,10 @@ void PcaReducer::Reduce(
 int fileNumber = FileNumber("m", ".txt");
 #endif
 
-    MeasureStage measureStage;
     SimCoefCalculator calc(simCoeffSelector, fingerprintSelector);
-    // sotre number of objects == mols
+    // set number of objects == mols
     size_t objectsCount = mols.size();
-    // caltulate fingerprints for all molecules
+    // calculate fingerprints for all molecules
     std::vector<Fingerprint *> fingerprints;
     fingerprints.resize(objectsCount, NULL);
     CalculateFingerprints calculateFingerprints(calc, mols, fingerprints);
@@ -236,7 +240,6 @@ int fileNumber = FileNumber("m", ".txt");
         tbb::parallel_for(
             tbb::blocked_range<size_t>(0, mols.size()),
             calculateFingerprints, tbb::auto_partitioner(), tbbCtx);
-        measureStage.ReportAndReset("CalculateFingerprints");
     }    
     
     // we calculate number of coordinates, and allocate them in a single new    
@@ -251,7 +254,6 @@ int fileNumber = FileNumber("m", ".txt");
         tbb::parallel_for(
             tbb::blocked_range<size_t>(0, objectsCount),
             calculateCoordinatesSum, tbb::auto_partitioner(), tbbCtx);
-        measureStage.ReportAndReset("CalculateCoordinates(Sum)");
     }    
     // we dont need FP no more
     for (size_t i = 0; i < mols.size(); ++i) {
@@ -267,7 +269,7 @@ int fileNumber = FileNumber("m", ".txt");
         for (int j = 0; j < coordinatesDimension; ++j) {
             meanCoordinates[j] = 0;
         }        
-        // we go throug data
+        // we go through data
         for (int i = 0; i < objectsCount; ++i) {
             // determine start coordinates
             size_t coordinateIndex = i * coordinatesDimension;
@@ -279,7 +281,6 @@ int fileNumber = FileNumber("m", ".txt");
         for (int j = 0; j < coordinatesDimension; ++j) {
             meanCoordinates[j] /= (double)objectsCount;
         }
-        measureStage.ReportAndReset("MeanCalculated");
     }    
     
     // center data (parallel)
@@ -288,31 +289,11 @@ int fileNumber = FileNumber("m", ".txt");
         tbb::parallel_for(
             tbb::blocked_range<size_t>(0, objectsCount),
             centerCoordinates, tbb::auto_partitioner(), tbbCtx);
-        measureStage.ReportAndReset("CenterCoordinates");
     }    
     // delete mean
     delete[] meanCoordinates;
     meanCoordinates = 0;
     
-#ifdef LOG_PCA_DATA     
-{
-    std::stringstream ss;
-    ss << "coord" << fileNumber << ".txt";
-    std::ofstream outfile(ss.str().c_str(), std::ios::out | std::ios::app);    
-    // outfile << "covariance matrix" << std::endl;
-    for (int o = 0; o < objectsCount; ++o) {    
-        outfile << coordinates[o * coordinatesDimension];
-        for (int j = 1; j < coordinatesDimension; ++j) {
-            outfile << "," << coordinates[j + (o * coordinatesDimension)];
-        }
-        outfile << std::endl;
-    }
-    
-    outfile.close();
-}    
-measureStage.ReportAndReset("LogOutput");    
-#endif
-
     // compute covariance matrix, we can use the fact that it is symetric (paralel)
     double *covarianceMatrix = new double[coordinatesDimension * coordinatesDimension];
     CalculateCovarianceMatrix calCovMatrix(
@@ -321,7 +302,6 @@ measureStage.ReportAndReset("LogOutput");
         tbb::parallel_for(
             tbb::blocked_range2d<size_t, size_t>(0, coordinatesDimension, 0, coordinatesDimension),
             calCovMatrix, tbb::auto_partitioner(), tbbCtx);
-        measureStage.ReportAndReset("CalculateCovarianceMatrix");
     }    
 
     // now we need 2 most significant eigen vectors
@@ -344,74 +324,44 @@ measureStage.ReportAndReset("LogOutput");
             Multiply(eigenFirst, tempVector, covarianceMatrix, coordinatesDimension);
             // move data from tempVector into eigenFirst
             std::swap(eigenFirst, tempVector);
-            // normalize before caltulating error
+            // normalize before calculating error
             Normalize(eigenFirst, coordinatesDimension); 
             Normalize(tempVector, coordinatesDimension); 
         } 
         while ( CalculateError(eigenFirst, tempVector, coordinatesDimension) > MaxError() );
-        measureStage.ReportAndReset("CalculateFirstEigenVector");    
         // eigenFirst is already normalized
     }     
     
     if (!Cancelled(tbbCtx)) {
-        // now we need second eigen vector, eigen vectors are ortogonal    
+        // now we need second eigen vector, eigen vectors are ortogonal
+        double error = 0;
+        double lastError = 0;
+        
+        int iter = 0;
+        
         do {
             // multiply vector with matrix and store result into tempVector
             Multiply(eigenSecond, tempVector, covarianceMatrix, coordinatesDimension);
             // make eigenSecond ortogonal to eigenFirst
             Orthogonalized(eigenFirst, tempVector, eigenSecond, coordinatesDimension);
-            // normalize before caltulating error
+            // normalize before calculating error
             Normalize(eigenSecond, coordinatesDimension); 
-            Normalize(tempVector, coordinatesDimension);             
+            Normalize(tempVector, coordinatesDimension);
+            // update values
+            lastError = error;
+            error = CalculateError(eigenSecond, tempVector, coordinatesDimension);
+            iter++;
         } 
-        while ( CalculateError(eigenSecond, tempVector, coordinatesDimension) > MaxError() );
-        measureStage.ReportAndReset("CalculateSecondEigenVector");
+        while ( error > MaxError() && std::abs(error - lastError) > MinStep() && 
+                !Cancelled(tbbCtx) && iter < 50);
         // eigenSecond is already normalized
+        std::cout << "Object count: " << objectsCount << std::endl;
+        if (iter == 50) {            
+            // we finished on iter limitation
+            SynchCout("Reducer run out of iterations ...");
+        }
     }
-#ifdef LOG_PCA_DATA     
-{
-    std::stringstream ss;
-    ss << "m" << fileNumber << ".txt";
-    std::ofstream outfile(ss.str().c_str(), std::ios::out | std::ios::app);    
-    // outfile << "covariance matrix" << std::endl;
-    for (int y = 0; y < coordinatesDimension; ++y) {
-    outfile << covarianceMatrix[y * coordinatesDimension];
-    for (int x = 1; x < coordinatesDimension; ++x) {
-        outfile << "," << covarianceMatrix[x+(y * coordinatesDimension)];
-    }
-    outfile << std::endl;
-    }
-    outfile.close();
-}
 
-{
-    std::stringstream ss;
-    ss << "e1" << fileNumber << ".txt";
-    std::ofstream outfile(ss.str().c_str(), std::ios::out | std::ios::app);
-    // outfile << "eigen first" << std::endl;
-    outfile << eigenFirst[0];
-    for (int i = 1; i < coordinatesDimension; ++i) {
-        outfile << "," << eigenFirst[i];
-    }
-    outfile << std::endl;
-    outfile.close();
-}
-
-{
-    std::stringstream ss;
-    ss << "e2" << fileNumber << ".txt";
-    std::ofstream outfile(ss.str().c_str(), std::ios::out | std::ios::app);
-    // outfile << "eigen second" << std::endl;
-    outfile << eigenSecond[0];
-    for (int i = 1; i < coordinatesDimension; ++i) {
-        outfile << "," << eigenSecond[i];
-    }
-    outfile << std::endl;
-    outfile.close();
-}   
-
-measureStage.ReportAndReset("LogOutput");
-#endif
     // delete covariance matrix
     delete[] covarianceMatrix;
     covarianceMatrix = 0;    
@@ -423,7 +373,6 @@ measureStage.ReportAndReset("LogOutput");
         tbb::parallel_for(
             tbb::blocked_range<size_t>(0, objectsCount),
             calculateCoordinates, tbb::auto_partitioner(), tbbCtx);
-        measureStage.ReportAndReset("CalculateCoordinates");
     }
 
     // delete coordinates
@@ -472,18 +421,6 @@ void PcaReducer::CalculateFingerprints::operator()(
 PcaReducer::MeasureStage::MeasureStage()
 {
     mTimestamp = std::clock();
-}
-
-void PcaReducer::MeasureStage::ReportAndReset(const std::string &stage)
-{
-    clock_t current = std::clock();
-#if PCAREDUCER_REPORTING == 1
-    std::ostringstream stream;
-    stream << "PcaReducer: " << stage <<
-        " consumed " << current - mTimestamp << " msec.";
-    SynchCout(stream.str());
-#endif
-    mTimestamp = current;
 }
 
 PcaReducer::CalculateCoordinatesSum::CalculateCoordinatesSum(

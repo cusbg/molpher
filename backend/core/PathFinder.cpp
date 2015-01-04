@@ -36,35 +36,32 @@
 #include "auxiliary/SynchRand.h"
 #include "coord/ReducerFactory.h"
 #include "chem/morphing/Morphing.hpp"
+#include "../chem/scaffold/Scaffold.hpp"
+#include "../chem/scaffold/ScaffoldDatabase.hpp"
 #include "JobManager.h"
 #include "PathFinder.h"
 
 PathFinder::PathFinder(
-    tbb::task_group_context *tbbCtx, JobManager *jobManager, int threadCnt
-    ) :
-    mTbbCtx(tbbCtx),
-    mJobManager(jobManager),
-    mThreadCnt(threadCnt)
-{
+        tbb::task_group_context *tbbCtx, JobManager *jobManager, int threadCnt
+        ) :
+mTbbCtx(tbbCtx),
+mJobManager(jobManager),
+mThreadCnt(threadCnt) {
 }
 
-PathFinder::~PathFinder()
-{
+PathFinder::~PathFinder() {
 }
 
-bool PathFinder::Cancelled()
-{
+bool PathFinder::Cancelled() {
     return mTbbCtx->is_group_execution_cancelled();
 }
 
 PathFinder::FindLeaves::FindLeaves(MoleculeVector &leaves) :
-    mLeaves(leaves)
-{
+mLeaves(leaves) {
 }
 
 void PathFinder::FindLeaves::operator()(
-    const PathFinderContext::CandidateMap::range_type &candidates) const
-{
+        const PathFinderContext::CandidateMap::range_type &candidates) const {
     PathFinderContext::CandidateMap::iterator it;
     for (it = candidates.begin(); it != candidates.end(); it++) {
         if (!it->second.parentSmile.empty()) {
@@ -78,13 +75,11 @@ void PathFinder::FindLeaves::operator()(
 }
 
 PathFinder::CollectMorphs::CollectMorphs(MoleculeVector &morphs) :
-    mMorphs(morphs)
-{
+mMorphs(morphs) {
     mCollectAttemptCount = 0;
 }
 
-void PathFinder::CollectMorphs::operator()(const MolpherMolecule &morph)
-{
+void PathFinder::CollectMorphs::operator()(const MolpherMolecule &morph) {
     ++mCollectAttemptCount; // atomic
     SmileSet::const_accessor dummy;
     if (mDuplicateChecker.insert(dummy, morph.smile)) {
@@ -94,24 +89,22 @@ void PathFinder::CollectMorphs::operator()(const MolpherMolecule &morph)
     }
 }
 
-unsigned int PathFinder::CollectMorphs::WithdrawCollectAttemptCount()
-{
+unsigned int PathFinder::CollectMorphs::WithdrawCollectAttemptCount() {
     unsigned int ret = mCollectAttemptCount;
     mCollectAttemptCount = 0;
     return ret;
 }
 
-void MorphCollector(MolpherMolecule *morph, void *functor)
-{
+void MorphCollector(MolpherMolecule *morph, void *functor) {
     PathFinder::CollectMorphs *collect =
-        (PathFinder::CollectMorphs *) functor;
+            (PathFinder::CollectMorphs *) functor;
     (*collect)(*morph);
 }
 
 // return true if "a" is closes to target then "b"
+
 bool PathFinder::CompareMorphs::operator()(
-    const MolpherMolecule &a, const MolpherMolecule &b) const
-{
+        const MolpherMolecule &a, const MolpherMolecule &b) const {
     /* Morphs are rated according to their proximity to the connecting line
      between their closest decoy and the target (i.e. sum of both distances is
      minimal on the connecting line between decoy and target). When sums for
@@ -126,92 +119,63 @@ bool PathFinder::CompareMorphs::operator()(
     double bSum = b.distToTarget + b.distToClosestDecoy;
 
     bool approximatelyEqual = (
-        fabs(aSum - bSum) <= (32 * DBL_EPSILON * fmax(fabs(aSum), fabs(bSum))));
+            fabs(aSum - bSum) <= (32 * DBL_EPSILON * fmax(fabs(aSum), fabs(bSum))));
 
     if (approximatelyEqual) {
         return a.distToTarget < b.distToTarget;
     } else {
         return aSum < bSum;
     }
-    
-    /**
-     * Just sort based on distance to decoy .. or target. We prefer those
-     * with target.
-     */
-    
-    /* Experimental evaluation
-    if (a.nextDecoy == -1 && b.nextDecoy == -1) {
-        // both go for target, so take just their distance
-        return a.distToTarget < b.distToTarget;
-    } else if (a.nextDecoy == -1) {
-        // a goes for target while b not -> a is greater
-        return true;
-    } else if (b.nextDecoy == -1) {
-        // b goes for target while a not -> b is greater
-        return false;
-    } else {
-        // decide based on nextDecoy
-        if (a.nextDecoy == b.nextDecoy) {
-            // go for same decoy use distance to closes decoy
-            return a.distToClosestDecoy < b.distToClosestDecoy;
-        } else {
-            // greater is better
-            return a.nextDecoy > b.nextDecoy;
-        }
-    }*/
 }
 
 PathFinder::FilterMorphs::FilterMorphs(PathFinderContext &ctx,
-    size_t globalMorphCount, MoleculeVector &morphs, std::vector<bool> &survivors
-    ) :
-    mCtx(ctx),
-    mGlobalMorphCount(globalMorphCount),
-    mMorphs(morphs),
-    mSurvivors(survivors)
-{
+        size_t globalMorphCount, MoleculeVector &morphs, std::vector<bool> &survivors
+        ) :
+mCtx(ctx),
+mGlobalMorphCount(globalMorphCount),
+mMorphs(morphs),
+mSurvivors(survivors) {
     assert(mMorphs.size() == mSurvivors.size());
 }
 
-void PathFinder::FilterMorphs::operator()(const tbb::blocked_range<size_t> &r) const
-{
-    RDKit::RWMol* reqSubstructure = NULL;
-
+void PathFinder::FilterMorphs::operator()(const tbb::blocked_range<size_t> &r) const {
     for (size_t idx = r.begin(); idx != r.end(); ++idx) {
 
         double acceptProbability = 1.0;
-        bool isTarget = (mMorphs[idx].smile == mCtx.target.smile);
+        bool isTarget = !mCtx.ScaffoldMode() ?
+                (mMorphs[idx].smile.compare(mCtx.target.smile) == 0) :
+                (mMorphs[idx].scaffoldSmile.compare(mCtx.target.scaffoldSmile) == 0);
         if (idx >= mCtx.params.cntCandidatesToKeep && !isTarget) {
             acceptProbability =
-                0.25 - (idx - mCtx.params.cntCandidatesToKeep) /
-                ((mGlobalMorphCount - mCtx.params.cntCandidatesToKeep) * 4.0);
+                    0.25 - (idx - mCtx.params.cntCandidatesToKeep) /
+                    ((mGlobalMorphCount - mCtx.params.cntCandidatesToKeep) * 4.0);
         }
 
         bool mightSurvive =
-            SynchRand::GetRandomNumber(0, 99) < (int) (acceptProbability * 100);
+                SynchRand::GetRandomNumber(0, 99) < (int) (acceptProbability * 100);
         if (mightSurvive) {
             bool isDead = false;
             bool badWeight = false;
             bool badSascore = false;
-            bool alreadyInTree = false;
+            bool alreadyExists = false;
             bool alreadyTriedByParent = false;
             bool tooManyProducedMorphs = false;
-            bool badSubstructure = false;
 
             // Tests are ordered according to their cost.
             // Added test for SAScore
 
-            isDead = (badWeight || badSascore || alreadyInTree ||
-                alreadyTriedByParent || tooManyProducedMorphs || badSubstructure);
+            isDead = (badWeight || badSascore || alreadyExists ||
+                    alreadyTriedByParent || tooManyProducedMorphs);
             if (!isDead) {
                 badWeight =
-                    (mMorphs[idx].molecularWeight <
-                    mCtx.params.minAcceptableMolecularWeight) ||
-                    (mMorphs[idx].molecularWeight >
-                    mCtx.params.maxAcceptableMolecularWeight);
+                        (mMorphs[idx].molecularWeight <
+                        mCtx.params.minAcceptableMolecularWeight) ||
+                        (mMorphs[idx].molecularWeight >
+                        mCtx.params.maxAcceptableMolecularWeight);
             }
 
-            isDead = (badWeight || badSascore || alreadyInTree ||
-                alreadyTriedByParent || tooManyProducedMorphs || badSubstructure);
+            isDead = (badWeight || badSascore || alreadyExists ||
+                    alreadyTriedByParent || tooManyProducedMorphs);
 
             if (!isDead) {
                 if (mCtx.params.useSyntetizedFeasibility) {
@@ -225,76 +189,81 @@ void PathFinder::FilterMorphs::operator()(const tbb::blocked_range<size_t> &r) c
                 }
             }
 
-            isDead = (badWeight || badSascore || alreadyInTree ||
-                alreadyTriedByParent || tooManyProducedMorphs || badSubstructure);
+            isDead = (badWeight || badSascore || alreadyExists ||
+                    alreadyTriedByParent || tooManyProducedMorphs);
             if (!isDead) {
-                PathFinderContext::CandidateMap::const_accessor ac;
-                if (mCtx.candidates.find(ac, mMorphs[idx].smile)) {
-                    alreadyInTree = true;
+                if (!mCtx.ScaffoldMode()) {
+                    PathFinderContext::CandidateMap::const_accessor dummy;
+                    if (mCtx.candidates.find(dummy, mMorphs[idx].smile)) {
+                        alreadyExists = true;
+                    }
+                } else {
+                    PathFinderContext::ScaffoldSmileMap::const_accessor dummy;
+                    bool isInCandidates = mCtx.candidateScaffoldMolecules.find(dummy, mMorphs[idx].scaffoldSmile);
+                    dummy.release();
+                    bool isOnPath = mCtx.pathScaffoldMolecules.find(dummy, mMorphs[idx].scaffoldSmile);
+                    if (isInCandidates ||
+                            (isOnPath && mMorphs[idx].scaffoldSmile.compare(mCtx.target.scaffoldSmile) != 0)) {
+                        alreadyExists = true;
+                    }
                 }
             }
 
-            isDead = (badWeight || badSascore || alreadyInTree ||
-                alreadyTriedByParent || tooManyProducedMorphs || badSubstructure);
+            isDead = (badWeight || badSascore || alreadyExists ||
+                    alreadyTriedByParent || tooManyProducedMorphs);
             if (!isDead) {
                 PathFinderContext::CandidateMap::const_accessor ac;
                 if (mCtx.candidates.find(ac, mMorphs[idx].parentSmile)) {
                     alreadyTriedByParent = (
-                        ac->second.historicDescendants.find(mMorphs[idx].smile)
-                        !=
-                        ac->second.historicDescendants.end());
+                            ac->second.historicDescendants.find(mMorphs[idx].smile)
+                            !=
+                            ac->second.historicDescendants.end());
                 } else {
                     assert(false);
                 }
             }
-            isDead = (badWeight || badSascore || alreadyInTree ||
-                alreadyTriedByParent || tooManyProducedMorphs || badSubstructure);
+            isDead = (badWeight || badSascore || alreadyExists ||
+                    alreadyTriedByParent || tooManyProducedMorphs);
             if (!isDead) {
                 PathFinderContext::MorphDerivationMap::const_accessor ac;
                 if (mCtx.morphDerivations.find(ac, mMorphs[idx].smile)) {
                     tooManyProducedMorphs =
-                        (ac->second > mCtx.params.cntMaxMorphs);
+                            (ac->second > mCtx.params.cntMaxMorphs);
                 }
             }
-                        
-            isDead = (badWeight || badSascore || alreadyInTree ||
-                alreadyTriedByParent || tooManyProducedMorphs || badSubstructure);
+
+            isDead = (badWeight || badSascore || alreadyExists ||
+                    alreadyTriedByParent || tooManyProducedMorphs);
             mSurvivors[idx] = !isDead;
         }
     }
-    // release data
-    if (reqSubstructure != NULL) {
-        delete reqSubstructure;
-    }
+
 }
 
 PathFinder::AcceptMorphs::AcceptMorphs(
-    MoleculeVector &morphs, std::vector<bool> &survivors,
-    PathFinderContext &ctx, SmileSet &modifiedParents
-    ) :
-    mMorphs(morphs),
-    mSurvivors(survivors),
-    mCtx(ctx),
-    mModifiedParents(modifiedParents),
-    mSurvivorCount(0)
-{
+        MoleculeVector &morphs, std::vector<bool> &survivors,
+        PathFinderContext &ctx, SmileSet &modifiedParents
+        ) :
+mMorphs(morphs),
+mSurvivors(survivors),
+mCtx(ctx),
+mModifiedParents(modifiedParents),
+mSurvivorCount(0) {
     assert(mMorphs.size() == mSurvivors.size());
 }
 
 PathFinder::AcceptMorphs::AcceptMorphs(
-    AcceptMorphs &toSplit, tbb::split
-    ) :
-    mCtx(toSplit.mCtx),
-    mMorphs(toSplit.mMorphs),
-    mSurvivors(toSplit.mSurvivors),
-    mModifiedParents(toSplit.mModifiedParents),
-    mSurvivorCount(0)
-{
+        AcceptMorphs &toSplit, tbb::split
+        ) :
+mCtx(toSplit.mCtx),
+mMorphs(toSplit.mMorphs),
+mSurvivors(toSplit.mSurvivors),
+mModifiedParents(toSplit.mModifiedParents),
+mSurvivorCount(0) {
 }
 
 void PathFinder::AcceptMorphs::operator()(
-    const tbb::blocked_range<size_t> &r, tbb::pre_scan_tag)
-{
+        const tbb::blocked_range<size_t> &r, tbb::pre_scan_tag) {
     for (size_t idx = r.begin(); idx != r.end(); ++idx) {
         if (mSurvivors[idx]) {
             ++mSurvivorCount;
@@ -303,16 +272,31 @@ void PathFinder::AcceptMorphs::operator()(
 }
 
 void PathFinder::AcceptMorphs::operator()(
-    const tbb::blocked_range<size_t> &r, tbb::final_scan_tag)
-{
+        const tbb::blocked_range<size_t> &r, tbb::final_scan_tag) {
     for (size_t idx = r.begin(); idx != r.end(); ++idx) {
         if (mSurvivors[idx]) {
             if (mSurvivorCount < mCtx.params.cntCandidatesToKeepMax) {
                 PathFinderContext::CandidateMap::accessor ac;
 
-                mCtx.candidates.insert(ac, mMorphs[idx].smile);
-                ac->second = mMorphs[idx];
-                ac.release();
+                if (!mCtx.ScaffoldMode()) {
+                    mCtx.candidates.insert(ac, mMorphs[idx].smile);
+                    ac->second = mMorphs[idx];
+                    ac.release();
+                } else {
+                    PathFinderContext::ScaffoldSmileMap::accessor acScaff;
+                    bool success = mCtx.candidateScaffoldMolecules.insert(
+                        acScaff, mMorphs[idx].scaffoldSmile);
+                    if (!success) {
+                        // the scaffold morph is already in candidate tree (it is strange
+                        // that it does not happen when scaffold hopping is turned off)
+                        continue;
+                    }
+                    acScaff->second = mMorphs[idx].smile;
+
+                    mCtx.candidates.insert(ac, mMorphs[idx].smile);
+                    ac->second = mMorphs[idx];
+                    ac.release();
+                }
 
                 if (mCtx.candidates.find(ac, mMorphs[idx].parentSmile)) {
                     ac->second.descendants.insert(mMorphs[idx].smile);
@@ -323,30 +307,25 @@ void PathFinder::AcceptMorphs::operator()(
                     assert(false);
                 }
             }
-
             ++mSurvivorCount;
         }
     }
 }
 
-void PathFinder::AcceptMorphs::reverse_join(AcceptMorphs &toJoin)
-{
+void PathFinder::AcceptMorphs::reverse_join(AcceptMorphs &toJoin) {
     mSurvivorCount += toJoin.mSurvivorCount;
 }
 
-void PathFinder::AcceptMorphs::assign(AcceptMorphs &toAssign)
-{
+void PathFinder::AcceptMorphs::assign(AcceptMorphs &toAssign) {
     mSurvivorCount = toAssign.mSurvivorCount;
 }
 
 PathFinder::UpdateTree::UpdateTree(PathFinderContext &ctx) :
-    mCtx(ctx)
-{
+mCtx(ctx) {
 }
 
 void PathFinder::UpdateTree::operator()(
-    const SmileSet::range_type &modifiedParents) const
-{
+        const SmileSet::range_type &modifiedParents) const {
     PathFinder::SmileSet::iterator itParent;
     for (itParent = modifiedParents.begin();
             itParent != modifiedParents.end(); itParent++) {
@@ -377,7 +356,8 @@ void PathFinder::UpdateTree::operator()(
         }
 
         // Update the tree branch towards root.
-        while (!acParent->second.parentSmile.empty()) {
+        while ((!mCtx.ScaffoldMode() && !acParent->second.parentSmile.empty()) ||
+                (mCtx.ScaffoldMode() && acParent->first.compare(mCtx.tempSource.smile) != 0)) {
             if (minDistance < acParent->second.distToTarget) {
                 acParent->second.itersWithoutDistImprovement = 0;
             }
@@ -391,14 +371,12 @@ void PathFinder::UpdateTree::operator()(
 }
 
 PathFinder::PruneTree::PruneTree(PathFinderContext &ctx, SmileSet &deferred) :
-    mCtx(ctx),
-    mDeferred(deferred)
-{
+mCtx(ctx),
+mDeferred(deferred) {
 }
 
 void PathFinder::PruneTree::operator()(
-    const std::string &smile, tbb::parallel_do_feeder<std::string> &feeder) const
-{
+        const std::string &smile, tbb::parallel_do_feeder<std::string> &feeder) const {
     PathFinderContext::CandidateMap::accessor ac;
     mCtx.candidates.find(ac, smile);
     assert(!ac.empty());
@@ -406,7 +384,7 @@ void PathFinder::PruneTree::operator()(
     SmileSet::const_accessor dummy;
     bool deferred = mDeferred.find(dummy, smile);
     bool prune = (deferred ||
-        (ac->second.itersWithoutDistImprovement > mCtx.params.itThreshold));
+            (ac->second.itersWithoutDistImprovement > mCtx.params.itThreshold));
     if (prune) {
 
         bool tooManyDerivations = false;
@@ -430,7 +408,7 @@ void PathFinder::PruneTree::operator()(
         } else {
             std::set<std::string>::const_iterator it;
             for (it = ac->second.descendants.begin();
-                    it !=ac->second.descendants.end(); it++) {
+                    it != ac->second.descendants.end(); it++) {
                 EraseSubTree(*it);
             }
             ac->second.descendants.clear();
@@ -440,14 +418,13 @@ void PathFinder::PruneTree::operator()(
     } else {
         std::set<std::string>::const_iterator it;
         for (it = ac->second.descendants.begin();
-                it !=ac->second.descendants.end(); it++) {
+                it != ac->second.descendants.end(); it++) {
             feeder.add(*it);
         }
     }
 }
 
-void PathFinder::PruneTree::EraseSubTree(const std::string &root) const
-{
+void PathFinder::PruneTree::EraseSubTree(const std::string &root) const {
     std::deque<std::string> toErase;
     toErase.push_back(root);
 
@@ -461,26 +438,29 @@ void PathFinder::PruneTree::EraseSubTree(const std::string &root) const
 
         std::set<std::string>::const_iterator it;
         for (it = ac->second.descendants.begin();
-                it !=ac->second.descendants.end(); it++) {
+                it != ac->second.descendants.end(); it++) {
             toErase.push_back(*it);
         }
 
         mCtx.prunedDuringThisIter.push_back(current);
+        if (mCtx.ScaffoldMode()) {
+            bool success = mCtx.candidateScaffoldMolecules.erase(
+                    ac->second.scaffoldSmile);
+            assert(success);
+        }
         mCtx.candidates.erase(ac);
     }
 }
 
 PathFinder::AccumulateTime::AccumulateTime(PathFinderContext &ctx) :
-    mCtx(ctx)
-{
+mCtx(ctx) {
     mTimestamp = std::clock();
 }
 
-unsigned int PathFinder::AccumulateTime::GetElapsedSeconds(bool reset)
-{
+unsigned int PathFinder::AccumulateTime::GetElapsedSeconds(bool reset) {
     clock_t current = std::clock();
     unsigned int seconds =
-        (unsigned int) ((current - mTimestamp) / CLOCKS_PER_SEC);
+            (unsigned int) ((current - mTimestamp) / CLOCKS_PER_SEC);
     if (reset) {
         mTimestamp = current;
     }
@@ -488,13 +468,12 @@ unsigned int PathFinder::AccumulateTime::GetElapsedSeconds(bool reset)
 }
 
 void PathFinder::AccumulateTime::ReportElapsedMiliseconds(
-    const std::string &consumer, bool reset)
-{
+        const std::string &consumer, bool reset) {
     clock_t current = std::clock();
 #if PATHFINDER_REPORTING == 1
     std::ostringstream stream;
     stream << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": " <<
-        consumer << " consumed " << current - mTimestamp << " msec.";
+            consumer << " consumed " << current - mTimestamp << " msec.";
     SynchCout(stream.str());
 #endif
     if (reset) {
@@ -502,8 +481,7 @@ void PathFinder::AccumulateTime::ReportElapsedMiliseconds(
     }
 }
 
-void PathFinder::AccumulateTime::Reset()
-{
+void PathFinder::AccumulateTime::Reset() {
     mTimestamp = std::clock();
 }
 
@@ -513,13 +491,14 @@ void PathFinder::AccumulateTime::Reset()
  * @param morphs List of morphs.
  * @param ctx Context.
  * @param modifiedParents Parent to modify.
+ *
+ * Unused method (scaffold hopping is not implemented here).
  */
 void acceptMorph(
         size_t idx,
-        PathFinder::MoleculeVector &morphs, 
-        PathFinderContext &ctx, 
-        PathFinder::SmileSet &modifiedParents)
-{    
+        PathFinder::MoleculeVector &morphs,
+        PathFinderContext &ctx,
+        PathFinder::SmileSet &modifiedParents) {
     PathFinderContext::CandidateMap::accessor ac;
     ctx.candidates.insert(ac, morphs[idx].smile);
     ac->second = morphs[idx];
@@ -532,11 +511,11 @@ void acceptMorph(
         modifiedParents.insert(dummy, ac->second.smile);
     } else {
         assert(false);
-    }    
+    }
 }
 
 /**
- * Accept morphs from list. If there is no decoy the PathFinder::AcceptMorphs is 
+ * Accept morphs from list. If there is no decoy the PathFinder::AcceptMorphs is
  * used. Otherwise for each decoy the same number of best candidates is accepted.
  * @param morphs Candidates.
  * @param survivors Survive index.
@@ -544,86 +523,23 @@ void acceptMorph(
  * @param modifiedParents
  * @param decoySize Number of decoy used during exploration.
  */
-void acceptMorphs(PathFinder::MoleculeVector &morphs, 
+void acceptMorphs(PathFinder::MoleculeVector &morphs,
         std::vector<bool> &survivors,
-        PathFinderContext &ctx, 
+        PathFinderContext &ctx,
         PathFinder::SmileSet &modifiedParents,
-        int decoySize)
-{
-    
-        // no decoy .. we can use old parallel approach        
-        PathFinder::AcceptMorphs acceptMorphs(morphs, survivors, ctx, modifiedParents);
-        // FIXME
-        // Current TBB version does not support parallel_scan cancellation.
-        // If it will be improved in the future, pass task_group_context
-        // argument similarly as in parallel_for.
-        tbb::parallel_scan(
+        int decoySize) {
+    PathFinder::AcceptMorphs acceptMorphs(morphs, survivors, ctx, modifiedParents);
+    // FIXME
+    // Current TBB version does not support parallel_scan cancellation.
+    // If it will be improved in the future, pass task_group_context
+    // argument similarly as in parallel_for.
+    tbb::parallel_scan(
             tbb::blocked_range<size_t>(0, morphs.size()),
             acceptMorphs, tbb::auto_partitioner());
-        return;
-    
-        
-    // Advance decoy functionality use if //if (decoySize != 0) {
-    /*
-    int maxDecoy = 0;
-    for (size_t i = 0; i < morphs.size(); ++i) {
-        if (survivors[i]) {
-            maxDecoy = maxDecoy < morphs[i].nextDecoy ? morphs[i].nextDecoy : maxDecoy;
-        }
-    }
-    // +1 is for target ..
-    assert(maxDecoy < (decoySize + 1));
-    // increase max decoy for target
-    maxDecoy += 1;
-    std::vector<int> limits(maxDecoy);
-    // give the same to each
-    std::stringstream ss; 
-    ss << "number of active decoys: " << maxDecoy << std::endl;
-    ss << "limits:      ";
-    for (size_t i = 0; i < maxDecoy; ++i) {
-        limits[i] = (ctx.params.cntCandidatesToKeepMax / maxDecoy) - 1;
-        ss << limits[i] << " ";
-    }
-    ss << std::endl;
-    
-    bool print = true;
-    // now scan the candidates list .. and store results
-    for (size_t i = 0; i < morphs.size(); ++i) {
-        if (survivors[i]) {
-            if (print) {
-                std::stringstream ss;
-                if (decoySize < morphs[i].nextDecoy) {
-                    ss << "next decoy:" << morphs[i].nextDecoy; 
-                } else {
-                    ss << "target";
-                }
-                ss <<  " distance:" << std::setprecision(5) << 
-                        morphs[i].distToClosestDecoy;
-                SynchCout(ss.str());
-                print = false;
-            }
-            
-            // determine the index to limits
-            size_t limitIndex = morphs[i].nextDecoy;
-            // do we have space left?
-            if (limits[limitIndex] > 0) {
-                --limits[limitIndex];
-                acceptMorph(i, morphs, ctx, modifiedParents);
-            } else {
-                // we are out of space .. 
-            }
-        }
-    }
-    ss << "left unused: ";
-    for (size_t i = 0; i < maxDecoy; ++i) {
-        ss << limits[i] << " ";
-    }
-    SynchCout(ss.str());
-    */
+    return;
 }
 
-void PathFinder::operator()()
-{
+void PathFinder::operator()() {
     SynchCout(std::string("PathFinder thread started."));
 
     tbb::task_scheduler_init scheduler;
@@ -636,7 +552,7 @@ void PathFinder::operator()()
     bool pathFound = false;
 
     while (true) {
-        
+
         if (!canContinueCurrentJob) {
             if (mJobManager->GetJob(mCtx)) {
                 canContinueCurrentJob = true;
@@ -645,9 +561,48 @@ void PathFinder::operator()()
                 // Initialize the first iteration of a job.
                 if (mCtx.candidates.empty()) {
                     assert(mCtx.iterIdx == 0);
+                    assert(mCtx.candidateScaffoldMolecules.empty());
+
                     PathFinderContext::CandidateMap::accessor ac;
-                    mCtx.candidates.insert(ac, mCtx.source.smile);
-                    ac->second = mCtx.source;
+                    if (!mCtx.ScaffoldMode()) {
+                        mCtx.candidates.insert(ac, mCtx.source.smile);
+                        ac->second = mCtx.source;
+                    } else {
+                        assert(mCtx.scaffoldSelector == SF_MOST_GENERAL);
+
+                        Scaffold *scaff = ScaffoldDatabase::Get(mCtx.scaffoldSelector);
+
+                        std::string scaffSource;
+                        scaff->GetScaffold(mCtx.source.smile, &scaffSource);
+                        mCtx.tempSource.scaffoldSmile = scaffSource;
+                        std::string scaffTarget;
+                        scaff->GetScaffold(mCtx.target.smile, &scaffTarget);
+                        mCtx.target.scaffoldSmile = scaffTarget;
+
+                        mCtx.candidates.insert(ac, mCtx.tempSource.smile);
+                        ac->second = mCtx.tempSource;
+
+                        PathFinderContext::ScaffoldSmileMap::accessor acScaff;
+                        mCtx.candidateScaffoldMolecules.insert(acScaff, scaffSource);
+                        acScaff->second = mCtx.source.smile;
+                        acScaff.release();
+
+                        mCtx.pathScaffoldMolecules.insert(acScaff, scaffSource);
+                        acScaff->second = mCtx.source.smile;
+                        acScaff.release();
+                        mCtx.pathScaffoldMolecules.insert(acScaff, scaffTarget);
+                        acScaff->second = mCtx.target.smile;
+
+                        std::string scaffDecoy;
+                        std::vector<MolpherMolecule>::iterator it;
+                        for (it = mCtx.decoys.begin(); it != mCtx.decoys.end(); ++it) {
+                            scaff->GetScaffold(it->smile, &scaffDecoy);
+                            it->scaffoldSmile = scaffDecoy;
+                            it->scaffoldLevelCreation = mCtx.scaffoldSelector;
+                        }
+
+                        delete scaff;
+                    }
                 }
             } else {
                 break; // Thread termination.
@@ -655,7 +610,7 @@ void PathFinder::operator()()
         }
 
         try {
-            
+
             if (!Cancelled()) {
                 mJobManager->GetFingerprintSelector(mCtx.fingerprintSelector);
                 mJobManager->GetSimCoeffSelector(mCtx.simCoeffSelector);
@@ -673,8 +628,8 @@ void PathFinder::operator()()
             FindLeaves findLeaves(leaves);
             if (!Cancelled()) {
                 tbb::parallel_for(
-                    PathFinderContext::CandidateMap::range_type(mCtx.candidates),
-                    findLeaves, tbb::auto_partitioner(), *mTbbCtx);
+                        PathFinderContext::CandidateMap::range_type(mCtx.candidates),
+                        findLeaves, tbb::auto_partitioner(), *mTbbCtx);
                 stageStopwatch.ReportElapsedMiliseconds("FindLeaves", true);
             }
 
@@ -691,33 +646,39 @@ void PathFinder::operator()()
              convert light snapshot into context (PathFinderContext::SnapshotToContext)
              scatter leaves over cluster
              convert node-specific part back to MoleculeVector
-            */
+             */
 
             MoleculeVector morphs;
             CollectMorphs collectMorphs(morphs);
+            Scaffold *scaff = mCtx.ScaffoldMode() ?
+                    ScaffoldDatabase::Get(mCtx.scaffoldSelector) : NULL;
+            std::vector<ChemOperSelector> chemOperSelectors =
+                    !mCtx.ScaffoldMode() || mCtx.scaffoldSelector == SF_ORIGINAL_MOLECULE ?
+                        mCtx.chemOperSelectors : scaff->GetUsefulOperators();
             for (MoleculeVector::iterator it = leaves.begin(); it != leaves.end(); it++) {
                 MolpherMolecule &candidate = (*it);
                 unsigned int morphAttempts = mCtx.params.cntMorphs;
                 if (candidate.distToTarget < mCtx.params.distToTargetDepthSwitch) {
                     morphAttempts = mCtx.params.cntMorphsInDepth;
                 }
-                
+
                 if (!Cancelled()) {
                     morphs.reserve(morphs.size() + morphAttempts);
-                                        
+
                     GenerateMorphs(
-                        candidate,
-                        morphAttempts,
-                        mCtx.fingerprintSelector,
-                        mCtx.simCoeffSelector,
-                        mCtx.chemOperSelectors,
-                        mCtx.target,
-                        mCtx.decoys,
-                        *mTbbCtx,
-                        &collectMorphs,
-                        MorphCollector);
+                            candidate,
+                            morphAttempts,
+                            mCtx.fingerprintSelector,
+                            mCtx.simCoeffSelector,
+                            chemOperSelectors,
+                            mCtx.target,
+                            mCtx.decoys,
+                            *mTbbCtx,
+                            &collectMorphs,
+                            MorphCollector,
+                            scaff);
                     PathFinderContext::MorphDerivationMap::accessor ac;
-                    
+
                     if (mCtx.morphDerivations.find(ac, candidate.smile)) {
                         ac->second += collectMorphs.WithdrawCollectAttemptCount();
                     } else {
@@ -730,6 +691,7 @@ void PathFinder::operator()()
                     break;
                 }
             }
+            delete scaff;
             morphs.shrink_to_fit();
 
             if (!Cancelled()) {
@@ -743,7 +705,7 @@ void PathFinder::operator()()
                  If it will be improved in the future, pass task_group_context
                  argument similarly as in parallel_for. */
                 tbb::parallel_sort(
-                    morphs.begin(), morphs.end(), compareMorphs);
+                        morphs.begin(), morphs.end(), compareMorphs);
                 stageStopwatch.ReportElapsedMiliseconds("SortMorphs", true);
             }
 
@@ -763,7 +725,7 @@ void PathFinder::operator()()
              gather snapshot to master
              convert morphs to std::vector
              gather morphs back to master
-            */
+             */
 
             /* TODO MPI
              MASTER
@@ -779,7 +741,7 @@ void PathFinder::operator()()
              broadcast morph vector complete size
              scatter morph vector over cluster
              convert node-specific part back to MoleculeVector
-            */
+             */
 
             std::vector<bool> survivors;
             survivors.resize(morphs.size(), false);
@@ -789,8 +751,8 @@ void PathFinder::operator()()
                     SynchCout("\tUsing syntetize feasibility");
                 }
                 tbb::parallel_for(
-                    tbb::blocked_range<size_t>(0, morphs.size()),
-                    filterMorphs, tbb::auto_partitioner(), *mTbbCtx);
+                        tbb::blocked_range<size_t>(0, morphs.size()),
+                        filterMorphs, tbb::auto_partitioner(), *mTbbCtx);
                 stageStopwatch.ReportElapsedMiliseconds("FilterMorphs", true);
             }
 
@@ -800,25 +762,39 @@ void PathFinder::operator()()
 
              SLAVE
              gather survivors vector back to master
-            */
+             */
 
-            // Now we need to accept morphs ie. move the lucky one from 
+            // Now we need to accept morphs ie. move the lucky one from
             // morphs -> survivors
             SmileSet modifiedParents;
             acceptMorphs(morphs, survivors, mCtx, modifiedParents, mCtx.decoys.size());
             stageStopwatch.ReportElapsedMiliseconds("AcceptMorphs", true);
-            
+
             UpdateTree updateTree(mCtx);
             if (!Cancelled()) {
                 tbb::parallel_for(SmileSet::range_type(modifiedParents),
-                    updateTree, tbb::auto_partitioner(), *mTbbCtx);
+                        updateTree, tbb::auto_partitioner(), *mTbbCtx);
                 stageStopwatch.ReportElapsedMiliseconds("UpdateTree", true);
             }
 
             if (!Cancelled()) {
-                PathFinderContext::CandidateMap::const_accessor acTarget;
-                mCtx.candidates.find(acTarget, mCtx.target.smile);
-                pathFound = !acTarget.empty();
+                if (!mCtx.ScaffoldMode()) {
+                    PathFinderContext::CandidateMap::const_accessor acTarget;
+                    mCtx.candidates.find(acTarget, mCtx.target.smile);
+                    pathFound = !acTarget.empty();
+                } else {
+                    PathFinderContext::ScaffoldSmileMap::const_accessor acTarget;
+                    mCtx.candidateScaffoldMolecules.find(acTarget, mCtx.target.scaffoldSmile);
+                    pathFound = !acTarget.empty();
+                }
+                if (pathFound) {
+                    std::stringstream ss;
+                    ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": ";
+                    !mCtx.ScaffoldMode() ?
+                            ss << "- - - Path has been found - - -" :
+                            ss << "- - - Subpath has been found - - -";
+                    SynchCout(ss.str());
+                }
             }
 
             SmileSet deferredSmiles;
@@ -831,27 +807,43 @@ void PathFinder::operator()()
                 std::vector<MolpherMolecule>::iterator it;
                 for (it = deferredMols.begin(); it != deferredMols.end(); it++) {
                     SmileSet::const_accessor dummy;
-                    if (it->smile == mCtx.source.smile) {
+                    if (it->smile == mCtx.source.smile ||
+                            (mCtx.ScaffoldMode() && it->smile == mCtx.tempSource.smile)) {
                         continue;
                     }
                     deferredSmiles.insert(dummy, it->smile);
                 }
                 deferredMols.clear();
 
-                pruningQueue.push_back(mCtx.source.smile);
+                pruningQueue.push_back(!mCtx.ScaffoldMode() ?
+                        mCtx.source.smile : mCtx.tempSource.smile);
                 tbb::parallel_do(
-                    pruningQueue.begin(), pruningQueue.end(), pruneTree, *mTbbCtx);
+                        pruningQueue.begin(), pruningQueue.end(), pruneTree, *mTbbCtx);
+                assert(!mCtx.ScaffoldMode() ?
+                        true :
+                        mCtx.candidates.size() == mCtx.candidateScaffoldMolecules.size());
                 stageStopwatch.ReportElapsedMiliseconds("PruneTree", true);
             }
 
-            if (!Cancelled()) {
+            // calculation of dimension reduction
+            if (!Cancelled() && mCtx.params.useVisualisation) {
                 DimensionReducer::MolPtrVector molsToReduce;
-                molsToReduce.reserve(mCtx.candidates.size() + mCtx.decoys.size() + 2);
+                int numberOfMolsToReduce = 0;
+                if (!mCtx.ScaffoldMode()) {
+                    numberOfMolsToReduce = mCtx.candidates.size() +
+                            mCtx.decoys.size() + 2;
+                } else {
+                    numberOfMolsToReduce = mCtx.candidates.size() +
+                            mCtx.decoys.size() + mCtx.pathMolecules.size() + 3;
+                }
+                molsToReduce.reserve(numberOfMolsToReduce);
+                // add all candidate
                 PathFinderContext::CandidateMap::iterator itCandidates;
                 for (itCandidates = mCtx.candidates.begin();
                         itCandidates != mCtx.candidates.end(); itCandidates++) {
                     molsToReduce.push_back(&itCandidates->second);
                 }
+                // add all decoys
                 std::vector<MolpherMolecule>::iterator itDecoys;
                 for (itDecoys = mCtx.decoys.begin();
                         itDecoys != mCtx.decoys.end(); itDecoys++) {
@@ -859,14 +851,45 @@ void PathFinder::operator()()
                 }
                 molsToReduce.push_back(&mCtx.source);
                 molsToReduce.push_back(&mCtx.target);
-
+                if (mCtx.ScaffoldMode()) {
+                    std::vector<MolpherMolecule>::iterator itPathMols;
+                    for (itPathMols = mCtx.pathMolecules.begin();
+                            itPathMols != mCtx.pathMolecules.end(); itPathMols++) {
+                        molsToReduce.push_back(&(*itPathMols));
+                    }
+                    molsToReduce.push_back(&mCtx.tempSource);
+                }
+                // reduce ..
                 DimensionReducer *reducer =
-                    ReducerFactory::Create(mCtx.dimRedSelector);
+                        ReducerFactory::Create(mCtx.dimRedSelector);
                 reducer->Reduce(molsToReduce,
-                    mCtx.fingerprintSelector, mCtx.simCoeffSelector, *mTbbCtx);
+                        mCtx.fingerprintSelector, mCtx.simCoeffSelector, *mTbbCtx);
                 ReducerFactory::Recycle(reducer);
 
                 stageStopwatch.ReportElapsedMiliseconds("DimensionReduction", true);
+            }
+
+            if (!Cancelled()) {
+                // find the closes molecule
+                double distance = 1;
+                PathFinderContext::CandidateMap::iterator itCandidates;
+                for (itCandidates = mCtx.candidates.begin();
+                        itCandidates != mCtx.candidates.end(); itCandidates++) {
+                    if (itCandidates->second.distToTarget < distance) {
+                        distance = itCandidates->second.distToTarget;
+                    }
+
+                    if (itCandidates->second.distToTarget == 0) {
+                        std::stringstream ss;
+                        ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
+                                << "Zero distance: " << itCandidates->second.smile;
+                        SynchCout(ss.str());
+                    }
+                }
+                std::stringstream ss;
+                ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
+                        << "The min. distance to target: " << distance;
+                SynchCout(ss.str());
             }
 
             if (!Cancelled()) {
@@ -877,15 +900,29 @@ void PathFinder::operator()()
                     bool itersDepleted = (mCtx.params.cntIterations <= mCtx.iterIdx);
                     bool timeDepleted = (mCtx.params.timeMaxSeconds <= mCtx.elapsedSeconds);
                     canContinueCurrentJob = (!itersDepleted && !timeDepleted);
+
+                    if (itersDepleted) {
+                        std::stringstream ss;
+                        ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
+                                << "The max number of iterations has been reached.";
+                        SynchCout(ss.str());
+                    }
+                    if (timeDepleted) {
+                        std::stringstream ss;
+                        ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
+                                << "We run out of time.";
+                        SynchCout(ss.str());
+                    }
                 }
             }
+
         } catch (tbb::tbb_exception &exc) {
             SynchCout(std::string(exc.what()));
             canContinueCurrentJob = false;
         }
 
         canContinueCurrentJob = mJobManager->CommitIteration(
-            mCtx, canContinueCurrentJob, pathFound);
+                mCtx, canContinueCurrentJob, pathFound);
 
     }
 

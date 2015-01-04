@@ -27,23 +27,27 @@
 struct MolpherParam
 {
     MolpherParam() :
-        cntCandidatesToKeep(50),
-        cntCandidatesToKeepMax(100),
-        cntMorphs(80),
-        cntMorphsInDepth(150),
-        distToTargetDepthSwitch(0.15),
-        cntMaxMorphs(1500),
-        itThreshold(5),
-        cntIterations(1000),
-        timeMaxSeconds(21600000),
+        cntCandidatesToKeep(40),        // accept
+        cntCandidatesToKeepMax(150),    // acceptMax
+        cntMorphs(90),                  // farProduce 
+        cntMorphsInDepth(200),          // closepPoduce
+        distToTargetDepthSwitch(0.1),   // farCloseThreashold
+        cntMaxMorphs(5000),             // maxMorhpsTotal
+        itThreshold(6),                 // nonProducingSurvive
+        cntIterations(500),             // maxIter
+        timeMaxSeconds(21600000),       // maxTime
         minAcceptableMolecularWeight(0.0),
-        maxAcceptableMolecularWeight(100000.0),
+        maxAcceptableMolecularWeight(500.0),
         useSyntetizedFeasibility(true),
         useSubstructureRestriction(false),
-        decoyRange(0.2)
+        decoyRange(0.2),
+        useVisualisation(true),
+        activityMorphing(false),
+        startMolMaxCount(0),
+        maxAcceptableEtalonDistance(5000)
     {
     }
-
+       
     friend class boost::serialization::access;
     template<typename Archive>
     void serialize(Archive &ar, const unsigned int version)
@@ -61,11 +65,16 @@ struct MolpherParam
         ar & BOOST_SERIALIZATION_NVP(minAcceptableMolecularWeight);
         ar & BOOST_SERIALIZATION_NVP(maxAcceptableMolecularWeight);
         ar & BOOST_SERIALIZATION_NVP(useSyntetizedFeasibility);
+        ar & BOOST_SERIALIZATION_NVP(activityMorphing);
+        ar & BOOST_SERIALIZATION_NVP(maxAcceptableEtalonDistance);
         
         //if (version > 0) {
             ar & BOOST_SERIALIZATION_NVP(useSubstructureRestriction);
             ar & BOOST_SERIALIZATION_NVP(decoyRange);
         //}
+            
+        // ignored:
+        //    useVisualisation
     }
 
     bool IsValid()
@@ -83,7 +92,8 @@ struct MolpherParam
             (minAcceptableMolecularWeight >= 0.0) &&
             (minAcceptableMolecularWeight <= maxAcceptableMolecularWeight) &&
             (maxAcceptableMolecularWeight > 0.0) &&
-            (decoyRange >= 0) && (decoyRange <= 1.0);
+            (decoyRange >= 0) && (decoyRange <= 1.0)
+                && (startMolMaxCount >=0) && (maxAcceptableEtalonDistance > 0);
     }
 
     // Molpher BIBE2011 parameters (do not rename)
@@ -116,6 +126,25 @@ struct MolpherParam
      * decoy to get over it. Must be from interval (1,0).
      */
     double decoyRange;
+    
+    /**
+     * If false no visualisation is computed.
+     */
+    bool useVisualisation;
+    
+    /**
+     * Use the PathFinderActivity class
+     */
+    bool activityMorphing;
+    
+    /**
+     * While morphing with activity information, this is the maximum number of active 
+     * molecules to use for morphing initilization. 
+     * Value of 0 means use all active molecules.
+     */
+    boost::uint32_t startMolMaxCount;
+    
+    double maxAcceptableEtalonDistance;
 };
 
 // add information about version to archive

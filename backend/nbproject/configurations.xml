@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="90">
+<configurationDescriptor version="95">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="f4" displayName="Commons" projectFiles="true">
+      <logicalFolder name="include" displayName="CSVParser" projectFiles="true">
+        <itemPath>../common/CSV_parser/include/CSV.cpp</itemPath>
+        <itemPath>../common/CSV_parser/include/CSV.h</itemPath>
+        <itemPath>../common/CSV_parser/include/DataConverter.cpp</itemPath>
+        <itemPath>../common/CSV_parser/include/DataConverter.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1" displayName="Header Files" projectFiles="true">
         <itemPath>../common/IterationSnapshot.h</itemPath>
         <itemPath>../common/JobGroup.h</itemPath>
@@ -11,20 +17,30 @@
         <itemPath>../common/NeighborhoodTask.h</itemPath>
         <itemPath>../common/NetbeansHack.h</itemPath>
         <itemPath>../common/Version.hpp</itemPath>
+        <itemPath>../common/activity_data_processing.h</itemPath>
         <itemPath>../common/chemoper_selectors.h</itemPath>
         <itemPath>../common/dimred_selectors.h</itemPath>
         <itemPath>../common/fingerprint_selectors.h</itemPath>
         <itemPath>../common/global_types.h</itemPath>
         <itemPath>../common/inout.h</itemPath>
         <itemPath>../common/iteration_serializer.hpp</itemPath>
+        <itemPath>../common/scaffold_selectors.hpp</itemPath>
         <itemPath>../common/simcoeff_selectors.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="include"
+                     displayName="PaDEL_descriptor_calculator"
+                     projectFiles="true">
+        <itemPath>../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp</itemPath>
+        <itemPath>../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f2" displayName="Source Files" projectFiles="true">
+        <itemPath>../common/activity_data_processing.cpp</itemPath>
         <itemPath>../common/chemoper_selectors.cpp</itemPath>
         <itemPath>../common/dimred_selectors.cpp</itemPath>
         <itemPath>../common/fingerprint_selectors.cpp</itemPath>
         <itemPath>../common/inout.cpp</itemPath>
         <itemPath>../common/iteration_serializer.cpp</itemPath>
+        <itemPath>../common/scaffold_selectors.cpp</itemPath>
         <itemPath>../common/simcoeff_selectors.cpp</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -65,6 +81,14 @@
           <itemPath>chem/morphingStrategy/OpRemoveAtom.hpp</itemPath>
           <itemPath>chem/morphingStrategy/OpRemoveBond.hpp</itemPath>
         </logicalFolder>
+        <logicalFolder name="f1" displayName="scaffold" projectFiles="true">
+          <itemPath>chem/scaffold/Murcko2Scaffold.hpp</itemPath>
+          <itemPath>chem/scaffold/Oprea1Scaffold.hpp</itemPath>
+          <itemPath>chem/scaffold/OriginalMoleculeScaffold.hpp</itemPath>
+          <itemPath>chem/scaffold/RingsWithLinkers1Scaffold.hpp</itemPath>
+          <itemPath>chem/scaffold/Scaffold.hpp</itemPath>
+          <itemPath>chem/scaffold/ScaffoldDatabase.hpp</itemPath>
+        </logicalFolder>
         <logicalFolder name="simCoefStrategy"
                        displayName="simCoefStrategy"
                        projectFiles="true">
@@ -96,6 +120,7 @@
         <itemPath>core/NeighborhoodGenerator.h</itemPath>
         <itemPath>core/NeighborhoodTaskQueue.h</itemPath>
         <itemPath>core/PathFinder.h</itemPath>
+        <itemPath>core/PathFinderActivity.h</itemPath>
         <itemPath>core/PathFinderContext.h</itemPath>
       </logicalFolder>
       <logicalFolder name="extensions" displayName="extensions" projectFiles="true">
@@ -145,6 +170,14 @@
           <itemPath>chem/morphingStrategy/OpRemoveAtom.cpp</itemPath>
           <itemPath>chem/morphingStrategy/OpRemoveBond.cpp</itemPath>
         </logicalFolder>
+        <logicalFolder name="f1" displayName="scaffold" projectFiles="true">
+          <itemPath>chem/scaffold/Murcko2Scaffold.cpp</itemPath>
+          <itemPath>chem/scaffold/Oprea1Scaffold.cpp</itemPath>
+          <itemPath>chem/scaffold/OriginalMoleculeScaffold.cpp</itemPath>
+          <itemPath>chem/scaffold/RingsWithLinkers1Scaffold.cpp</itemPath>
+          <itemPath>chem/scaffold/Scaffold.cpp</itemPath>
+          <itemPath>chem/scaffold/ScaffoldDatabase.cpp</itemPath>
+        </logicalFolder>
         <logicalFolder name="simCoefStrategy"
                        displayName="simCoefStrategy"
                        projectFiles="true">
@@ -174,6 +207,7 @@
         <itemPath>core/NeighborhoodGenerator.cpp</itemPath>
         <itemPath>core/NeighborhoodTaskQueue.cpp</itemPath>
         <itemPath>core/PathFinder.cpp</itemPath>
+        <itemPath>core/PathFinderActivity.cpp</itemPath>
         <itemPath>core/PathFinderContext.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="extensions" displayName="extensions" projectFiles="true">
@@ -197,6 +231,10 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>../common/CSV_parser/include</Elem>
+    <Elem>../common/PaDEL_descriptor_calculator/include</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Win32_Debug" type="1">
@@ -287,6 +325,23 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="../common/CSV_parser/include/CSV.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/CSV_parser/include/CSV.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../common/CSV_parser/include/DataConverter.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/CSV_parser/include/DataConverter.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
@@ -301,7 +356,27 @@
       </item>
       <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../common/activity_data_processing.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/activity_data_processing.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../common/chemoper_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -329,6 +404,10 @@
       <item path="../common/iteration_serializer.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/molpher_interface.idl" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../common/scaffold_selectors.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../common/scaffold_selectors.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/simcoeff_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -526,6 +605,42 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="chem/scaffold/Murcko2Scaffold.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Murcko2Scaffold.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Oprea1Scaffold.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Oprea1Scaffold.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/scaffold/OriginalMoleculeScaffold.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/OriginalMoleculeScaffold.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/RingsWithLinkers1Scaffold.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/RingsWithLinkers1Scaffold.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/Scaffold.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Scaffold.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/scaffold/ScaffoldDatabase.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/ScaffoldDatabase.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="chem/simCoefStrategy/AllBitSimCoef.cpp"
             ex="false"
             tool="1"
@@ -680,6 +795,10 @@
       <item path="core/PathFinder.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="core/PathFinder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core/PathFinderActivity.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="core/PathFinderActivity.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -801,6 +920,23 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="../common/CSV_parser/include/CSV.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/CSV_parser/include/CSV.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../common/CSV_parser/include/DataConverter.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/CSV_parser/include/DataConverter.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
@@ -815,7 +951,27 @@
       </item>
       <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../common/activity_data_processing.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/activity_data_processing.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../common/chemoper_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -843,6 +999,10 @@
       <item path="../common/iteration_serializer.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/molpher_interface.idl" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../common/scaffold_selectors.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../common/scaffold_selectors.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/simcoeff_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1040,6 +1200,42 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="chem/scaffold/Murcko2Scaffold.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Murcko2Scaffold.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Oprea1Scaffold.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Oprea1Scaffold.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/scaffold/OriginalMoleculeScaffold.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/OriginalMoleculeScaffold.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/RingsWithLinkers1Scaffold.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/RingsWithLinkers1Scaffold.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/Scaffold.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Scaffold.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/scaffold/ScaffoldDatabase.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/ScaffoldDatabase.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="chem/simCoefStrategy/AllBitSimCoef.cpp"
             ex="false"
             tool="1"
@@ -1195,6 +1391,10 @@
       </item>
       <item path="core/PathFinder.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="core/PathFinderActivity.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="core/PathFinderActivity.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
@@ -1214,7 +1414,7 @@
     </conf>
     <conf name="Linux64_Release" type="1">
       <toolsSet>
-        <compilerSet>MinGW|MinGW</compilerSet>
+        <compilerSet>GNU_4_6|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -1229,6 +1429,8 @@
             <pElem>../dependencies/zlib</pElem>
             <pElem>../dependencies/rdkit/Code</pElem>
             <pElem>../dependencies/tbb/include</pElem>
+            <pElem>../common/CSV_parser/include/</pElem>
+            <pElem>../common/PaDEL_descriptor_calculator/include/</pElem>
           </incDir>
           <commandLine>-DNOT_NETBEANS -Wno-deprecated -Wno-write-strings -Wno-attributes -Wno-strict-aliasing -fpermissive</commandLine>
           <preprocessorList>
@@ -1246,6 +1448,12 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/molpher-srv</output>
+          <linkerAddLib>
+            <pElem>../dependencies/tbb/lib/intel64/gcc4.4</pElem>
+          </linkerAddLib>
+          <linkerDynSerch>
+            <pElem>../dependencies/tbb/lib/intel64/gcc4.4</pElem>
+          </linkerDynSerch>
           <linkerLibItems>
             <linkerLibFileItem>../dependencies/rdkit/lib/libDistGeomHelpers_static.a</linkerLibFileItem>
             <linkerLibFileItem>../dependencies/rdkit/lib/libMolAlign_static.a</linkerLibFileItem>
@@ -1296,6 +1504,23 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="../common/CSV_parser/include/CSV.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/CSV_parser/include/CSV.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../common/CSV_parser/include/DataConverter.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/CSV_parser/include/DataConverter.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
@@ -1310,7 +1535,27 @@
       </item>
       <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../common/activity_data_processing.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../common/activity_data_processing.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../common/chemoper_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1338,6 +1583,10 @@
       <item path="../common/iteration_serializer.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/molpher_interface.idl" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../common/scaffold_selectors.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../common/scaffold_selectors.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/simcoeff_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1535,6 +1784,42 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="chem/scaffold/Murcko2Scaffold.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Murcko2Scaffold.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Oprea1Scaffold.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Oprea1Scaffold.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/scaffold/OriginalMoleculeScaffold.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/OriginalMoleculeScaffold.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/RingsWithLinkers1Scaffold.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/RingsWithLinkers1Scaffold.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="chem/scaffold/Scaffold.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/Scaffold.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/scaffold/ScaffoldDatabase.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/scaffold/ScaffoldDatabase.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="chem/simCoefStrategy/AllBitSimCoef.cpp"
             ex="false"
             tool="1"
@@ -1689,6 +1974,10 @@
       <item path="core/PathFinder.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="core/PathFinder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core/PathFinderActivity.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="core/PathFinderActivity.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
       </item>

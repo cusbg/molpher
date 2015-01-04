@@ -1,0 +1,34 @@
+
+<!--
+    Template can be loaded instead of snapsthot at any place.
+    Molper distinguish between snp a template file and use
+    proper loading function. The file must end on '-template.xml'
+    if Molpher should interpreate file as a template.
+    If file ends only on 'xml' Molpher try to load it as a regular
+    xml-snapstho file wich will almost surely failed.
+
+    When using templates Molpher write info about loaded into
+    snapshost. For information about other snaphost deafult values
+    please refer to commonst/iteration_snaphost.hpp.
+
+    The <fingerprint> respectively <similarity> should use
+    values from enums in common/fingerprintSelector.hpp
+    respectively common/simCoefSelector.hpp
+-->
+<iteration>
+	<inputActivityDataDir>/home/martin/temp/muv</inputActivityDataDir>
+    <activesSDF>aid466_actives.sdf</activesSDF>
+    <!-- not used now <inactivesSDF>aid466_decoys.sdf</inactivesSDF> -->
+    <fingerprint>FP_MORGAN</fingerprint>
+    <similarity>SC_TANIMOTO</similarity>
+    <param>
+		<activityMorphing>true</activityMorphing>
+		<startMolMaxCount>30</startMolMaxCount>
+        <syntetizedFeasibility>true</syntetizedFeasibility>
+        <substructureRestriction>false</substructureRestriction>
+	<farProduce>5</farProduce>
+	<iterMax>5</iterMax>
+	<maxTimeMinutes>180</maxTimeMinutes>
+	<maxAcceptableEtalonDistance>2000</maxAcceptableEtalonDistance>
+    </param>
+</iteration>
