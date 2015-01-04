@@ -7,13 +7,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/martin/temp/Molpher/molpher/trunk/backend/core/PathFinderActivity.cpp</file>
-            <file>file:/home/martin/temp/Molpher/molpher/trunk/backend/core/PathFinderContext.cpp</file>
-            <file>file:/home/martin/temp/Molpher/molpher/trunk/common/IterationSnapshot.h</file>
-            <file>file:/home/martin/temp/Molpher/molpher/trunk/common/iteration_serializer.cpp</file>
-            <file>file:/home/martin/temp/Molpher/molpher/trunk/backend/core/PathFinderActivity.h</file>
-            <file>file:/home/martin/temp/Molpher/molpher/trunk/backend/core/PathFinderContext.h</file>
-            <file>file:/home/martin/temp/Molpher/molpher/trunk/common/MolpherMolecule.h</file>
+            <file>file:/home/martin/temp/Molpher/backend/core/PathFinderContext.h</file>
+            <file>file:/home/martin/temp/Molpher/backend/core/PathFinderContext.cpp</file>
+            <file>file:/home/martin/temp/Molpher/backend/core/PathFinderActivity.cpp</file>
         </group>
     </open-files>
 </project-private>
