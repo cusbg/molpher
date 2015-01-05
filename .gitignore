@@ -1,4 +1,5 @@
 build/
 dist/
-dependencies/
+dependencies/*
+!dependencies/*.sh
 Results/
