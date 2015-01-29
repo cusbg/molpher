@@ -253,6 +253,8 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
                     snp.params.startMolMaxCount = toInt(v.second.data());
                 } else if (v.first == "maxAcceptableEtalonDistance") {                 
                     snp.params.maxAcceptableEtalonDistance= toInt(v.second.data());
+                } else if (v.first == "maxMOOPruns") {                 
+                    snp.params.maxMOOPruns = toInt(v.second.data());
                 } else if (v.first == "activityMorphing") {
                     snp.params.activityMorphing = 
                             v.second.data() == "1" || v.second.data() == "true";

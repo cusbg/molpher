@@ -161,7 +161,6 @@ struct MolpherMolecule
     }
     
     void SaveDescriptors(std::map<std::string, double> &descriptors) {
-        unsigned int si = relevantDescriptorNames.size();
         for (std::vector<std::string>::iterator it = relevantDescriptorNames.begin(); it != relevantDescriptorNames.end(); it++ ) {
             descriptorValues.push_back(descriptors[*it]);
         }
@@ -210,7 +209,7 @@ struct MolpherMolecule
                     } else {
                         maximum = morph_value;
                         minimum = active_value;
-                    }
+                }
                     double A = (max_value - min_value) / (maximum - minimum);
                     double B = min_value - A * minimum;
                     morph_value = A * morph_value + B;
@@ -223,9 +222,9 @@ struct MolpherMolecule
                 squared_distance = std::pow(etalon_value - morph_value, 2);
                 assert(!((boost::math::isnan)(squared_distance)));
                 etalonDistances.push_back(std::sqrt(squared_distance));
-            }
+                }
             sum_dist_squared += squared_distance;
-        }
+            }
         distToEtalon = std::sqrt(sum_dist_squared);
         assert(!((boost::math::isnan)(distToEtalon)));
         assert(descriptorValues.size() == etalonDistances.size());

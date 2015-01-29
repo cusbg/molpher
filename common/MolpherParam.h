@@ -44,7 +44,8 @@ struct MolpherParam
         useVisualisation(true),
         activityMorphing(false),
         startMolMaxCount(0),
-        maxAcceptableEtalonDistance(5000)
+        maxAcceptableEtalonDistance(5000),
+        maxMOOPruns(10)
     {
     }
        
@@ -145,6 +146,7 @@ struct MolpherParam
     boost::uint32_t startMolMaxCount;
     
     double maxAcceptableEtalonDistance;
+    boost::uint32_t maxMOOPruns;
 };
 
 // add information about version to archive

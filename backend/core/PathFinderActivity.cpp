@@ -123,15 +123,29 @@ bool PathFinderActivity::CompareMorphs::operator()(
     }
 }
 
+//PathFinderActivity::FilterMorphs::FilterMorphs(PathFinderContext &ctx,
+//        size_t globalMorphCount, MoleculeVector &morphs, std::vector<bool> &survivors
+//        ) :
+//mCtx(ctx),
+//mGlobalMorphCount(globalMorphCount),
+//mMorphs(morphs),
+//mMorphCount(morphs.size()),
+//mSurvivors(survivors) {
+//    assert(mMorphs.size() == mSurvivors.size());
+//}
+
 PathFinderActivity::FilterMorphs::FilterMorphs(PathFinderContext &ctx,
-        size_t globalMorphCount, MoleculeVector &morphs, std::vector<bool> &survivors
+        size_t globalMorphCount, MoleculeVector &morphs, std::vector<bool> &survivors,
+        std::vector<bool> &next
         ) :
 mCtx(ctx),
 mGlobalMorphCount(globalMorphCount),
 mMorphs(morphs),
 mMorphCount(morphs.size()),
-mSurvivors(survivors) {
+mSurvivors(survivors),
+mNext(next){
     assert(mMorphs.size() == mSurvivors.size());
+    assert(mMorphs.size() == mNext.size());
 }
 
 void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_t> &r) const {
@@ -159,6 +173,37 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
             bool tooManyProducedMorphs = false;
             bool isNotOptimal = false;
             bool isTooFarFromEtalon = false;
+            
+            // MOOP
+            if (!isDead && mNext[idx]) {
+                MolpherMolecule first = mMorphs[idx];
+
+                for (size_t second_idx = 0; second_idx != mMorphCount; ++second_idx) {
+                    MolpherMolecule second = mMorphs[second_idx];
+                    if (first.id.compare(second.id) != 0 && mNext[second_idx]) {
+                        bool check(true);
+                        std::vector<double>::iterator it;
+                        std::vector<double>::size_type counter(0);
+                        for (it = first.etalonDistances.begin(); it != first.etalonDistances.end(); it++, counter++) {
+                            //                    SynchCout(mCtx.relevantDescriptorNames[counter] + ": " + NumberToString(*it));
+                            if (*it <= second.etalonDistances[counter]) {
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
+                            isNotOptimal = true;
+                            break;
+                        }
+                    }
+                }
+                if (isNotOptimal) {
+                    SynchCout(first.id + ": non-optimal solution (distance: " + NumberToString(first.distToEtalon) + ")");
+                } else {
+                    SynchCout(first.id + ": optimal solution (distance: " + NumberToString(first.distToEtalon) + ")");
+                }
+                mNext[idx] = isNotOptimal;
+            }
 
             // Tests are ordered according to their cost.
             // Added test for SAScore
@@ -234,39 +279,10 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
             isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
             
-            if (!isDead) {
-                isTooFarFromEtalon = mMorphs[idx].distToEtalon > mCtx.params.maxAcceptableEtalonDistance;
-            }
+//            if (!isDead) {
+//                isTooFarFromEtalon = mMorphs[idx].distToEtalon > mCtx.params.maxAcceptableEtalonDistance;
+//            }
 
-            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
-                    alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
-            
-            if (!isDead) {
-                MolpherMolecule first = mMorphs[idx];
-
-                for (size_t second_idx = 0; second_idx != mMorphCount; ++second_idx) {
-                    MolpherMolecule second = mMorphs[second_idx];
-                    if (first.id.compare(second.id) != 0 && mSurvivors[second_idx]) {
-                        bool check(true);
-                        std::vector<double>::iterator it;
-                        std::vector<double>::size_type counter(0);
-                        for (it = first.etalonDistances.begin(); it != first.etalonDistances.end(); it++, counter++) {
-                            //                    SynchCout(mCtx.relevantDescriptorNames[counter] + ": " + NumberToString(*it));
-                            if (*it > second.etalonDistances[counter]) {
-                                check = false;
-                                break;
-                            }
-                        }
-                        if (check) {
-                            isNotOptimal = true;
-                        }
-                    }
-                }
-                if (isNotOptimal) {
-                    SynchCout(first.id + ": non-optimal solution");
-                }
-            }
-            
             isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
             
@@ -367,7 +383,7 @@ void PathFinderActivity::UpdateTree::operator()(
     for (itParent = modifiedParents.begin();
             itParent != modifiedParents.end(); itParent++) {
 
-        // Determine what child is the closest to the target.
+        // Determine what child is the closest to the etalon.
         double minDistance = DBL_MAX;
         PathFinderContext::CandidateMap::accessor acParent;
         if (mCtx.candidates.find(acParent, itParent->first)) {
@@ -379,8 +395,8 @@ void PathFinderActivity::UpdateTree::operator()(
 
                 PathFinderContext::CandidateMap::const_accessor acChild;
                 if (mCtx.candidates.find(acChild, (*itChild))) {
-                    if (acChild->second.distToTarget < minDistance) {
-                        minDistance = acChild->second.distToTarget;
+                    if (acChild->second.distToEtalon < minDistance) {
+                        minDistance = acChild->second.distToEtalon;
                     }
                 } else {
                     assert(false);
@@ -395,7 +411,7 @@ void PathFinderActivity::UpdateTree::operator()(
         // Update the tree branch towards root.
         while ((!mCtx.ScaffoldMode() && !acParent->second.parentSmile.empty()) ||
                 (mCtx.ScaffoldMode() && acParent->first.compare(mCtx.tempSource.smile) != 0)) {
-            if (minDistance < acParent->second.distToTarget) {
+            if (minDistance < acParent->second.distToEtalon) {
                 acParent->second.itersWithoutDistImprovement = 0;
             }
             std::string smile = acParent->second.parentSmile;
@@ -574,7 +590,7 @@ void acceptMorphs2(PathFinderActivity::MoleculeVector &morphs,
             tbb::blocked_range<size_t>(0, morphs.size()),
             acceptMorphs, tbb::auto_partitioner());
     SynchCout("Acceptance ratio (iteration #" 
-            + NumberToString(ctx.iterIdx) + "): " 
+            + NumberToString(ctx.iterIdx + 1) + "): " 
             + NumberToString(acceptMorphs.mSurvivorCount) + "/" 
             + NumberToString(morphs.size()) + ".");
     return;
@@ -591,6 +607,7 @@ void PathFinderActivity::operator()() {
 
     bool canContinueCurrentJob = false;
     bool pathFound = false;
+    std::vector<std::string> startMols;
     
     while (true) {
 
@@ -616,6 +633,7 @@ void PathFinderActivity::operator()() {
                                 it != mCtx.actives.end(); it++
                                 ) {
                             mCtx.candidates.insert(ac, it->first);
+                            startMols.push_back(it->first);
                             //SynchCout(it->first);
                             ac->second = it->second;
                             
@@ -757,7 +775,7 @@ void PathFinderActivity::operator()() {
                 stageStopwatch.ReportElapsedMiliseconds("GenerateMorphs", true);
             }
             
-            // prepare directories and files for descriptor computation
+            // prepare directory for descriptor computation
             std::string output_dir(mJobManager->GetStorageDir());
             std::string storage_dir(GenerateDirname(output_dir, mCtx.jobId, mCtx.proteinTargetName + "_" + NumberToString(mCtx.iterIdx)));
             try {
@@ -844,17 +862,33 @@ void PathFinderActivity::operator()() {
 
             // filtering now solves an MOOP to mark survivors
             std::vector<bool> survivors;
+            std::vector<bool> next; // morphs scheduled for next MOOP run
             survivors.resize(morphs.size(), true);
-            FilterMorphs filterMorphs(mCtx, morphs.size(), morphs, survivors);
+            next.resize(morphs.size(), true);
+            FilterMorphs filterMorphs(mCtx, morphs.size(), morphs, survivors, next);
             
             if (!Cancelled()) {
-//                if (mCtx.params.useSyntetizedFeasibility) {
-//                    SynchCout("\tUsing syntetize feasibility");
-//                }
-                tbb::parallel_for(
+                if (mCtx.params.useSyntetizedFeasibility) {
+                    SynchCout("\tUsing syntetize feasibility");
+                }
+                unsigned int counter = 0;
+                while (mCtx.params.maxMOOPruns > counter) {
+                    SynchCout("MOOP run #" + NumberToString(counter + 1));
+                    tbb::parallel_for(
                         tbb::blocked_range<size_t>(0, morphs.size()),
                         filterMorphs, tbb::auto_partitioner(), *mTbbCtx);              
-                stageStopwatch.ReportElapsedMiliseconds("FilterMorphs", true);
+                    stageStopwatch.ReportElapsedMiliseconds("FilterMorphs", true);
+                    unsigned int next_c = 0;
+                    unsigned int accepted_c = 0;
+                    for (unsigned int idx = 0; idx != next.size(); idx++) {
+                        if (next[idx]) ++next_c;
+                        if (survivors[idx]) ++accepted_c;
+                    }
+                    SynchCout("Accepted: " + NumberToString(accepted_c));
+                    SynchCout("Next: " + NumberToString(next_c));
+                    if (next_c == 0) break;
+                    ++counter;
+                }
             }
 
             /* TODO MPI
@@ -871,12 +905,12 @@ void PathFinderActivity::operator()() {
             acceptMorphs2(morphs, survivors, mCtx, modifiedParents, mCtx.decoys.size());
             stageStopwatch.ReportElapsedMiliseconds("AcceptMorphs", true);
 
-//            UpdateTree updateTree(mCtx);
-//            if (!Cancelled()) {
-//                tbb::parallel_for(SmileSet::range_type(modifiedParents),
-//                        updateTree, tbb::auto_partitioner(), *mTbbCtx);
-//                stageStopwatch.ReportElapsedMiliseconds("UpdateTree", true);
-//            }
+            UpdateTree updateTree(mCtx);
+            if (!Cancelled()) {
+                tbb::parallel_for(SmileSet::range_type(modifiedParents),
+                        updateTree, tbb::auto_partitioner(), *mTbbCtx);
+                stageStopwatch.ReportElapsedMiliseconds("UpdateTree", true);
+            }
 
 //            if (!Cancelled()) {
 //                if (!mCtx.ScaffoldMode()) {
@@ -898,33 +932,37 @@ void PathFinderActivity::operator()() {
 //                }
 //            }
 
-//            SmileSet deferredSmiles;
-//            SmileVector pruningQueue;
-//            PruneTree pruneTree(mCtx, deferredSmiles);
-//            if (!pathFound && !Cancelled()) {
-//                // Prepare deferred visual pruning.
-//                std::vector<MolpherMolecule> deferredMols;
-//                mJobManager->GetPruned(deferredMols);
-//                std::vector<MolpherMolecule>::iterator it;
-//                for (it = deferredMols.begin(); it != deferredMols.end(); it++) {
-//                    SmileSet::const_accessor dummy;
-//                    if (it->smile == mCtx.source.smile ||
-//                            (mCtx.ScaffoldMode() && it->smile == mCtx.tempSource.smile)) {
-//                        continue;
-//                    }
-//                    deferredSmiles.insert(dummy, it->smile);
-//                }
-//                deferredMols.clear();
-//
+            SmileSet deferredSmiles;
+            PruneTree pruneTree(mCtx, deferredSmiles);
+            if (!Cancelled()) {
+                // Prepare deferred visual pruning.
+                std::vector<MolpherMolecule> deferredMols;
+                mJobManager->GetPruned(deferredMols);
+                std::vector<MolpherMolecule>::iterator it;
+                for (it = deferredMols.begin(); it != deferredMols.end(); it++) {
+                    SmileSet::const_accessor dummy;
+                    if (it->smile == mCtx.source.smile ||
+                            (mCtx.ScaffoldMode() && it->smile == mCtx.tempSource.smile)) {
+                        continue;
+                    }
+                    deferredSmiles.insert(dummy, it->smile);
+                }
+                deferredMols.clear();
+
 //                pruningQueue.push_back(!mCtx.ScaffoldMode() ?
 //                        mCtx.source.smile : mCtx.tempSource.smile);
-//                tbb::parallel_do(
-//                        pruningQueue.begin(), pruningQueue.end(), pruneTree, *mTbbCtx);
-//                assert(!mCtx.ScaffoldMode() ?
-//                        true :
-//                        mCtx.candidates.size() == mCtx.candidateScaffoldMolecules.size());
-//                stageStopwatch.ReportElapsedMiliseconds("PruneTree", true);
-//            }
+                for (std::vector<std::string>::iterator sourceIt = startMols.begin();
+                        sourceIt != startMols.end(); sourceIt++) {
+                    SmileVector pruningQueue;
+                    pruningQueue.push_back(*sourceIt);
+                    tbb::parallel_do(
+                            pruningQueue.begin(), pruningQueue.end(), pruneTree, *mTbbCtx);
+                    assert(!mCtx.ScaffoldMode() ?
+                            true :
+                            mCtx.candidates.size() == mCtx.candidateScaffoldMolecules.size());
+                }
+                stageStopwatch.ReportElapsedMiliseconds("PruneTree", true);
+            }
 
             // calculation of dimension reduction
 //            if (!Cancelled() && mCtx.params.useVisualisation) {
@@ -970,28 +1008,31 @@ void PathFinderActivity::operator()() {
 //                stageStopwatch.ReportElapsedMiliseconds("DimensionReduction", true);
 //            }
 
-//            if (!Cancelled()) {
-//                // find the closes molecule
-//                double distance = 1;
-//                PathFinderContext::CandidateMap::iterator itCandidates;
-//                for (itCandidates = mCtx.candidates.begin();
-//                        itCandidates != mCtx.candidates.end(); itCandidates++) {
-//                    if (itCandidates->second.distToTarget < distance) {
-//                        distance = itCandidates->second.distToTarget;
-//                    }
-//
-//                    if (itCandidates->second.distToTarget == 0) {
+            if (!Cancelled()) {
+                // find the closes molecule
+                double distance = DBL_MAX;
+                PathFinderContext::CandidateMap::iterator itCandidates;
+                std::string bestID;
+                for (itCandidates = mCtx.candidates.begin();
+                        itCandidates != mCtx.candidates.end(); itCandidates++) {
+                    if (itCandidates->second.distToEtalon < distance) {
+                        distance = itCandidates->second.distToEtalon;
+                        bestID = itCandidates->second.id;
+                    }
+
+//                    if (itCandidates->second.distToEtalon == 0) {
 //                        std::stringstream ss;
 //                        ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
 //                                << "Zero distance: " << itCandidates->second.smile;
 //                        SynchCout(ss.str());
 //                    }
-//                }
-//                std::stringstream ss;
-//                ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
-//                        << "The min. distance to target: " << distance;
-//                SynchCout(ss.str());
-//            }
+                }
+                std::stringstream ss;
+                ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
+                        << "The min. distance to etalon: " << distance
+                        << " (" << bestID << ")";
+                SynchCout(ss.str());
+            }
 
             if (!Cancelled()) {
                 mCtx.iterIdx += 1;

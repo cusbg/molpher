@@ -23,12 +23,15 @@
     <similarity>SC_TANIMOTO</similarity>
     <param>
 		<activityMorphing>true</activityMorphing>
-		<startMolMaxCount>30</startMolMaxCount>
+		<startMolMaxCount>2</startMolMaxCount>
         <syntetizedFeasibility>true</syntetizedFeasibility>
         <substructureRestriction>false</substructureRestriction>
 	<farProduce>5</farProduce>
-	<iterMax>5</iterMax>
+	<iterMax>6</iterMax>
 	<maxTimeMinutes>180</maxTimeMinutes>
-	<maxAcceptableEtalonDistance>2000</maxAcceptableEtalonDistance>
+	<maxMOOPruns>3</maxMOOPruns>
+	<nonProducingSurvive>3</nonProducingSurvive>
+	<maxMorhpsTotal>100</maxMorhpsTotal>
+	<!--<maxAcceptableEtalonDistance>2000</maxAcceptableEtalonDistance> -->
     </param>
 </iteration>
