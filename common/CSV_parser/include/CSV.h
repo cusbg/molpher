@@ -43,12 +43,12 @@ namespace CSVparse {
         map<unsigned int, vector<double> > floatData;
         map<unsigned int, vector<string> > stringData;
 
-        void loadData();
         void saveToken(string &token, unsigned int columnIdx, DataType type);
+        void generateRows(unsigned int count);
 
     public:
 
-        CSV(string filename
+        CSV(string filename = ""
                 , string sep = ";"
                 , string emptyValue = "NA"
                 , bool header = true
@@ -56,7 +56,9 @@ namespace CSVparse {
                 , char stringSeparator = '"'
                 , char decimalChar = '.'
                 );
-
+        
+        void loadData();
+        void loadData(const string &filename);
         void write(ostream &stream);
         void writeRow(ostream &stream, unsigned int number);
         void writeHeader(ostream &stream);
@@ -68,12 +70,18 @@ namespace CSVparse {
         unsigned int getRowIdx(const string &rowName);
         const map<unsigned int, DataType>& getTypeMap();
         const vector<string>& getHeader();
-        const vector<double>& GetFloatData(unsigned int columnIdx);
-        const vector<string>& GetStringData(unsigned int columnIdx);
-        const vector<double>& GetFloatData(const string &colName);
-        const vector<string>& GetStringData(const string &colName);
+        
+        // these methods should be generic, maybe next time :)
+        const vector<double>& getFloatData(unsigned int columnIdx);
+        const vector<string>& getStringData(unsigned int columnIdx);
+        const vector<double>& getFloatData(const string &colName);
+        const vector<string>& getStringData(const string &colName);
+        void addFloatData(const string &colName, const vector<double> &data);
+        void addStringData(const string &colName, const vector<string> &data);
         
         string getEmptyValue();
+        
+        void setFilename(const string &filename);
     };
 
 

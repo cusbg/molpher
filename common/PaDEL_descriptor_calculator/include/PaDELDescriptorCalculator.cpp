@@ -15,9 +15,9 @@ using namespace std;
 
 void PaDELdesc::PaDELDescriptorCalculator::LoadAvailableDescriptors(const string &CSV_desc_list_path) {
     CSVparse::CSV available_descriptors(CSV_desc_list_path, ";", "");
-    const vector<string>& classes = available_descriptors.GetStringData("Descriptor Java Class");
-    const vector<string>& names = available_descriptors.GetStringData("Descriptor");
-    const vector<string>& types = available_descriptors.GetStringData("Class");
+    const vector<string>& classes = available_descriptors.getStringData("Descriptor Java Class");
+    const vector<string>& names = available_descriptors.getStringData("Descriptor");
+    const vector<string>& types = available_descriptors.getStringData("Class");
     
     string curent_class;
     vector<string>::size_type counter(0);
@@ -94,14 +94,14 @@ void PaDELdesc::PaDELDescriptorCalculator::computeDescriptors() {
     assert(ret == 0);
     
     CSVparse::CSV descriptors(outputFilePath, ",", "");
-    const vector<string> &names = descriptors.GetStringData("Name");
+    const vector<string> &names = descriptors.getStringData("Name");
     computedData.clear();
     unsigned int mol_idx(0);
     for (vector<string>::iterator mol_name = molNames.begin(); mol_name != molNames.end(); mol_name++) {
         assert(mol_name->compare(names[mol_idx]) == 0);
         computedData[*mol_name] = map<string, double>();
         for (vector<string>::iterator desc_name = descriptors2compute.begin(); desc_name != descriptors2compute.end(); desc_name++) {
-            computedData[*mol_name][*desc_name] = descriptors.GetFloatData(*desc_name)[mol_idx];
+            computedData[*mol_name][*desc_name] = descriptors.getFloatData(*desc_name)[mol_idx];
         }
         ++mol_idx;
     }

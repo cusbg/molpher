@@ -239,7 +239,7 @@ const vector<string>& CSVparse::CSV::getHeader() {
     return header;
 }
 
-const vector<double>& CSVparse::CSV::GetFloatData(unsigned int columnIdx) {
+const vector<double>& CSVparse::CSV::getFloatData(unsigned int columnIdx) {
     if (columnIdx >= columnCount) {
         throw runtime_error("Index out of range: " + DConv::ValToString(columnIdx));
     }
@@ -250,14 +250,14 @@ const vector<double>& CSVparse::CSV::GetFloatData(unsigned int columnIdx) {
     }
 }
 
-const vector<double>& CSVparse::CSV::GetFloatData(const string &colName) {
+const vector<double>& CSVparse::CSV::getFloatData(const string &colName) {
     if (columnNameColumnIdx.find(colName) == columnNameColumnIdx.end()) {
         throw runtime_error("Column of this name does not exist: " + colName);
     }
-    return GetFloatData(columnNameColumnIdx[colName]);
+    return getFloatData(columnNameColumnIdx[colName]);
 }
 
-const vector<string>& CSVparse::CSV::GetStringData(unsigned int columnIdx) {
+const vector<string>& CSVparse::CSV::getStringData(unsigned int columnIdx) {
     if (columnIdx >= columnCount) {
         throw runtime_error("Index out of range: " + DConv::ValToString(columnIdx));
     }
@@ -268,11 +268,11 @@ const vector<string>& CSVparse::CSV::GetStringData(unsigned int columnIdx) {
     }
 }
 
-const vector<string>& CSVparse::CSV::GetStringData(const string &colName) {
+const vector<string>& CSVparse::CSV::getStringData(const string &colName) {
     if (columnNameColumnIdx.find(colName) == columnNameColumnIdx.end()) {
         throw runtime_error("Column of this name does not exist: " + colName);
     }
-    return GetStringData(columnNameColumnIdx[colName]);
+    return getStringData(columnNameColumnIdx[colName]);
 }
 
 string CSVparse::CSV::getEmptyValue() {
@@ -297,5 +297,55 @@ filename(filename)
 , rowNamesOn(rowName)
 , columnCount(0)
 , rowCount(0) {
+    if (!filename.empty()) {
+        loadData();
+    }
+}
+
+void CSVparse::CSV::loadData(const string &filename) {
+    this->filename = filename;
+    rowCount = 0;
+    columnCount = 0;
+    header.clear();
+    rowNames.clear();
+    columnIdxDataType.clear();
+    columnNameColumnIdx.clear();
+    rowNameRowIdx.clear();
+    floatData.clear();
+    stringData.clear();
     loadData();
+}
+
+void CSVparse::CSV::setFilename(const string &filename) {
+    this->filename = filename;
+}
+
+void CSVparse::CSV::generateRows(unsigned int count) {
+    if (rowCount == 0) {
+        rowCount = count;
+        for (unsigned int i = 0; i < rowCount; i++) {
+            rowNames.push_back(DConv::ValToString(i+1));
+            rowNameRowIdx[DConv::ValToString(i+1)] = i;
+        }
+    }
+}
+
+void CSVparse::CSV::addFloatData(const string &colName, const vector<double> &data) {
+    generateRows(data.size());
+    assert(rowCount == data.size());
+    ++columnCount;
+    header.push_back(colName);
+    columnIdxDataType[columnCount - 1] = CSVparse::FLOAT_TYPE;
+    columnNameColumnIdx[colName] = columnCount - 1;
+    floatData[columnCount - 1] = data;
+}
+
+void CSVparse::CSV::addStringData(const string &colName, const vector<string> &data) {
+    generateRows(data.size());
+    assert(rowCount == data.size());
+    ++columnCount;
+    header.push_back(colName);
+    columnIdxDataType[columnCount - 1] = CSVparse::STRING_TYPE;
+    columnNameColumnIdx[colName] = columnCount - 1;
+    stringData[columnCount - 1] = data;
 }

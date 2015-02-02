@@ -171,19 +171,19 @@ struct IterationSnapshot
         const std::vector<string> &desc_names = analysis_results_CSV.getHeader();
         unsigned int rejected_row_idx = analysis_results_CSV.getRowIdx("rejected");
         for (std::vector<string>::const_iterator it = desc_names.begin(); it != desc_names.end(); it++) {
-            if (analysis_results_CSV.GetFloatData(*it)[rejected_row_idx] == 1) {
+            if (analysis_results_CSV.getFloatData(*it)[rejected_row_idx] == 1) {
                 relevantDescriptorNames.push_back(*it);
             }
         }
         
         CSVparse::CSV actives_desc_CSV(inputActivityDataDir + activesDescriptorsFile, ",", "");
-        activesIDs = actives_desc_CSV.GetStringData("Name");
+        activesIDs = actives_desc_CSV.getStringData("Name");
         
         unsigned int active_idx(0);
         for (std::vector<string>::const_iterator id = activesIDs.begin(); id != activesIDs.end(); id++) {
             std::vector<double> desc_values;
             for (std::vector<string>::const_iterator it = relevantDescriptorNames.begin(); it != relevantDescriptorNames.end(); it++) {
-                desc_values.push_back(actives_desc_CSV.GetFloatData(*it)[active_idx]);
+                desc_values.push_back(actives_desc_CSV.getFloatData(*it)[active_idx]);
             }
             activesDescriptors.push_back(desc_values);
             ++active_idx;
