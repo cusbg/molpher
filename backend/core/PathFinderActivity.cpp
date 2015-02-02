@@ -136,16 +136,18 @@ bool PathFinderActivity::CompareMorphs::operator()(
 
 PathFinderActivity::FilterMorphs::FilterMorphs(PathFinderContext &ctx,
         size_t globalMorphCount, MoleculeVector &morphs, std::vector<bool> &survivors,
-        std::vector<bool> &next
+        std::vector<bool> &next, std::vector<bool> &killedOutsideMOOP
         ) :
 mCtx(ctx),
 mGlobalMorphCount(globalMorphCount),
 mMorphs(morphs),
 mMorphCount(morphs.size()),
 mSurvivors(survivors),
-mNext(next){
+mNext(next),
+mKilledOutsideMOOP(killedOutsideMOOP){
     assert(mMorphs.size() == mSurvivors.size());
     assert(mMorphs.size() == mNext.size());
+    assert(mMorphs.size() == mKilledOutsideMOOP.size());
 }
 
 void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_t> &r) const {
@@ -164,6 +166,7 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
 //        bool mightSurvive =
 //                SynchRand::GetRandomNumber(0, 99) < (int) (acceptProbability * 100);
 //        if (mightSurvive) {
+        
         if (true) {
             bool isDead = false;
             bool badWeight = false;
@@ -175,18 +178,17 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
             bool isTooFarFromEtalon = false;
             
             // MOOP
-            if (!isDead && mNext[idx]) {
+            if (!isDead && mNext[idx] && !mKilledOutsideMOOP[idx]) {
                 MolpherMolecule first = mMorphs[idx];
-
                 for (size_t second_idx = 0; second_idx != mMorphCount; ++second_idx) {
                     MolpherMolecule second = mMorphs[second_idx];
                     if (first.id.compare(second.id) != 0 && mNext[second_idx]) {
                         bool check(true);
                         std::vector<double>::iterator it;
-                        std::vector<double>::size_type counter(0);
-                        for (it = first.etalonDistances.begin(); it != first.etalonDistances.end(); it++, counter++) {
-                            //                    SynchCout(mCtx.relevantDescriptorNames[counter] + ": " + NumberToString(*it));
-                            if (*it <= second.etalonDistances[counter]) {
+                        std::vector<double>::size_type desc_idx(0);
+                        for (it = first.etalonDistances.begin(); it != first.etalonDistances.end(); it++, desc_idx++) {
+//                            SynchCout(mCtx.relevantDescriptorNames[counter] + ": " + NumberToString(*it));
+                            if (*it < second.etalonDistances[desc_idx]) {
                                 check = false;
                                 break;
                             }
@@ -198,27 +200,29 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                     }
                 }
                 if (isNotOptimal) {
-                    SynchCout(first.id + ": non-optimal solution (distance: " + NumberToString(first.distToEtalon) + ")");
-                } else {
-                    SynchCout(first.id + ": optimal solution (distance: " + NumberToString(first.distToEtalon) + ")");
+                    SynchCout(first.id + ": dominated solution (distance: " + NumberToString(first.distToEtalon) + ")");
                 }
                 mNext[idx] = isNotOptimal;
             }
 
             // Tests are ordered according to their cost.
             // Added test for SAScore
-
-            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
+            
+            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal || mKilledOutsideMOOP[idx] ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
-//            if (!isDead) {
-//                badWeight =
-//                        (mMorphs[idx].molecularWeight <
-//                        mCtx.params.minAcceptableMolecularWeight) ||
-//                        (mMorphs[idx].molecularWeight >
-//                        mCtx.params.maxAcceptableMolecularWeight);
-//            }
+            
+            if (!isDead) {
+                badWeight =
+                        (mMorphs[idx].molecularWeight <
+                        mCtx.params.minAcceptableMolecularWeight) ||
+                        (mMorphs[idx].molecularWeight >
+                        mCtx.params.maxAcceptableMolecularWeight);
+                if (badWeight) {
+                    SynchCout(mMorphs[idx].id + ": Bad weight\n");
+                }
+            }
 
-            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
+            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal || mKilledOutsideMOOP[idx] ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
 
             if (!isDead) {
@@ -233,8 +237,9 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                 }
             }
 
-            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
+            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal || mKilledOutsideMOOP[idx] ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
+            
             if (!isDead) {
                 if (!mCtx.ScaffoldMode()) {
                     PathFinderContext::CandidateMap::const_accessor dummy;
@@ -253,8 +258,9 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                 }
             }
 
-            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
+            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal || mKilledOutsideMOOP[idx] ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
+            
             if (!isDead) {
                 PathFinderContext::CandidateMap::const_accessor ac;
                 if (mCtx.candidates.find(ac, mMorphs[idx].parentSmile)) {
@@ -266,8 +272,10 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                     assert(false);
                 }
             }
-            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
+            
+            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal || mKilledOutsideMOOP[idx] ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
+            
 //            if (!isDead) {
 //                PathFinderContext::MorphDerivationMap::const_accessor ac;
 //                if (mCtx.morphDerivations.find(ac, mMorphs[idx].smile)) {
@@ -276,16 +284,21 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
 //                }
 //            }
 
-            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
+            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal || mKilledOutsideMOOP[idx] ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
             
 //            if (!isDead) {
 //                isTooFarFromEtalon = mMorphs[idx].distToEtalon > mCtx.params.maxAcceptableEtalonDistance;
 //            }
 
-            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal ||
+            isDead = (badWeight || badSascore || alreadyExists || isNotOptimal || mKilledOutsideMOOP[idx] ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
             
+            if (badWeight || badSascore || alreadyExists || 
+                    alreadyTriedByParent || tooManyProducedMorphs || 
+                    isTooFarFromEtalon) {
+                mKilledOutsideMOOP[idx] = true;
+            }
             mSurvivors[idx] = !isDead;
         }
     }
@@ -863,9 +876,11 @@ void PathFinderActivity::operator()() {
             // filtering now solves an MOOP to mark survivors
             std::vector<bool> survivors;
             std::vector<bool> next; // morphs scheduled for next MOOP run
+            std::vector<bool> killedOutsideMOOP; // morphs scheduled for next MOOP run
             survivors.resize(morphs.size(), true);
             next.resize(morphs.size(), true);
-            FilterMorphs filterMorphs(mCtx, morphs.size(), morphs, survivors, next);
+            killedOutsideMOOP.resize(morphs.size(), false);
+            FilterMorphs filterMorphs(mCtx, morphs.size(), morphs, survivors, next, killedOutsideMOOP);
             
             if (!Cancelled()) {
                 if (mCtx.params.useSyntetizedFeasibility) {
@@ -880,12 +895,15 @@ void PathFinderActivity::operator()() {
                     stageStopwatch.ReportElapsedMiliseconds("FilterMorphs", true);
                     unsigned int next_c = 0;
                     unsigned int accepted_c = 0;
+                    unsigned int killed_outside_MOOP_c = 0;
                     for (unsigned int idx = 0; idx != next.size(); idx++) {
                         if (next[idx]) ++next_c;
                         if (survivors[idx]) ++accepted_c;
+                        if (killedOutsideMOOP[idx]) ++killed_outside_MOOP_c;
                     }
-                    SynchCout("Accepted: " + NumberToString(accepted_c));
-                    SynchCout("Next: " + NumberToString(next_c));
+                    SynchCout("Next MOOP run: " + NumberToString(next_c));
+                    SynchCout("Killed outside MOOP: " + NumberToString(killed_outside_MOOP_c));
+                    SynchCout("Survivors overall: " + NumberToString(accepted_c));
                     if (next_c == 0) break;
                     ++counter;
                 }
