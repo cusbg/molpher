@@ -64,6 +64,12 @@ void PathFinderContext::ContextToSnapshot(
         snp.actives.insert(*it);
     }
     
+    snp.testActives.clear();
+    for (PathFinderContext::CandidateMap::const_iterator it = ctx.testActives.begin();
+            it != ctx.testActives.end(); it++) {
+        snp.testActives.insert(*it);
+    }
+    
     snp.activesIDs.clear();
     snp.activesIDs.reserve(ctx.activesIDs.size());
     for (PathFinderContext::ConcStringVector::const_iterator it = ctx.activesIDs.begin();
@@ -179,6 +185,12 @@ void PathFinderContext::SnapshotToContext(
     for (IterationSnapshot::CandidateMap::const_iterator it = snp.actives.begin();
             it != snp.actives.end(); it++) {
         ctx.actives.insert(*it);
+    }
+    
+    ctx.testActives.clear();
+    for (IterationSnapshot::CandidateMap::const_iterator it = snp.testActives.begin();
+            it != snp.testActives.end(); it++) {
+        ctx.testActives.insert(*it);
     }
     
     ctx.activesIDs.clear();

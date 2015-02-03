@@ -63,6 +63,22 @@ struct MolpherMolecule
     {
     }
     
+    MolpherMolecule(const std::string &smile, const std::string &id) :
+        smile(smile),
+        id(id),
+        parentChemOper(0),
+        scaffoldLevelCreation(0),
+        distToTarget(DBL_MAX),
+        distToEtalon(DBL_MAX),
+        distToClosestDecoy(0),
+        molecularWeight(0.0),
+        sascore(0.0),
+        itersWithoutDistImprovement(0),
+        posX(0),
+        posY(0)
+    {
+    }
+    
     MolpherMolecule(const std::string &smile,
         const std::string &id,
         const std::vector<double> &descriptors,

@@ -32,9 +32,12 @@
 #include "chem/morphing/Morphing.hpp"
 #include "../chem/scaffold/Scaffold.hpp"
 #include "../chem/scaffold/ScaffoldDatabase.hpp"
+#include "../chem/SimCoefCalculator.hpp"
 #include "JobManager.h"
 #include "PathFinderActivity.h"
 #include "PaDELDescriptorCalculator.h"
+#include "chem/morphing/ReturnResults.hpp"
+#include "DataConverter.h"
 
 PathFinderActivity::PathFinderActivity(
         tbb::task_group_context *tbbCtx, JobManager *jobManager, int threadCnt
@@ -609,6 +612,44 @@ void acceptMorphs2(PathFinderActivity::MoleculeVector &morphs,
     return;
 }
 
+double PathFinderActivity::getClosestTestActive(MolpherMolecule &morph, MolpherMolecule*& testActive) {
+    SimCoefCalculator scCalc(mCtx.simCoeffSelector, mCtx.fingerprintSelector);
+    double current_min = DBL_MAX;
+    for (
+            PathFinderContext::CandidateMap::iterator testIt = mCtx.testActives.begin();
+            testIt != mCtx.testActives.end(); testIt++
+            ) {
+        assert(morph.id.compare(testIt->second.id) != 0);
+        RDKit::RWMol *mol = NULL;
+        RDKit::RWMol *test = NULL;
+        try {
+            mol = RDKit::SmilesToMol(morph.smile);
+            test = RDKit::SmilesToMol(testIt->second.smile);
+            if (mol && test) {
+                RDKit::MolOps::Kekulize(*mol);
+                RDKit::MolOps::Kekulize(*test);
+            } else {
+                throw ValueErrorException("");
+            }
+        } catch (const ValueErrorException &exc) {
+            delete mol;
+            delete test;
+            continue;
+        }
+
+        double simCoeff = scCalc.GetSimCoef(mol, test);
+        double dist = scCalc.ConvertToDistance(simCoeff);
+        if (dist < current_min) {
+            current_min = dist;
+            testActive = &(testIt->second);
+        }
+        
+        delete mol;
+        delete test;
+    }
+    return current_min;
+}
+
 void PathFinderActivity::operator()() {
     SynchCout(std::string("PathFinder thread started."));
 
@@ -621,6 +662,7 @@ void PathFinderActivity::operator()() {
     bool canContinueCurrentJob = false;
     bool pathFound = false;
     std::vector<std::string> startMols;
+    CSVparse::CSV morphingData;
     
     while (true) {
 
@@ -642,14 +684,41 @@ void PathFinderActivity::operator()() {
                     if (!mCtx.ScaffoldMode()) {
                         int counter = 1;
                         for ( 
-                                PathFinderContext::CandidateMap::const_iterator it = mCtx.actives.begin();
+                                PathFinderContext::CandidateMap::iterator it = mCtx.actives.begin();
                                 it != mCtx.actives.end(); it++
                                 ) {
                             mCtx.candidates.insert(ac, it->first);
                             startMols.push_back(it->first);
                             //SynchCout(it->first);
                             ac->second = it->second;
+                                                        
+                            //initialize data collection
+                            std::vector<string> stringData;
+                            std::vector<double> floatData;
+                            stringData.push_back(it->second.id);
+                            floatData.push_back(it->second.distToEtalon);
+                            morphingData.addStringData("ID", stringData);
+                            stringData[0] = it->second.smile;
+                            morphingData.addStringData("SMILES", stringData);
+                            morphingData.addFloatData("EtalonDistance", floatData);
+                            stringData[0] = "NA";
+                            morphingData.addStringData("ParentID", stringData);
+                            floatData[0] = -1;
+                            morphingData.addFloatData("IterIdx", floatData);
+                            floatData[0] = 1;
+                            morphingData.addFloatData("IsAlive", floatData);
                             
+                            MolpherMolecule* closestTestActive = NULL;
+                            floatData[0] = getClosestTestActive(it->second, closestTestActive);
+                            if (closestTestActive) {
+                                stringData[0] = closestTestActive->id;
+                            } else {
+                                stringData[0] = "NA";
+                                floatData[0] = NAN;
+                            }
+                            morphingData.addStringData("ClosestTestActiveID", stringData);
+                            morphingData.addFloatData("ClosestTestActiveDistance", floatData);
+                                                   
                             ++counter;
                             if (counter > mCtx.params.startMolMaxCount) {
                                 break;
@@ -908,6 +977,49 @@ void PathFinderActivity::operator()() {
                     ++counter;
                 }
             }
+            
+            unsigned int idx = 0;
+            for (MoleculeVector::iterator morph_it = morphs.begin(); morph_it != morphs.end(); morph_it++) {
+                MolpherMolecule &morph = (*morph_it);
+                PathFinderContext::CandidateMap::accessor ac;
+                std::vector<string> stringData;
+                std::vector<double> floatData;
+                stringData.push_back(morph.id);
+                floatData.push_back(morph.distToEtalon);
+                morphingData.addStringData("ID", stringData);
+                stringData[0] = morph.smile;
+                morphingData.addStringData("SMILES", stringData);
+                morphingData.addFloatData("EtalonDistance", floatData);
+                mCtx.candidates.find(ac, morph.parentSmile);
+                stringData[0] = ac->second.id;
+                morphingData.addStringData("ParentID", stringData);
+                floatData[0] = mCtx.iterIdx;
+                morphingData.addFloatData("IterIdx", floatData);
+                if (survivors[idx]) {
+                    floatData[0] = 1;
+                } else {
+                    floatData[0] = 0;
+                }
+                morphingData.addFloatData("IsAlive", floatData);
+
+                MolpherMolecule* closestTestActive = NULL;
+                floatData[0] = getClosestTestActive(morph, closestTestActive);
+                if (closestTestActive) {
+                    stringData[0] = closestTestActive->id;
+                } else {
+                    stringData[0] = "NA";
+                    floatData[0] = NAN;
+                }
+                morphingData.addStringData("ClosestTestActiveID", stringData);
+                morphingData.addFloatData("ClosestTestActiveDistance", floatData);
+                ++idx;
+            }
+            
+            std::string summary_path(output_dir + "/" + NumberToString(mCtx.jobId) + "_summary.csv");
+            ofstream overallData(summary_path.c_str());
+            morphingData.write(overallData);
+            
+            stageStopwatch.ReportElapsedMiliseconds("DataSummary", true);
 
             /* TODO MPI
              MASTER

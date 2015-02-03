@@ -42,7 +42,7 @@ struct PathFinderContext
     static void ContextToLightSnapshot(const PathFinderContext &ctx, IterationSnapshot &snp);
 
     bool ScaffoldMode() const;
-
+    
     JobId jobId;
     unsigned int iterIdx;
     unsigned int elapsedSeconds;
@@ -78,6 +78,7 @@ struct PathFinderContext
     //typedef tbb::concurrent_vector<std::vector<double> > ConcDoubleMatrix;
     typedef std::vector<std::vector<double> > ConcDoubleMatrix;
     CandidateMap actives;
+    CandidateMap testActives;
     ConcStringVector activesIDs;
     ConcDoubleVector etalonValues;
     ConcDoubleMatrix activesDescriptors;

@@ -156,6 +156,8 @@ public:
     };
 
     bool Cancelled();
+    
+    double getClosestTestActive(MolpherMolecule &morph, MolpherMolecule*& testActive);
 
 private:
     tbb::task_group_context *mTbbCtx;

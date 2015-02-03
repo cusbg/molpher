@@ -181,6 +181,7 @@ struct IterationSnapshot
         
         unsigned int active_idx(0);
         for (std::vector<string>::const_iterator id = activesIDs.begin(); id != activesIDs.end(); id++) {
+            activesIDsSet.insert(*id);
             std::vector<double> desc_values;
             for (std::vector<string>::const_iterator it = relevantDescriptorNames.begin(); it != relevantDescriptorNames.end(); it++) {
                 desc_values.push_back(actives_desc_CSV.getFloatData(*it)[active_idx]);
@@ -201,7 +202,19 @@ struct IterationSnapshot
             actives.insert(std::make_pair<std::string, MolpherMolecule>(*it, mm));
             ++idx;
         }
-        
+
+        // read test molecules
+        CSVparse::CSV all_actives(
+                inputActivityDataDir + proteinTargetName
+                + "_actives_all.smi", "\t", "", false, false);
+        const std::vector<std::string> &ids = all_actives.getStringData(0);
+        const std::vector<std::string> &smiles = all_actives.getStringData(1);
+        for (unsigned int idx = 0; idx < all_actives.getRowCount(); idx++) {
+            if (activesIDsSet.find(ids[idx]) == activesIDsSet.end()) {
+                MolpherMolecule mm(smiles[idx], ids[idx]);
+                testActives.insert(std::make_pair<std::string, MolpherMolecule>(smiles[idx], mm));
+            }
+        }
         activityMorphingInitialized = true;
     }
 
@@ -271,7 +284,9 @@ struct IterationSnapshot
      */
     CandidateMap candidates;
     CandidateMap actives;
+    CandidateMap testActives;
     std::vector<std::string> activesIDs;
+    std::set<std::string> activesIDsSet;
     std::vector<double> etalonValues;
     std::vector<std::vector<double> > activesDescriptors;
     std::vector<std::pair<double, double> > normalizationCoefficients;
