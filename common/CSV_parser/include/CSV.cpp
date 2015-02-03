@@ -186,14 +186,18 @@ void CSVparse::CSV::writeRow(ostream &stream, unsigned int rowNumber) {
     for (unsigned int colIdx = 0; colIdx != column_count; colIdx++) {
         switch (columnIdxDataType[colIdx]) {
             case CSVparse::FLOAT_TYPE:
-                if (isnan(floatData[colIdx][rowNumber]) != 0) {
+                if (floatData[colIdx].size() - 1 < rowNumber) {
+                    stream << emptyValue;
+                } else if (isnan(floatData[colIdx][rowNumber]) != 0) {
                     stream << emptyValue;
                 } else {
                     stream << floatData[colIdx][rowNumber];
                 }
                 break;
             case CSVparse::STRING_TYPE:
-                if (emptyValue.compare(stringData[colIdx][rowNumber]) == 0) {
+                if (stringData[colIdx].size() - 1 < rowNumber) {
+                    stream << emptyValue;
+                } else if (emptyValue.compare(stringData[colIdx][rowNumber]) == 0) {
                     stream << emptyValue;
                 } else {
                     stream << stringSeparator << stringData[colIdx][rowNumber] << stringSeparator;
@@ -321,7 +325,7 @@ void CSVparse::CSV::setFilename(const string &filename) {
 }
 
 void CSVparse::CSV::generateRows(unsigned int count) {
-    if (rowCount == 0) {
+    if (rowCount < count) {
         rowCount = count;
         for (unsigned int i = 0; i < rowCount; i++) {
             rowNames.push_back(DConv::ValToString(i+1));
@@ -331,21 +335,36 @@ void CSVparse::CSV::generateRows(unsigned int count) {
 }
 
 void CSVparse::CSV::addFloatData(const string &colName, const vector<double> &data) {
-    generateRows(data.size());
-    assert(rowCount == data.size());
-    ++columnCount;
-    header.push_back(colName);
-    columnIdxDataType[columnCount - 1] = CSVparse::FLOAT_TYPE;
-    columnNameColumnIdx[colName] = columnCount - 1;
-    floatData[columnCount - 1] = data;
+    if (columnNameColumnIdx.find(colName) == columnNameColumnIdx.end()) {
+        generateRows(data.size());
+        ++columnCount;
+        header.push_back(colName);
+        columnIdxDataType[columnCount - 1] = CSVparse::FLOAT_TYPE;
+        columnNameColumnIdx[colName] = columnCount - 1;
+        floatData[columnCount - 1] = data;
+    } else if (columnIdxDataType[columnNameColumnIdx[colName]] == CSVparse::FLOAT_TYPE) {
+        floatData[columnNameColumnIdx[colName]].insert(floatData[columnNameColumnIdx[colName]].end(), data.begin(), data.end());
+        generateRows(floatData[columnNameColumnIdx[colName]].size());
+    } else {
+        assert(false);
+    }
 }
 
 void CSVparse::CSV::addStringData(const string &colName, const vector<string> &data) {
-    generateRows(data.size());
-    assert(rowCount == data.size());
-    ++columnCount;
-    header.push_back(colName);
-    columnIdxDataType[columnCount - 1] = CSVparse::STRING_TYPE;
-    columnNameColumnIdx[colName] = columnCount - 1;
-    stringData[columnCount - 1] = data;
+    if (columnNameColumnIdx.find(colName) == columnNameColumnIdx.end()) {
+//        assert(rowCount == data.size());
+        generateRows(data.size());
+        ++columnCount;
+        header.push_back(colName);
+        columnIdxDataType[columnCount - 1] = CSVparse::STRING_TYPE;
+        columnNameColumnIdx[colName] = columnCount - 1;
+        stringData[columnCount - 1] = data;
+    } else if (columnIdxDataType[columnNameColumnIdx[colName]] == CSVparse::STRING_TYPE) {
+//        assert(rowCount == data.size() + stringData.size());
+        stringData[columnNameColumnIdx[colName]].insert(stringData[columnNameColumnIdx[colName]].end(), data.begin(), data.end());
+        generateRows(stringData[columnNameColumnIdx[colName]].size());
+    } else {
+        assert(false);
+    }
+    
 }
