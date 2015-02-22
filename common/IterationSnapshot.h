@@ -41,6 +41,7 @@ namespace fs = boost::filesystem;
 #include "MolpherMolecule.h"
 #include "activity_data_processing.h"
 #include "CSV.h"
+#include "CSV_parser/include/DataConverter.h"
 
 struct IterationSnapshot
 {
@@ -207,11 +208,22 @@ struct IterationSnapshot
         CSVparse::CSV all_actives(
                 inputActivityDataDir + proteinTargetName
                 + "_actives_all.smi", "\t", "", false, false);
-        const std::vector<std::string> &ids = all_actives.getStringData(0);
-        const std::vector<std::string> &smiles = all_actives.getStringData(1);
+        CSVparse::CSV all_actives_descriptors(inputActivityDataDir + proteinTargetName + "_actives_all_padel_descriptors", ",", "");
+        const std::vector<std::string> &ids = all_actives.getStringData(1);
+        const std::vector<std::string> &smiles = all_actives.getStringData(0);
         for (unsigned int idx = 0; idx < all_actives.getRowCount(); idx++) {
             if (activesIDsSet.find(ids[idx]) == activesIDsSet.end()) {
                 MolpherMolecule mm(smiles[idx], ids[idx]);
+                mm.descriptorsFilePath = inputActivityDataDir + proteinTargetName + "_actives_all_padel_descriptors";
+                mm.relevantDescriptorNames = relevantDescriptorNames;
+                
+                for (std::vector<std::string>::iterator it = relevantDescriptorNames.begin(); it != relevantDescriptorNames.end(); it++) {
+                    mm.descriptorValues.push_back(all_actives_descriptors.getFloatData(*it)[idx]);
+                }
+                
+                mm.normalizeDescriptors(normalizationCoefficients);
+                mm.ComputeEtalonDistances(etalonValues, activesDescriptors[0]);
+                
                 testActives.insert(std::make_pair<std::string, MolpherMolecule>(smiles[idx], mm));
             }
         }

@@ -213,27 +213,28 @@ struct MolpherMolecule
             double etalon_value = *it;
             double squared_distance = 0;
             if ( ((boost::math::isnan)(etalon_value)) ) { // if this is true, all actives have one single value for this descriptor
-                double active_value = some_active_desc[idx];
-                if (active_value == morph_value) {
-                    etalonDistances.push_back(0);
-                } else {
-                    double maximum;
-                    double minimum;
-                    if (active_value > morph_value) {
-                        maximum = active_value;
-                        minimum = morph_value;
-                    } else {
-                        maximum = morph_value;
-                        minimum = active_value;
-                }
-                    double A = (max_value - min_value) / (maximum - minimum);
-                    double B = min_value - A * minimum;
-                    morph_value = A * morph_value + B;
-                    active_value = A * active_value + B;
-                    squared_distance = std::pow((active_value - morph_value) / 2, 2);
-                    assert(!((boost::math::isnan)(squared_distance)));
-                    etalonDistances.push_back(std::sqrt(squared_distance));
-                }
+                assert(false);
+//                double active_value = some_active_desc[idx];
+//                if (active_value == morph_value) {
+//                    etalonDistances.push_back(0);
+//                } else {
+//                    double maximum;
+//                    double minimum;
+//                    if (active_value > morph_value) {
+//                        maximum = active_value;
+//                        minimum = morph_value;
+//                    } else {
+//                        maximum = morph_value;
+//                        minimum = active_value;
+//                }
+//                    double A = (max_value - min_value) / (maximum - minimum);
+//                    double B = min_value - A * minimum;
+//                    morph_value = A * morph_value + B;
+//                    active_value = A * active_value + B;
+//                    squared_distance = std::pow((active_value - morph_value) / 2, 2);
+//                    assert(!((boost::math::isnan)(squared_distance)));
+//                    etalonDistances.push_back(std::sqrt(squared_distance));
+//                }
             } else {
                 squared_distance = std::pow(etalon_value - morph_value, 2);
                 assert(!((boost::math::isnan)(squared_distance)));

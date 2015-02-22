@@ -48,18 +48,28 @@ void adp::normalizeActivesData(
         double maximum = max_( acc );
         double median = median_( acc );
         if (minimum != maximum) {
-            double A = (max_value - min_value) / (maximum - minimum);
-            double B = min_value - A * minimum;
-            for (int mol_idx = 0; mol_idx < row_count; mol_idx++) {
-                data[mol_idx][desc_idx] = A * data[mol_idx][desc_idx] + B;
-            }
-            normalization_ceofficients.push_back(std::pair<double, double>(A, B));
-            //std::cout << A * median + B << std::endl;
-            etalon.push_back(A * median + B);
+//            double A = (max_value - min_value) / (maximum - minimum);
+//            double B = min_value - A * minimum;
+//            for (int mol_idx = 0; mol_idx < row_count; mol_idx++) {
+//                data[mol_idx][desc_idx] = A * data[mol_idx][desc_idx] + B;
+//            }
+//            normalization_ceofficients.push_back(std::pair<double, double>(A, B));
+//            //std::cout << A * median + B << std::endl;
+//            etalon.push_back(A * median + B);
         } else {
-            normalization_ceofficients.push_back(std::pair<double, double>(NAN, NAN));
-            etalon.push_back(NAN);
+            maximum = maximum + 1E-9;
+            minimum = minimum - 1E-9;
+//            normalization_ceofficients.push_back(std::pair<double, double>(NAN, NAN));
+//            etalon.push_back(NAN);
         }
+        double A = (max_value - min_value) / (maximum - minimum);
+        double B = min_value - A * minimum;
+        for (int mol_idx = 0; mol_idx < row_count; mol_idx++) {
+            data[mol_idx][desc_idx] = A * data[mol_idx][desc_idx] + B;
+        }
+        normalization_ceofficients.push_back(std::pair<double, double>(A, B));
+        //std::cout << A * median + B << std::endl;
+        etalon.push_back(A * median + B);
     }
 }
 
