@@ -57,8 +57,8 @@ void adp::normalizeActivesData(
 //            //std::cout << A * median + B << std::endl;
 //            etalon.push_back(A * median + B);
         } else {
-            maximum = maximum + 1E-9;
-            minimum = minimum - 1E-9;
+            maximum = maximum + 1E-6;
+            minimum = minimum - 1E-6;
 //            normalization_ceofficients.push_back(std::pair<double, double>(NAN, NAN));
 //            etalon.push_back(NAN);
         }

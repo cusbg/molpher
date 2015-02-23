@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <cfloat>
+
 #include <boost/version.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/serialization/access.hpp>
@@ -44,7 +46,7 @@ struct MolpherParam
         useVisualisation(true),
         activityMorphing(false),
         startMolMaxCount(0),
-        maxAcceptableEtalonDistance(5000),
+        maxAcceptableEtalonDistance(DBL_MAX),
         maxMOOPruns(10)
     {
     }
