@@ -80,11 +80,8 @@ public:
     class FilterMorphs
     {
     public:
-//        FilterMorphs(PathFinderContext &ctx, size_t globalMorphCount,
-//            MoleculeVector &morphs, std::vector<bool> &survivors);
         FilterMorphs(PathFinderContext &ctx, size_t globalMorphCount,
-            MoleculeVector &morphs, std::vector<bool> &survivors
-                , std::vector<bool> &next, std::vector<bool> &killedOutsideMOOP);
+            MoleculeVector &morphs, std::vector<bool> &survivors);
         void operator()(const tbb::blocked_range<size_t> &r) const;
         
     private:
@@ -93,8 +90,20 @@ public:
         size_t mMorphCount;
         MoleculeVector &mMorphs;
         std::vector<bool> &mSurvivors;
+    };
+    
+    class MOOPFilter
+    {
+    public:
+        MOOPFilter(MoleculeVector &morphs, std::vector<bool> &survivors
+                , std::vector<bool> &next);
+        void operator()(const tbb::blocked_range<size_t> &r) const;
+        
+    private:
+        size_t mMorphCount;
+        MoleculeVector &mMorphs;
+        std::vector<bool> &mSurvivors;
         std::vector<bool> &mNext;
-        std::vector<bool> &mKilledOutsideMOOP;
     };
 
     class AcceptMorphs
