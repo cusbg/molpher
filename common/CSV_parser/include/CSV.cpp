@@ -164,6 +164,12 @@ void CSVparse::CSV::write(ostream &stream) {
     }
 }
 
+void CSVparse::CSV::write(const string &filename) {
+    setFilename(filename);
+    ofstream outstream(filename.c_str());
+    write(outstream);
+}
+
 void CSVparse::CSV::writeHeader(ostream &stream) {
     std::vector<string>::iterator it;
     for (it = header.begin(); it != header.end(); it++) {

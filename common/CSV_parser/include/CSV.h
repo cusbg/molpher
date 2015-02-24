@@ -60,6 +60,7 @@ namespace CSVparse {
         void loadData();
         void loadData(const string &filename);
         void write(ostream &stream);
+        void write(const string &filename);
         void writeRow(ostream &stream, unsigned int number);
         void writeHeader(ostream &stream);
         unsigned int getRowCount();

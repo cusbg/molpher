@@ -41,7 +41,6 @@ namespace fs = boost::filesystem;
 #include "MolpherMolecule.h"
 #include "activity_data_processing.h"
 #include "CSV.h"
-#include "CSV_parser/include/DataConverter.h"
 
 struct IterationSnapshot
 {
@@ -54,6 +53,7 @@ struct IterationSnapshot
         inputActivityDataDir(""),
         descriptorDataFileSuffix("_padel_descriptors"),
         analysisResultsSuffix("_results"),
+        saveDistCSVs(false),
         activityMorphingInitialized(false)
     {
         fingerprintSelector = DEFAULT_FP;
@@ -166,6 +166,29 @@ struct IterationSnapshot
     typedef std::map<std::string, boost::uint32_t> MorphDerivationMap;
     typedef std::vector<std::string> PrunedMoleculeVector;
     typedef std::map<std::string, std::string> ScaffoldSmileMap;
+
+    void saveEtalonDistancesCSV(CSVparse::CSV& descriptors_CSV, const std::string& out_path) {
+        CSVparse::CSV output;
+        const std::vector<std::string> &ids = descriptors_CSV.getStringData("Name");
+        std::vector<double> etal_dists;
+        for (unsigned int idx = 0; idx < descriptors_CSV.getRowCount(); idx++) {
+            MolpherMolecule mm("", ids[idx]);
+            mm.descriptorsFilePath = inputActivityDataDir + proteinTargetName + "_actives_all_padel_descriptors";
+            mm.relevantDescriptorNames = relevantDescriptorNames;
+
+            for (std::vector<std::string>::iterator it = relevantDescriptorNames.begin(); it != relevantDescriptorNames.end(); it++) {
+                mm.descriptorValues.push_back(descriptors_CSV.getFloatData(*it)[idx]);
+            }
+
+            mm.normalizeDescriptors(normalizationCoefficients);
+            mm.ComputeEtalonDistances(etalonValues, activesDescriptors[0]);
+
+            etal_dists.push_back(mm.distToEtalon);
+        }
+        output.addStringData("PMID", ids);
+        output.addFloatData("DistToEtalon", etal_dists);
+        output.write(out_path);
+    }
        
     void PrepareActivityData() {        
         CSVparse::CSV analysis_results_CSV(inputActivityDataDir + proteinTargetName + analysisResultsSuffix, ";", "NA", true, true);
@@ -227,6 +250,13 @@ struct IterationSnapshot
                 testActives.insert(std::make_pair<std::string, MolpherMolecule>(smiles[idx], mm));
             }
         }
+
+        if (saveDistCSVs) {
+            CSVparse::CSV decoys_descriptors(inputActivityDataDir + proteinTargetName + "_decoys_padel_descriptors", ",", "");
+            saveEtalonDistancesCSV(decoys_descriptors, "decoy_mols.csv");
+            saveEtalonDistancesCSV(all_actives_descriptors, "active_mols.csv");
+        }
+        
         activityMorphingInitialized = true;
     }
 
@@ -303,6 +333,7 @@ struct IterationSnapshot
     std::vector<std::vector<double> > activesDescriptors;
     std::vector<std::pair<double, double> > normalizationCoefficients;
     std::vector<std::string> relevantDescriptorNames;
+    bool saveDistCSVs;
     bool activityMorphingInitialized;
     
     /**
