@@ -81,7 +81,6 @@ struct PathFinderContext
     CandidateMap testActives;
     ConcStringVector activesIDs;
     ConcDoubleVector etalonValues;
-    ConcDoubleMatrix activesDescriptors;
     ConcDoublePairVector normalizationCoefficients;
     ConcStringVector relevantDescriptorNames;
 //    ConcBoolVector relevantDescriptorIndices;

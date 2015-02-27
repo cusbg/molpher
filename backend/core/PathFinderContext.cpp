@@ -84,13 +84,6 @@ void PathFinderContext::ContextToSnapshot(
         snp.etalonValues.push_back(*it);
     }
     
-    snp.activesDescriptors.clear();
-    snp.activesDescriptors.reserve(ctx.activesDescriptors.size());
-    for (PathFinderContext::ConcDoubleMatrix::const_iterator it = ctx.activesDescriptors.begin();
-            it != ctx.activesDescriptors.end(); it++) {
-        snp.activesDescriptors.push_back(*it);
-    }
-    
     snp.normalizationCoefficients.clear();
     snp.normalizationCoefficients.reserve(ctx.normalizationCoefficients.size());
     for (PathFinderContext::ConcDoublePairVector::const_iterator it = ctx.normalizationCoefficients.begin();
@@ -205,13 +198,6 @@ void PathFinderContext::SnapshotToContext(
     for (std::vector<double>::const_iterator it = snp.etalonValues.begin();
             it != snp.etalonValues.end(); it++) {
         ctx.etalonValues.push_back(*it);
-    }
-    
-    ctx.activesDescriptors.clear();
-    ctx.activesDescriptors.reserve(snp.activesDescriptors.size());
-    for (std::vector<std::vector<double> >::const_iterator it = snp.activesDescriptors.begin();
-            it != snp.activesDescriptors.end(); it++) {
-        ctx.activesDescriptors.push_back(*it);
     }
     
     ctx.normalizationCoefficients.clear();

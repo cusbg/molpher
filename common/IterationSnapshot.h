@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <fstream>
 
 #include <boost/version.hpp>
 #include <boost/cstdint.hpp>
@@ -53,7 +54,7 @@ struct IterationSnapshot
         inputActivityDataDir(""),
         descriptorDataFileSuffix("_padel_descriptors"),
         analysisResultsSuffix("_results"),
-        saveDistCSVs(false),
+        saveDataAsCSVs(false),
         activityMorphingInitialized(false)
     {
         fingerprintSelector = DEFAULT_FP;
@@ -100,7 +101,7 @@ struct IterationSnapshot
         ar & BOOST_SERIALIZATION_NVP(actives);
         ar & BOOST_SERIALIZATION_NVP(activesIDs);
         ar & BOOST_SERIALIZATION_NVP(etalonValues);
-        ar & BOOST_SERIALIZATION_NVP(activesDescriptors);
+//        ar & BOOST_SERIALIZATION_NVP(actives);
         ar & BOOST_SERIALIZATION_NVP(normalizationCoefficients);
     }
 
@@ -181,7 +182,7 @@ struct IterationSnapshot
             }
 
             mm.normalizeDescriptors(normalizationCoefficients);
-            mm.ComputeEtalonDistances(etalonValues, activesDescriptors[0]);
+            mm.ComputeEtalonDistances(etalonValues);
 
             etal_dists.push_back(mm.distToEtalon);
         }
@@ -191,6 +192,7 @@ struct IterationSnapshot
     }
        
     void PrepareActivityData() {        
+        // read the selected features
         CSVparse::CSV analysis_results_CSV(inputActivityDataDir + proteinTargetName + analysisResultsSuffix, ";", "NA", true, true);
         const std::vector<string> &desc_names = analysis_results_CSV.getHeader();
         unsigned int rejected_row_idx = analysis_results_CSV.getRowIdx("rejected");
@@ -200,40 +202,62 @@ struct IterationSnapshot
             }
         }
         
-        CSVparse::CSV actives_desc_CSV(inputActivityDataDir + activesDescriptorsFile, ",", "");
-        activesIDs = actives_desc_CSV.getStringData("Name");
-        
-        unsigned int active_idx(0);
+        // load data about actives
+        CSVparse::CSV actives_descs_CSV(inputActivityDataDir + activesDescriptorsFile, ",", "");
+        activesIDs = actives_descs_CSV.getStringData("Name");
         for (std::vector<string>::const_iterator id = activesIDs.begin(); id != activesIDs.end(); id++) {
             activesIDsSet.insert(*id);
-            std::vector<double> desc_values;
-            for (std::vector<string>::const_iterator it = relevantDescriptorNames.begin(); it != relevantDescriptorNames.end(); it++) {
-                desc_values.push_back(actives_desc_CSV.getFloatData(*it)[active_idx]);
-            }
-            activesDescriptors.push_back(desc_values);
-            ++active_idx;
+        }
+        
+        // load data about decoys
+        CSVparse::CSV decoys_descs_CSV(inputActivityDataDir + proteinTargetName + "_decoys_padel_descriptors", ",", "");
+        
+        // extract only the data for selected features
+        std::vector<std::vector<double> > all_mols;
+        std::vector<std::vector<double> > actives;
+        adp::readRelevantData(actives_descs_CSV, relevantDescriptorNames, all_mols);
+        if (saveDataAsCSVs) {
+            CSVparse::CSV actives_CSV;
+            adp::readRelevantData(actives_descs_CSV, relevantDescriptorNames, actives, actives_CSV);
+            actives_CSV.write("Results/active_mols_selected_feats.csv");
+            CSVparse::CSV decoys_CSV;
+            adp::readRelevantData(decoys_descs_CSV, relevantDescriptorNames, all_mols, decoys_CSV);
+            decoys_CSV.write("Results/decoy_mols_selected_feats.csv");
+        } else {
+            adp::readRelevantData(actives_descs_CSV, relevantDescriptorNames, actives);
+            adp::readRelevantData(decoys_descs_CSV, relevantDescriptorNames, all_mols);
         }
       
-        adp::normalizeActivesData(activesDescriptors, 0, 1000, normalizationCoefficients, etalonValues);
+        // compute normalization (feature scaling) coefficients and normalize all data
+        adp::normalizeData(all_mols, 0, 1000, normalizationCoefficients);
+        adp::normalizeData(actives, normalizationCoefficients);
         
+        // use the scaled data to compute etalon values
+        adp::computeEtalon(actives, etalonValues);
+        
+        // read structeres of the active molecules
         std::vector<std::string> actives_smiles;
         adp::readPropFromSDF(inputActivityDataDir + activesSDFFile, "PUBCHEM_OPENEYE_CAN_SMILES", actives_smiles);
         
+        // create MolpherMolecule from each active
         std::vector<std::string>::size_type idx = 0;
-        for (std::vector<std::string>::iterator it = actives_smiles.begin(); it != actives_smiles.end(); it++) {
-            MolpherMolecule mm(*it, activesIDs[idx], activesDescriptors[idx], inputActivityDataDir + activesDescriptorsFile, relevantDescriptorNames);
-            mm.ComputeEtalonDistances(etalonValues, activesDescriptors[0]);
-            actives.insert(std::make_pair<std::string, MolpherMolecule>(*it, mm));
-            ++idx;
+        for (std::vector<std::string>::iterator it = actives_smiles.begin(); it != actives_smiles.end(); it++, idx++) {
+            MolpherMolecule mm(*it, activesIDs[idx], actives[idx], inputActivityDataDir + activesDescriptorsFile, relevantDescriptorNames);
+            mm.ComputeEtalonDistances(etalonValues);
+            this->actives.insert(std::make_pair<std::string, MolpherMolecule>(*it, mm));
         }
 
-        // read test molecules
+        // read test actives and save as MolpherMolecules
         CSVparse::CSV all_actives(
                 inputActivityDataDir + proteinTargetName
                 + "_actives_all.smi", "\t", "", false, false);
         CSVparse::CSV all_actives_descriptors(inputActivityDataDir + proteinTargetName + "_actives_all_padel_descriptors", ",", "");
         const std::vector<std::string> &ids = all_actives.getStringData(1);
         const std::vector<std::string> &smiles = all_actives.getStringData(0);
+        std::ofstream outfile("Results/test_mols_dists.csv");
+        if (saveDataAsCSVs) {
+            outfile << "PMID;DistToEtalon" << std::endl;
+        }
         for (unsigned int idx = 0; idx < all_actives.getRowCount(); idx++) {
             if (activesIDsSet.find(ids[idx]) == activesIDsSet.end()) {
                 MolpherMolecule mm(smiles[idx], ids[idx]);
@@ -245,16 +269,21 @@ struct IterationSnapshot
                 }
                 
                 mm.normalizeDescriptors(normalizationCoefficients);
-                mm.ComputeEtalonDistances(etalonValues, activesDescriptors[0]);
+                mm.ComputeEtalonDistances(etalonValues);
+                
+                if (saveDataAsCSVs) {
+                    outfile << mm.id << ";" << mm.distToEtalon << std::endl;
+                }
                 
                 testActives.insert(std::make_pair<std::string, MolpherMolecule>(smiles[idx], mm));
             }
         }
+        outfile.close();
 
-        if (saveDistCSVs) {
-            CSVparse::CSV decoys_descriptors(inputActivityDataDir + proteinTargetName + "_decoys_padel_descriptors", ",", "");
-            saveEtalonDistancesCSV(decoys_descriptors, "decoy_mols.csv");
-            saveEtalonDistancesCSV(all_actives_descriptors, "active_mols.csv");
+        // save etalon distances for actives and decoys
+        if (saveDataAsCSVs) {
+            saveEtalonDistancesCSV(decoys_descs_CSV, "Results/decoy_mols_dists.csv");
+            saveEtalonDistancesCSV(actives_descs_CSV, "Results/train_mols_dists.csv");
         }
         
         activityMorphingInitialized = true;
@@ -330,10 +359,10 @@ struct IterationSnapshot
     std::vector<std::string> activesIDs;
     std::set<std::string> activesIDsSet;
     std::vector<double> etalonValues;
-    std::vector<std::vector<double> > activesDescriptors;
+//    std::vector<std::vector<double> > actives;
     std::vector<std::pair<double, double> > normalizationCoefficients;
     std::vector<std::string> relevantDescriptorNames;
-    bool saveDistCSVs;
+    bool saveDataAsCSVs;
     bool activityMorphingInitialized;
     
     /**

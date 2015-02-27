@@ -215,8 +215,8 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
             snp.fingerprintSelector = FingerprintParse(v.second.data());
         } else if (v.first == "similarity") {
             snp.simCoeffSelector = SimCoeffParse(v.second.data());
-        } else if (v.first == "saveDistCSVs") {
-            snp.saveDistCSVs = v.second.data() == "1" || v.second.data() == "true";
+        } else if (v.first == "saveDataAsCSVs") {
+            snp.saveDataAsCSVs = v.second.data() == "1" || v.second.data() == "true";
         } else if (v.first == "param") {
             BOOST_FOREACH( boost::property_tree::ptree::value_type const& v, 
                     v.second ) {

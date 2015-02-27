@@ -896,7 +896,7 @@ void PathFinderActivity::operator()() {
                 MolpherMolecule &morph = (*it);
                 morph.SaveDescriptors(calculator.getDescValues(morph.id));
                 morph.normalizeDescriptors(mCtx.normalizationCoefficients);
-                morph.ComputeEtalonDistances(mCtx.etalonValues, mCtx.activesDescriptors[0]);
+                morph.ComputeEtalonDistances(mCtx.etalonValues);
             }
             
             if (!Cancelled()) {

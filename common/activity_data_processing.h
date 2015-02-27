@@ -8,22 +8,46 @@
 #ifndef ACTIVITY_DATA_IO_H
 #define	ACTIVITY_DATA_IO_H
 
+#include "CSV.h"
+
 // activity data manipulation and IO
 
 namespace adp {
 
-    void normalizeActivesData(
+    void normalizeData(
             std::vector<std::vector<double> > &data,
             double min_value,
             double max_value,
-            std::vector<std::pair<double, double> > &normalization_ceofficients,
+            std::vector<std::pair<double, double> > &normalization_ceofficients
+            );
+
+    void normalizeData(
+            std::vector<std::vector<double> > &data
+            , std::vector<std::pair<double, double> > &normalization_ceofficients
+            );
+
+    void computeEtalon(
+            std::vector<std::vector<double> > &data,
             std::vector<double> &etalon
             );
-    
+
     void readPropFromSDF(
             const std::string &SDFpath,
             const std::string &property_name,
             std::vector<std::string> &smiles
+            );
+
+    void readRelevantData(
+            CSVparse::CSV& input_data_CSV
+            , const std::vector<std::string>& relevant_descs_names
+            , std::vector<std::vector<double> >& output_data
+            , CSVparse::CSV& output_data_CSV
+            );
+
+    void readRelevantData(
+            CSVparse::CSV& input_data_CSV
+            , const std::vector<std::string>& relevant_descs_names
+            , std::vector<std::vector<double> >& output_data
             );
 }
 

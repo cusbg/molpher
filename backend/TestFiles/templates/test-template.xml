@@ -21,17 +21,18 @@
     <!-- not used now <inactivesSDF>aid466_decoys.sdf</inactivesSDF> -->
     <fingerprint>FP_MORGAN</fingerprint>
     <similarity>SC_TANIMOTO</similarity>
+    <saveDataAsCSVs>true</saveDataAsCSVs>
     <param>
-		<activityMorphing>true</activityMorphing>
-		<startMolMaxCount>2</startMolMaxCount>
-        <syntetizedFeasibility>true</syntetizedFeasibility>
-        <substructureRestriction>false</substructureRestriction>
-	<farProduce>5</farProduce>
-	<iterMax>6</iterMax>
+	<substructureRestriction>false</substructureRestriction>
+	<activityMorphing>true</activityMorphing>
+	<startMolMaxCount>30</startMolMaxCount>
+	<syntetizedFeasibility>false</syntetizedFeasibility>
+	<farProduce>60</farProduce>
+	<iterMax>500</iterMax>
 	<maxTimeMinutes>180</maxTimeMinutes>
-	<maxMOOPruns>3</maxMOOPruns>
-	<nonProducingSurvive>3</nonProducingSurvive>
-	<maxMorhpsTotal>100</maxMorhpsTotal>
-	<!--<maxAcceptableEtalonDistance>2000</maxAcceptableEtalonDistance> -->
+	<maxMOOPruns>1</maxMOOPruns>
+	<nonProducingSurvive>6</nonProducingSurvive>
+	<maxMorhpsTotal>1000</maxMorhpsTotal>
+	<maxAcceptableEtalonDistance>10000</maxAcceptableEtalonDistance>
     </param>
 </iteration>

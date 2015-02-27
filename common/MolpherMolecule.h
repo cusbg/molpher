@@ -196,52 +196,30 @@ struct MolpherMolecule
         }
     }
     
-    void ComputeEtalonDistances(std::vector<double> &etalon, std::vector<double> &some_active_desc) {
-        assert(descriptorValues.size() == etalon.size() && descriptorValues.size() == some_active_desc.size());
-        double max_value = 1000; // TODO: convert these to global options
-        double min_value = 0;
+    void ComputeEtalonDistances(std::vector<double> &etalon, double NA_penalty = 1000) {
+        assert(descriptorValues.size() == etalon.size());
         double sum_dist_squared = 0;
         std::vector<double>::iterator it;
         unsigned int idx = 0;
         for (it = etalon.begin(); it != etalon.end(); it++, idx++) {
             double morph_value = descriptorValues[idx];
             if (((boost::math::isnan)(morph_value))) {
-                etalonDistances.push_back(max_value);
-                sum_dist_squared += std::pow(max_value, 2);
-                continue;
-            }
-            double etalon_value = *it;
-            double squared_distance = 0;
-            if ( ((boost::math::isnan)(etalon_value)) ) { // if this is true, all actives have one single value for this descriptor
-                assert(false);
-//                double active_value = some_active_desc[idx];
-//                if (active_value == morph_value) {
-//                    etalonDistances.push_back(0);
-//                } else {
-//                    double maximum;
-//                    double minimum;
-//                    if (active_value > morph_value) {
-//                        maximum = active_value;
-//                        minimum = morph_value;
-//                    } else {
-//                        maximum = morph_value;
-//                        minimum = active_value;
-//                }
-//                    double A = (max_value - min_value) / (maximum - minimum);
-//                    double B = min_value - A * minimum;
-//                    morph_value = A * morph_value + B;
-//                    active_value = A * active_value + B;
-//                    squared_distance = std::pow((active_value - morph_value) / 2, 2);
-//                    assert(!((boost::math::isnan)(squared_distance)));
-//                    etalonDistances.push_back(std::sqrt(squared_distance));
-//                }
+                etalonDistances.push_back(NA_penalty);
+                sum_dist_squared += std::pow(NA_penalty, 2);
             } else {
-                squared_distance = std::pow(etalon_value - morph_value, 2);
-                assert(!((boost::math::isnan)(squared_distance)));
-                etalonDistances.push_back(std::sqrt(squared_distance));
+                double etalon_value = *it;
+                double squared_distance = 0;
+                if (!((boost::math::isnan)(etalon_value))) {
+                    squared_distance = std::pow(etalon_value - morph_value, 2);
+                    assert(!((boost::math::isnan)(squared_distance)));
+                    etalonDistances.push_back(std::sqrt(squared_distance));
+                } else {
+                    assert(false);
                 }
-            sum_dist_squared += squared_distance;
+                sum_dist_squared += squared_distance;
             }
+
+        }
         distToEtalon = std::sqrt(sum_dist_squared);
         assert(!((boost::math::isnan)(distToEtalon)));
         assert(descriptorValues.size() == etalonDistances.size());
