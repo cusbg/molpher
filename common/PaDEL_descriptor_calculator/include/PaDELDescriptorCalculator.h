@@ -44,6 +44,7 @@ namespace PaDELdesc {
                     const string &PaDELPath
                     , const string &workDirPath
                     , const vector<string> &descriptor
+                    , const string &descriptorsCSV = "/descriptors.csv"
             );
             void saveDescConfigFile(const string &path);
             void saveDescConfigFile();

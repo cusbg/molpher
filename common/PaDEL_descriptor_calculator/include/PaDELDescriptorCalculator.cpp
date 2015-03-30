@@ -34,8 +34,8 @@ void PaDELdesc::PaDELDescriptorCalculator::LoadAvailableDescriptors(const string
         descriptorClassType[name].second = type;
         ++counter;
     }
-}
-
+        }
+    
 void PaDELdesc::PaDELDescriptorCalculator::SaveDescConfig() {
     using boost::property_tree::ptree;
 
@@ -66,6 +66,7 @@ void PaDELdesc::PaDELDescriptorCalculator::SaveDescConfig() {
                 assert(false);
             }
         } else {
+            cout << "Could not locate key: " << *it << endl;
             assert(false);
         }
     }
@@ -143,11 +144,12 @@ PaDELdesc::PaDELDescriptorCalculator::PaDELDescriptorCalculator(
     const string &PaDELPath
     , const string &workDirPath
     , const vector<string> &descriptors
+    , const string &descriptorsCSV
 ) : 
     PaDELPath(PaDELPath + "/")
     , workDirPath(workDirPath + "/")
     , configXMLPath(workDirPath + "/descriptors.xml")
-    , availableDescsCSVPath(PaDELPath + "/descriptors.csv")
+    , availableDescsCSVPath(PaDELPath + descriptorsCSV)
     , SMILESFilePath(workDirPath + "/mols.smi")
     , outputFilePath(workDirPath + "/results.csv")
     , descriptors2compute(descriptors) 
