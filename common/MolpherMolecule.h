@@ -187,30 +187,69 @@ struct MolpherMolecule
         std::vector<double>::iterator it;
         unsigned int idx = 0;
         for (it = descriptorValues.begin(); it != descriptorValues.end(); it++, idx++) {
+            double val = *it;
             double A = norm_coefs[idx].first;
             double B = norm_coefs[idx].second;
             if ( ((boost::math::isnan)(A)) || ((boost::math::isnan)(B)) ) {
-                continue;
+                assert(false);
             }
-            *it = A * (*it) + B;
+            double normed_val = A * val + B;
+            val = normed_val;
+            descriptorValues[idx] = val;
         }
     }
     
-    void ComputeEtalonDistances(std::vector<double> &etalon, double NA_penalty = 1000) {
+//    void ComputeEtalonDistances(std::vector<double> &etalon, double NA_penalty = 0, double max_NAN_perc = 0) {
+//        assert(descriptorValues.size() == etalon.size());
+//        double sum_dist_squared = 0;
+//        std::vector<double>::iterator it;
+//        unsigned int idx = 0;
+//        unsigned int NAN_count = 0;
+//        for (it = etalon.begin(); it != etalon.end(); it++, idx++) {
+//            double morph_value = descriptorValues[idx];
+//            if (((boost::math::isnan)(morph_value))) {
+//                etalonDistances.push_back(NA_penalty);
+//                sum_dist_squared += std::pow(NA_penalty, 2);
+//                ++NAN_count;
+//            } else {
+//                double etalon_value = *it;
+//                double squared_distance = 0;
+//                if (!((boost::math::isnan)(etalon_value))) {
+//                    squared_distance = std::pow(etalon_value - morph_value, 2);
+//                    assert(!((boost::math::isnan)(squared_distance)));
+//                    etalonDistances.push_back(std::sqrt(squared_distance));
+//                } else {
+//                    assert(false);
+//                }
+//                sum_dist_squared += squared_distance;
+//            }
+//
+//        }
+//        double NAN_percentage = NAN_count / (double) etalon.size();
+//        if (NAN_percentage <= max_NAN_perc) {
+//            distToEtalon = std::sqrt(sum_dist_squared);
+//        } else {
+//            distToEtalon = DBL_MAX;
+//        }
+//        assert(!((boost::math::isnan)(distToEtalon)));
+//        assert(descriptorValues.size() == etalonDistances.size());
+//    }
+    
+    void ComputeEtalonDistances(std::vector<double> &etalon, std::vector<double> &weights) {
         assert(descriptorValues.size() == etalon.size());
+        assert(descriptorValues.size() == weights.size());
         double sum_dist_squared = 0;
         std::vector<double>::iterator it;
         unsigned int idx = 0;
         for (it = etalon.begin(); it != etalon.end(); it++, idx++) {
             double morph_value = descriptorValues[idx];
             if (((boost::math::isnan)(morph_value))) {
-                etalonDistances.push_back(NA_penalty);
-                sum_dist_squared += std::pow(NA_penalty, 2);
+                etalonDistances.push_back(1);
             } else {
                 double etalon_value = *it;
                 double squared_distance = 0;
                 if (!((boost::math::isnan)(etalon_value))) {
-                    squared_distance = std::pow(etalon_value - morph_value, 2);
+                    squared_distance = std::pow(weights[idx] * (etalon_value - morph_value), 2);
                     assert(!((boost::math::isnan)(squared_distance)));
                     etalonDistances.push_back(std::sqrt(squared_distance));
                 } else {

@@ -200,13 +200,17 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
         
         if (v.first == "inputActivityDataDir") {
             snp.inputActivityDataDir = v.second.data() + "/";
-        } else if (v.first == "activesSDF") {
-            snp.activesSDFFile = v.second.data();
-            snp.proteinTargetName = snp.activesSDFFile.substr(0, snp.activesSDFFile.find("_"));
-            snp.activesDescriptorsFile = snp.activesSDFFile.substr(0, snp.activesSDFFile.find(".")) + snp.descriptorDataFileSuffix;
-        } else if (v.first == "inactivesSDF") {
-//            snp.inactivesSDFFile = v.second.data();
-//            snp.inactivesDescriptorsFile = snp.inactivesSDFFile.substr(0, snp.inactivesSDFFile.find(".")) + snp.descriptorDataFileSuffix;
+        } else if (v.first == "allActivesSMILES") {
+            snp.allActivesSMILESFile = v.second.data();
+            snp.proteinTargetName = snp.allActivesSMILESFile.substr(snp.allActivesSMILESFile.rfind("/"), 7);
+        } else if (v.first == "activesDescriptors") {
+            snp.activesDescriptorsFile = v.second.data();
+        } else if (v.first == "testActivesDescriptors") {
+            snp.testActivesDescriptorsFile = v.second.data();
+        } else if (v.first == "inactivesDescriptors") {
+            snp.inactivesDescriptorsFile = v.second.data();
+        } else if (v.first == "descriptorWeights") {
+            snp.descriptorWeightsFile = v.second.data();
         } else if (v.first == "source") {
             snp.source = createMoleculeFromSmile(v.second.get<std::string>("smile"));
         } else if (v.first == "target") {

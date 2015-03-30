@@ -97,6 +97,8 @@ struct PathFinderContext
 //    std::string inactivesDescriptorsFile;
     std::string descriptorDataFileSuffix;
     std::string analysisResultsSuffix;
+    bool saveDataAsCSVs;
+    std::vector<double> descWeights;
     
     MorphDerivationMap morphDerivations;
     PrunedMoleculeVector prunedDuringThisIter;

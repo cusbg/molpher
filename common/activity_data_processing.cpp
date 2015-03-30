@@ -11,7 +11,7 @@
 #include <boost/accumulators/statistics/count.hpp>
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/accumulators/statistics/median.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
 
 namespace ba = boost::accumulators;
 
@@ -31,7 +31,7 @@ void adp::normalizeData(
     ba::extractor< ba::tag::min > min_;
     ba::extractor< ba::tag::max > max_;
     for (int desc_idx = 0; desc_idx < column_count; desc_idx++) {
-        ba::accumulator_set< double, ba::features< ba::tag::min, ba::tag::max, ba::tag::median > > acc;
+        ba::accumulator_set< double, ba::features<ba::tag::min, ba::tag::max> > acc;
         for (int mol_idx = 0; mol_idx < row_count; mol_idx++) {
             double value = data[mol_idx][desc_idx];
             if ( !((boost::math::isnan)(value)) ) { 
@@ -85,17 +85,17 @@ void adp::computeEtalon(
 ) {
     std::vector<std::vector<double> >::size_type row_count = data.size();
     std::vector<double>::size_type column_count = data[0].size();
-    ba::extractor< ba::tag::median > median_;
+    ba::extractor< ba::tag::mean > mean_;
     for (int desc_idx = 0; desc_idx < column_count; desc_idx++) {
-        ba::accumulator_set< double, ba::features< ba::tag::min, ba::tag::max, ba::tag::median > > acc;
+        ba::accumulator_set< double, ba::features< ba::tag::mean > > acc;
         for (int mol_idx = 0; mol_idx < row_count; mol_idx++) {
             double value = data[mol_idx][desc_idx];
             if ( !((boost::math::isnan)(value)) ) { 
                 acc(value);
             }
         }
-        double median = median_( acc );
-        etalon.push_back(median);
+        double mean = mean_( acc );
+        etalon.push_back(mean);
     }
 }
 

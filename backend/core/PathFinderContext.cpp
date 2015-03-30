@@ -107,13 +107,10 @@ void PathFinderContext::ContextToSnapshot(
     
     snp.activityMorphingInitialized = ctx.activityMorphingInitialized;
     snp.inputActivityDataDir = ctx.inputActivityDataDir;
-    snp.activesSDFFile = ctx.activesSDFFile;
-//    snp.inactivesSDFFile = ctx.inactivesSDFFile;
     snp.proteinTargetName = ctx.proteinTargetName;
     snp.activesDescriptorsFile = ctx.activesDescriptorsFile;
-//    snp.inactivesDescriptorsFile = ctx.inactivesDescriptorsFile;
-    snp.descriptorDataFileSuffix = ctx.descriptorDataFileSuffix;
-    snp.analysisResultsSuffix = ctx.analysisResultsSuffix;
+    snp.saveDataAsCSVs = ctx.saveDataAsCSVs;
+    snp.descWeights = ctx.descWeights;
 
     snp.tempSource = ctx.tempSource;
     snp.scaffoldSelector = ctx.scaffoldSelector;
@@ -223,14 +220,11 @@ void PathFinderContext::SnapshotToContext(
     
     ctx.activityMorphingInitialized = snp.activityMorphingInitialized;
     ctx.inputActivityDataDir = snp.inputActivityDataDir;
-    ctx.activesSDFFile = snp.activesSDFFile;
-//    ctx.inactivesSDFFile = snp.inactivesSDFFile;
     ctx.proteinTargetName = snp.proteinTargetName;
     ctx.activesDescriptorsFile = snp.activesDescriptorsFile;
-//    ctx.inactivesDescriptorsFile = snp.inactivesDescriptorsFile;
-    ctx.descriptorDataFileSuffix = snp.descriptorDataFileSuffix;
-    ctx.analysisResultsSuffix = snp.analysisResultsSuffix;
-
+    ctx.saveDataAsCSVs = snp.saveDataAsCSVs;
+    ctx.descWeights = snp.descWeights;
+    
     ctx.tempSource = snp.tempSource;
     ctx.scaffoldSelector = (ScaffoldSelector) snp.scaffoldSelector;
     ctx.pathMolecules = snp.pathMolecules;
