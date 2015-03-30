@@ -147,9 +147,11 @@ void CSVparse::CSV::loadData() {
         }
         assert(header.size() == columnCount);
         assert(rowCount == rowNames.size());
-        assert(columnCount == (stringData.size() + floatData.size()));
-        assert(columnIdxDataType.size() == columnCount);
-        assert(columnNameColumnIdx.size() == columnCount);
+        if (rowCount > 0) {
+            assert(columnCount == (stringData.size() + floatData.size()));
+            assert(columnIdxDataType.size() == columnCount);
+            assert(columnNameColumnIdx.size() == columnCount);
+        }
     } else {
         throw runtime_error("Error opening file: " + filename);
     }
