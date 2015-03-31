@@ -35,7 +35,7 @@
 	<iterMax>10</iterMax>
 	<maxTimeMinutes>180</maxTimeMinutes>
 	<maxMOOPruns>1</maxMOOPruns>
-	<nonProducingSurvive>1</nonProducingSurvive>
+	<nonProducingSurvive>5</nonProducingSurvive>
 	<maxMorhpsTotal>1000</maxMorhpsTotal>
 	<!-- <maxAcceptableEtalonDistance>10000</maxAcceptableEtalonDistance> -->
     </param>

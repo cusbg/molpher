@@ -55,6 +55,17 @@ public:
     private:
         MoleculeVector &mLeaves;
     };
+    
+    class FindNextBag
+    {
+    public:
+        FindNextBag(MoleculeVector &nextBag);
+        void operator()(
+            const PathFinderContext::CandidateMap::range_type &candidates) const;
+
+    private:
+        MoleculeVector &mNext;
+    };
 
     friend void MorphCollector2(MolpherMolecule *morph, void *functor);
 
@@ -166,8 +177,20 @@ public:
 
     bool Cancelled();
     
-    double getClosestTestActive(MolpherMolecule &morph, MolpherMolecule*& testActive);
-
+    class SaveIterationData
+    {
+    public:
+        static std::pair<double, double> getClosestTestActives(
+            MolpherMolecule &morph
+            , PathFinderContext& ctx
+            , MolpherMolecule*& testActiveStruct
+            , MolpherMolecule*& testActiveActivity);
+        static void saveCSVData(
+            MolpherMolecule& mol
+            , PathFinderContext& ctx
+            , CSVparse::CSV& morphingData);
+    };
+    
 private:
     tbb::task_group_context *mTbbCtx;
     JobManager *mJobManager;

@@ -263,6 +263,18 @@ struct MolpherMolecule
         assert(!((boost::math::isnan)(distToEtalon)));
         assert(descriptorValues.size() == etalonDistances.size());
     }
+    
+    double GetDistanceFrom(MolpherMolecule& testMol, std::vector<double> weights) {
+        assert(descriptorValues.size() == testMol.descriptorValues.size());
+        assert(descriptorValues.size() == weights.size());
+        std::vector<double>::iterator it;
+        double dist_squared = 0;
+        unsigned int idx = 0;
+        for (it = descriptorValues.begin(); it != descriptorValues.end(); it++, idx++) {
+            dist_squared += std::pow(weights[idx] * (descriptorValues[idx] - testMol.descriptorValues[idx]), 2);
+        }
+        return std::sqrt(dist_squared);
+    }
 
     std::string smile;
     std::string formula;
