@@ -47,7 +47,8 @@ struct MolpherParam
         activityMorphing(false),
         startMolMaxCount(0),
         maxAcceptableEtalonDistance(DBL_MAX),
-        maxMOOPruns(10)
+        maxMOOPruns(10),
+        etalonType("mean")
     {
     }
        
@@ -149,6 +150,7 @@ struct MolpherParam
     
     double maxAcceptableEtalonDistance;
     boost::uint32_t maxMOOPruns;
+    std::string etalonType;
 };
 
 // add information about version to archive

@@ -173,7 +173,7 @@ struct IterationSnapshot
                 mm.descriptorValues.push_back(descriptors_CSV.getFloatData(*it)[idx]);
             }
 
-            mm.normalizeDescriptors(normalizationCoefficients);
+            mm.normalizeDescriptors(normalizationCoefficients, imputedValues);
             mm.ComputeEtalonDistances(etalonValues, descWeights);
 
             etal_dists.push_back(mm.distToEtalon);
@@ -228,11 +228,11 @@ struct IterationSnapshot
         }
       
         // compute normalization (feature scaling) coefficients and normalize all data
-        adp::normalizeData(all_mols, 0, 1, normalizationCoefficients);
-        adp::normalizeData(actives, normalizationCoefficients);
+        adp::normalizeData(all_mols, 0, 1, normalizationCoefficients, imputedValues);
+        adp::normalizeData(actives, imputedValues, normalizationCoefficients);
         
         // use the scaled data to compute etalon values
-        adp::computeEtalon(actives, etalonValues);
+        adp::computeEtalon(actives, etalonValues, params.etalonType);
         
         // read structeres of the active molecules
         CSVparse::CSV all_actives(allActivesSMILESFile, "\t", "", false, false);
@@ -275,7 +275,7 @@ struct IterationSnapshot
                 
                 mm.descriptorValues = test_mols[counter];
                 
-                mm.normalizeDescriptors(normalizationCoefficients);
+                mm.normalizeDescriptors(normalizationCoefficients, imputedValues);
                 mm.ComputeEtalonDistances(etalonValues, descWeights);
                 
                 if (saveDataAsCSVs) {
@@ -371,6 +371,7 @@ struct IterationSnapshot
     std::vector<double> etalonValues;
 //    std::vector<std::vector<double> > actives;
     std::vector<std::pair<double, double> > normalizationCoefficients;
+    std::vector<double> imputedValues;
     std::vector<std::string> relevantDescriptorNames;
     std::vector<double> descWeights;
     bool saveDataAsCSVs;

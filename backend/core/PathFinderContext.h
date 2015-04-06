@@ -99,6 +99,7 @@ struct PathFinderContext
     std::string analysisResultsSuffix;
     bool saveDataAsCSVs;
     std::vector<double> descWeights;
+    std::vector<double> imputedValues;
     
     MorphDerivationMap morphDerivations;
     PrunedMoleculeVector prunedDuringThisIter;

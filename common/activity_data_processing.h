@@ -18,17 +18,20 @@ namespace adp {
             std::vector<std::vector<double> > &data,
             double min_value,
             double max_value,
-            std::vector<std::pair<double, double> > &normalization_ceofficients
+            std::vector<std::pair<double, double> > &normalization_ceofficients,
+            std::vector<double> &imputed_values
             );
 
     void normalizeData(
             std::vector<std::vector<double> > &data
+            , std::vector<double> &imputed_values
             , std::vector<std::pair<double, double> > &normalization_ceofficients
             );
 
     void computeEtalon(
             std::vector<std::vector<double> > &data,
-            std::vector<double> &etalon
+            std::vector<double> &etalon,
+            std::string etalon_type = "mean"
             );
 
     void readPropFromSDF(

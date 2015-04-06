@@ -182,12 +182,16 @@ struct MolpherMolecule
         }
     }
     
-    void normalizeDescriptors(std::vector<std::pair<double, double> > &norm_coefs) {
+    void normalizeDescriptors(std::vector<std::pair<double, double> > &norm_coefs, std::vector<double> &imputed_values) {
         assert(descriptorValues.size() == norm_coefs.size());
+        assert(descriptorValues.size() == imputed_values.size());
         std::vector<double>::iterator it;
         unsigned int idx = 0;
         for (it = descriptorValues.begin(); it != descriptorValues.end(); it++, idx++) {
             double val = *it;
+            if (((boost::math::isnan)(val))) {
+                val = imputed_values[idx];
+            }
             double A = norm_coefs[idx].first;
             double B = norm_coefs[idx].second;
             if ( ((boost::math::isnan)(A)) || ((boost::math::isnan)(B)) ) {
@@ -249,9 +253,9 @@ struct MolpherMolecule
                 double etalon_value = *it;
                 double squared_distance = 0;
                 if (!((boost::math::isnan)(etalon_value))) {
-                    squared_distance = std::pow(weights[idx] * (etalon_value - morph_value), 2);
+                    squared_distance = std::abs(weights[idx] * (etalon_value - morph_value));
                     assert(!((boost::math::isnan)(squared_distance)));
-                    etalonDistances.push_back(std::sqrt(squared_distance));
+                    etalonDistances.push_back(squared_distance);
                 } else {
                     assert(false);
                 }
@@ -259,7 +263,7 @@ struct MolpherMolecule
             }
 
         }
-        distToEtalon = std::sqrt(sum_dist_squared);
+        distToEtalon = sum_dist_squared;
         assert(!((boost::math::isnan)(distToEtalon)));
         assert(descriptorValues.size() == etalonDistances.size());
     }
@@ -267,13 +271,11 @@ struct MolpherMolecule
     double GetDistanceFrom(MolpherMolecule& testMol, std::vector<double> weights) {
         assert(descriptorValues.size() == testMol.descriptorValues.size());
         assert(descriptorValues.size() == weights.size());
-        std::vector<double>::iterator it;
         double dist_squared = 0;
-        unsigned int idx = 0;
-        for (it = descriptorValues.begin(); it != descriptorValues.end(); it++, idx++) {
-            dist_squared += std::pow(weights[idx] * (descriptorValues[idx] - testMol.descriptorValues[idx]), 2);
+        for (unsigned int idx = 0; idx < descriptorValues.size(); idx++) {
+            dist_squared += std::abs(weights[idx] * (descriptorValues[idx] - testMol.descriptorValues[idx]));
         }
-        return std::sqrt(dist_squared);
+        return dist_squared;
     }
 
     std::string smile;

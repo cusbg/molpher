@@ -111,6 +111,7 @@ void PathFinderContext::ContextToSnapshot(
     snp.activesDescriptorsFile = ctx.activesDescriptorsFile;
     snp.saveDataAsCSVs = ctx.saveDataAsCSVs;
     snp.descWeights = ctx.descWeights;
+    snp.imputedValues = ctx.imputedValues;
 
     snp.tempSource = ctx.tempSource;
     snp.scaffoldSelector = ctx.scaffoldSelector;
@@ -224,6 +225,7 @@ void PathFinderContext::SnapshotToContext(
     ctx.activesDescriptorsFile = snp.activesDescriptorsFile;
     ctx.saveDataAsCSVs = snp.saveDataAsCSVs;
     ctx.descWeights = snp.descWeights;
+    ctx.imputedValues = snp.imputedValues;
     
     ctx.tempSource = snp.tempSource;
     ctx.scaffoldSelector = (ScaffoldSelector) snp.scaffoldSelector;
