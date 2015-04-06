@@ -181,12 +181,14 @@ public:
     {
     public:
         static std::pair<double, double> getClosestTestActives(
-            MolpherMolecule &morph
+            MolpherMolecule &mol
+            , PathFinderContext::CandidateMap& probedMols
             , PathFinderContext& ctx
             , MolpherMolecule*& testActiveStruct
             , MolpherMolecule*& testActiveActivity);
         static void saveCSVData(
             MolpherMolecule& mol
+            , PathFinderContext::CandidateMap& probedMols
             , PathFinderContext& ctx
             , CSVparse::CSV& morphingData);
     };

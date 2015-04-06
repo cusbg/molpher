@@ -633,7 +633,9 @@ void acceptMorphs2(PathFinderActivity::MoleculeVector &morphs,
 }
 
 std::pair<double, double> PathFinderActivity::SaveIterationData::getClosestTestActives(
-    MolpherMolecule &morph, PathFinderContext& ctx
+    MolpherMolecule &inputMol
+    , PathFinderContext::CandidateMap& probedMols
+    , PathFinderContext& ctx
     , MolpherMolecule*& testActiveStruct
     , MolpherMolecule*& testActiveActivity
 ) {
@@ -641,14 +643,14 @@ std::pair<double, double> PathFinderActivity::SaveIterationData::getClosestTestA
     double current_min_struct = DBL_MAX;
     double current_min_activity = DBL_MAX;
     for (
-            PathFinderContext::CandidateMap::iterator testIt = ctx.testActives.begin();
-            testIt != ctx.testActives.end(); testIt++
+            PathFinderContext::CandidateMap::iterator testIt = probedMols.begin();
+            testIt != probedMols.end(); testIt++
             ) {
-        assert(morph.id.compare(testIt->second.id) != 0);
+        assert(inputMol.id.compare(testIt->second.id) != 0);
         RDKit::RWMol *mol = NULL;
         RDKit::RWMol *test = NULL;
         try {
-            mol = RDKit::SmilesToMol(morph.smile);
+            mol = RDKit::SmilesToMol(inputMol.smile);
             test = RDKit::SmilesToMol(testIt->second.smile);
             if (mol && test) {
                 RDKit::MolOps::Kekulize(*mol);
@@ -670,7 +672,7 @@ std::pair<double, double> PathFinderActivity::SaveIterationData::getClosestTestA
         }
         
         MolpherMolecule& testMol = testIt->second;
-        double activity_dist = morph.GetDistanceFrom(testMol, ctx.descWeights);
+        double activity_dist = inputMol.GetDistanceFrom(testMol, ctx.descWeights);
         if (activity_dist < current_min_activity) {
             current_min_activity = activity_dist;
             testActiveActivity = &(testIt->second);
@@ -684,6 +686,7 @@ std::pair<double, double> PathFinderActivity::SaveIterationData::getClosestTestA
 
 void PathFinderActivity::SaveIterationData::saveCSVData(
     MolpherMolecule& mol
+    , PathFinderContext::CandidateMap& probedMols
     , PathFinderContext& ctx
     , CSVparse::CSV& morphingData
 ) {
@@ -695,7 +698,7 @@ void PathFinderActivity::SaveIterationData::saveCSVData(
     MolpherMolecule* closestTestActiveStruct = NULL;
     MolpherMolecule* closestTestActiveActivity = NULL;
     std::pair<double, double> distStructActivity;
-    distStructActivity = getClosestTestActives(mol, ctx, closestTestActiveStruct, closestTestActiveActivity);
+    distStructActivity = getClosestTestActives(mol, probedMols, ctx, closestTestActiveStruct, closestTestActiveActivity);
     
     // closest in strctural space
     if (closestTestActiveStruct) {
@@ -733,6 +736,7 @@ void PathFinderActivity::operator()() {
     bool pathFound = false;
     std::vector<std::string> startMols;
     CSVparse::CSV morphingData;
+    CSVparse::CSV testMolsData;
     
     while (true) {
 
@@ -776,7 +780,7 @@ void PathFinderActivity::operator()() {
                                 floatData[0] = 1;
                                 morphingData.addFloatData("IsAlive", floatData);
 
-                                SaveIterationData::saveCSVData(it->second, mCtx, morphingData);
+                                SaveIterationData::saveCSVData(it->second, mCtx.testActives, mCtx, morphingData);
                             }
                         
                             ++counter;
@@ -784,6 +788,23 @@ void PathFinderActivity::operator()() {
                                 break;
                             }
                         }
+                        
+                        // init initial data about test mols
+                        for (PathFinderContext::CandidateMap::iterator it = mCtx.testActives.begin(); it != mCtx.testActives.end(); it++) {
+                            std::vector<string> stringData;
+                            std::vector<double> floatData;
+                            stringData.push_back(it->second.id);
+                            floatData.push_back(it->second.distToEtalon);
+                            testMolsData.addStringData("ID", stringData);
+                            stringData[0] = it->second.smile;
+                            testMolsData.addStringData("SMILES", stringData);
+                            testMolsData.addFloatData("EtalonDistance", floatData);
+                            floatData[0] = -1;
+                            testMolsData.addFloatData("IterIdx", floatData);
+                            
+                            SaveIterationData::saveCSVData(it->second, mCtx.candidates, mCtx, testMolsData);
+                        }
+                        
                     } else {
                         assert(mCtx.scaffoldSelector == SF_MOST_GENERAL);
 
@@ -1084,7 +1105,7 @@ void PathFinderActivity::operator()() {
                         }
                         morphingData.addFloatData("IsAlive", floatData);
 
-                        SaveIterationData::saveCSVData(morph, mCtx, morphingData);
+                        SaveIterationData::saveCSVData(morph, mCtx.testActives, mCtx, morphingData);
                     }
                     ++idx;
                 }
@@ -1092,6 +1113,27 @@ void PathFinderActivity::operator()() {
                 std::string summary_path(output_dir + "/" + NumberToString(mCtx.jobId) + "_summary.csv");
                 ofstream overallData(summary_path.c_str());
                 morphingData.write(overallData);
+                
+                
+                // save data about the test mols
+                for (PathFinderContext::CandidateMap::iterator it = mCtx.testActives.begin(); it != mCtx.testActives.end(); it++) {
+                    std::vector<string> stringData;
+                    std::vector<double> floatData;
+                    stringData.push_back(it->second.id);
+                    floatData.push_back(it->second.distToEtalon);
+                    testMolsData.addStringData("ID", stringData);
+                    stringData[0] = it->second.smile;
+                    testMolsData.addStringData("SMILES", stringData);
+                    testMolsData.addFloatData("EtalonDistance", floatData);
+                    floatData[0] = mCtx.iterIdx;
+                    testMolsData.addFloatData("IterIdx", floatData);
+
+                    SaveIterationData::saveCSVData(it->second, mCtx.candidates, mCtx, testMolsData);
+                }
+                
+                std::string test_summary_path(output_dir + "/" + NumberToString(mCtx.jobId) + "_summary_test_mols.csv");
+                ofstream overallTestData(test_summary_path.c_str());
+                testMolsData.write(overallTestData);
 
                 stageStopwatch.ReportElapsedMiliseconds("DataSummary", true);
             }
