@@ -708,8 +708,8 @@ void PathFinderActivity::SaveIterationData::saveCSVData(
         stringData[0] = "NA";
         floatData[0] = NAN;
     }
-    morphingData.addStringData("ClosestTestActiveStructID", stringData);
-    morphingData.addFloatData("ClosestTestActiveStructDistance", floatData);
+    morphingData.addStringData("ClosestStructID", stringData);
+    morphingData.addFloatData("ClosestStructDistance", floatData);
     
     // closest in activity space
     if (closestTestActiveActivity) {
@@ -719,8 +719,8 @@ void PathFinderActivity::SaveIterationData::saveCSVData(
         stringData[0] = "NA";
         floatData[0] = NAN;
     }
-    morphingData.addStringData("ClosestTestActiveActivityID", stringData);
-    morphingData.addFloatData("ClosestTestActiveActivityDistance", floatData);
+    morphingData.addStringData("ClosestActivityID", stringData);
+    morphingData.addFloatData("ClosestActivityDistance", floatData);
 }
 
 void PathFinderActivity::operator()() {
