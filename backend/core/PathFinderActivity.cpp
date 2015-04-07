@@ -958,6 +958,7 @@ void PathFinderActivity::operator()() {
                 "../dependencies/padel/"
                 , storage_dir
                 , mCtx.relevantDescriptorNames
+                , mThreadCnt
             );
             
             unsigned int counter(1);

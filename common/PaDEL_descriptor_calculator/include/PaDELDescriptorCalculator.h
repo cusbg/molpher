@@ -32,6 +32,7 @@ namespace PaDELdesc {
             boost::property_tree::ptree configXML;
             map<string, string> mols;
             vector<string> molNames;
+            unsigned int threadsCnt;
             
             typedef map<string, map<string, double> > DataMap;
             DataMap computedData;
@@ -44,6 +45,7 @@ namespace PaDELdesc {
                     const string &PaDELPath
                     , const string &workDirPath
                     , const vector<string> &descriptor
+                    , const unsigned int threads = 2
                     , const string &descriptorsCSV = "/descriptors.csv"
             );
             void saveDescConfigFile(const string &path);

@@ -88,7 +88,7 @@ void PaDELdesc::PaDELDescriptorCalculator::computeDescriptors() {
     saveDescConfigFile();
     saveSMILESFile();
     string command( "java -jar \"" + PaDELPath + "PaDEL-Descriptor.jar\" ");
-    string options("-dir \"" + SMILESFilePath + "\" -convert3d -descriptortypes \"" + configXMLPath + "\" -file \"" + outputFilePath + "\" -retainorder -log -2d -3d");
+    string options("-dir \"" + SMILESFilePath + "\" -convert3d -descriptortypes \"" + configXMLPath + "\" -file \"" + outputFilePath + "\" -retainorder -log -2d -3d -maxruntime 300000 -threads " + CSVparse::DataConverter::ValToString(threadsCnt));
     string call(command + options);
     cout << call << endl;
     int ret = system(call.c_str());
@@ -144,15 +144,17 @@ PaDELdesc::PaDELDescriptorCalculator::PaDELDescriptorCalculator(
     const string &PaDELPath
     , const string &workDirPath
     , const vector<string> &descriptors
+    , const unsigned int threads
     , const string &descriptorsCSV
 ) : 
     PaDELPath(PaDELPath + "/")
     , workDirPath(workDirPath + "/")
+    , threadsCnt(threads)
     , configXMLPath(workDirPath + "/descriptors.xml")
     , availableDescsCSVPath(PaDELPath + descriptorsCSV)
     , SMILESFilePath(workDirPath + "/mols.smi")
     , outputFilePath(workDirPath + "/results.csv")
-    , descriptors2compute(descriptors) 
+    , descriptors2compute(descriptors)
 {
     LoadAvailableDescriptors(availableDescsCSVPath);
 }
