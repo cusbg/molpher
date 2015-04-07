@@ -248,7 +248,7 @@ struct MolpherMolecule
         for (it = etalon.begin(); it != etalon.end(); it++, idx++) {
             double morph_value = descriptorValues[idx];
             if (((boost::math::isnan)(morph_value))) {
-                etalonDistances.push_back(1);
+                etalonDistances.push_back(DBL_MAX);
             } else {
                 double etalon_value = *it;
                 double squared_distance = 0;
