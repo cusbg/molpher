@@ -185,7 +185,7 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
             bool alreadyExists = false;
             bool alreadyTriedByParent = false;
             bool tooManyProducedMorphs = false;
-            bool isTooFarFromEtalon = false;
+            bool isTooFarFromEtalon = false; // not used at the moment
 
             // Tests are ordered according to their cost.
             // Added test for SAScore
@@ -269,13 +269,13 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
             isDead = (badWeight || badSascore || alreadyExists || 
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
             
-            if (!isDead) {
-                isTooFarFromEtalon = mMorphs[idx].distToEtalon > mCtx.params.maxAcceptableEtalonDistance 
-                            || mMorphs[idx].distToEtalon == DBL_MAX;
-            }
-            
-            isDead = (badWeight || badSascore || alreadyExists || 
-                    alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
+//            if (!isDead) {
+//                isTooFarFromEtalon = mMorphs[idx].distToEtalon > mCtx.params.maxAcceptableEtalonDistance 
+//                            || mMorphs[idx].distToEtalon == DBL_MAX;
+//            }
+//            
+//            isDead = (badWeight || badSascore || alreadyExists || 
+//                    alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
             
             mSurvivors[idx] = !isDead;
         }
@@ -945,47 +945,6 @@ void PathFinderActivity::operator()() {
                 stageStopwatch.ReportElapsedMiliseconds("GenerateMorphs", true);
             }
             
-            // prepare directory for descriptor computation
-            std::string output_dir(mJobManager->GetStorageDir());
-            std::string storage_dir(GenerateDirname(output_dir, mCtx.jobId, mCtx.proteinTargetName + "_" + NumberToString(mCtx.iterIdx)));
-            try {
-                boost::filesystem::create_directories(storage_dir);
-            } catch (boost::filesystem::filesystem_error &exc) {
-                SynchCout(exc.what());
-            }      
-            
-            PaDELdesc::PaDELDescriptorCalculator calculator(
-                "../dependencies/padel/"
-                , storage_dir
-                , mCtx.relevantDescriptorNames
-                , mThreadCnt
-            );
-            
-            unsigned int counter(1);
-            for (MoleculeVector::iterator it = morphs.begin(); it != morphs.end(); it++) {
-                MolpherMolecule &morph = (*it);
-                morph.id = "MORPH_" + NumberToString(mCtx.iterIdx) + "_" + NumberToString(counter++);
-                calculator.addMol(morph.id, morph.smile);
-                morph.descriptorsFilePath = calculator.getOutputFilePath();
-                morph.relevantDescriptorNames = mCtx.relevantDescriptorNames;
-            }
-            
-            // compute descriptors using PaDEL
-            calculator.computeDescriptors();
-            
-            // load and normalize the data + compute etalon distances 
-            // TODO: could be concurrent (use the tbb::concurrent_* structures in PathFinderContext) -> concurrent file IO needed too
-            for (MoleculeVector::iterator it = morphs.begin(); it != morphs.end(); it++) {
-                MolpherMolecule &morph = (*it);
-                morph.SaveDescriptors(calculator.getDescValues(morph.id));
-                morph.normalizeDescriptors(mCtx.normalizationCoefficients, mCtx.imputedValues);
-                morph.ComputeEtalonDistances(mCtx.etalonValues, mCtx.descWeights);
-            }
-            
-            if (!Cancelled()) {
-                stageStopwatch.ReportElapsedMiliseconds("ComputeDescriptors", true);
-            }
-            
 //            CompareMorphs compareMorphs;
 //            if (!Cancelled()) {
 //                /* FIXME
@@ -1049,7 +1008,56 @@ void PathFinderActivity::operator()() {
                 stageStopwatch.ReportElapsedMiliseconds("FilterMorphs", true);
             }
             
-            
+            // prepare directory for descriptor computation
+            std::string output_dir(mJobManager->GetStorageDir());
+                std::string storage_dir(GenerateDirname(output_dir, mCtx.jobId, mCtx.proteinTargetName + "_" + NumberToString(mCtx.iterIdx)));
+            try {
+                boost::filesystem::create_directories(storage_dir);
+            } catch (boost::filesystem::filesystem_error &exc) {
+                SynchCout(exc.what());
+            }
+                
+            // calculate descriptors
+            // TODO: could be concurrent (use the tbb::concurrent_* structures in PathFinderContext) -> concurrent file IO needed too
+            if (!Cancelled()) {
+                PaDELdesc::PaDELDescriptorCalculator calculator(
+                        "../dependencies/padel/"
+                        , storage_dir
+                        , mCtx.relevantDescriptorNames
+                        , mThreadCnt
+                        );
+
+                unsigned int idx = 0;
+                for (MoleculeVector::iterator it = morphs.begin(); it != morphs.end(); it++, idx++) {
+                    MolpherMolecule &morph = (*it);
+                    morph.id = "MORPH_" + NumberToString(mCtx.iterIdx) + "_" + NumberToString(idx + 1);
+                    if (survivors[idx]) {
+                        calculator.addMol(morph.id, morph.smile);
+                        morph.descriptorsFilePath = calculator.getOutputFilePath();
+                        morph.relevantDescriptorNames = mCtx.relevantDescriptorNames;
+                    }
+                }
+
+                // compute descriptors using PaDEL
+                calculator.computeDescriptors();
+
+                // load and normalize the data + compute etalon distances 
+                idx = 0;
+                for (MoleculeVector::iterator it = morphs.begin(); it != morphs.end(); it++, idx++) {
+                    if (survivors[idx]) {
+                        MolpherMolecule &morph = (*it);
+                        morph.SaveDescriptors(calculator.getDescValues(morph.id));
+                        morph.normalizeDescriptors(mCtx.normalizationCoefficients, mCtx.imputedValues);
+                        morph.ComputeEtalonDistances(mCtx.etalonValues, mCtx.descWeights);
+                    }
+                }
+
+                if (!Cancelled()) {
+                    stageStopwatch.ReportElapsedMiliseconds("ComputeDescriptors", true);
+                }
+            }
+                                    
+            // MOOP
             std::vector<bool> next = survivors; // morphs scheduled for next MOOP run
             MOOPFilter MOOPfiltering(morphs, survivors, next);
             if (!Cancelled()) {
