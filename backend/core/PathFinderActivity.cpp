@@ -1080,7 +1080,7 @@ void PathFinderActivity::operator()() {
                 stageStopwatch.ReportElapsedMiliseconds("MOOPfiltering", true);
             }
             
-            if (mCtx.saveDataAsCSVs) {
+            if (!Cancelled() && mCtx.saveDataAsCSVs) {
                 unsigned int idx = 0;
                 for (MoleculeVector::iterator morph_it = morphs.begin(); morph_it != morphs.end(); morph_it++) {
                     if (survivors[idx]) {
@@ -1114,29 +1114,8 @@ void PathFinderActivity::operator()() {
                 std::string summary_path(output_dir + "/" + NumberToString(mCtx.jobId) + "_summary.csv");
                 ofstream overallData(summary_path.c_str());
                 morphingData.write(overallData);
-                
-                
-                // save data about the test mols
-                for (PathFinderContext::CandidateMap::iterator it = mCtx.testActives.begin(); it != mCtx.testActives.end(); it++) {
-                    std::vector<string> stringData;
-                    std::vector<double> floatData;
-                    stringData.push_back(it->second.id);
-                    floatData.push_back(it->second.distToEtalon);
-                    testMolsData.addStringData("ID", stringData);
-                    stringData[0] = it->second.smile;
-                    testMolsData.addStringData("SMILES", stringData);
-                    testMolsData.addFloatData("EtalonDistance", floatData);
-                    floatData[0] = mCtx.iterIdx;
-                    testMolsData.addFloatData("IterIdx", floatData);
 
-                    SaveIterationData::saveCSVData(it->second, mCtx.candidates, mCtx, testMolsData);
-                }
-                
-                std::string test_summary_path(output_dir + "/" + NumberToString(mCtx.jobId) + "_summary_test_mols.csv");
-                ofstream overallTestData(test_summary_path.c_str());
-                testMolsData.write(overallTestData);
-
-                stageStopwatch.ReportElapsedMiliseconds("DataSummary", true);
+                stageStopwatch.ReportElapsedMiliseconds("MorphingSummary", true);
             }
 
             /* TODO MPI
@@ -1257,6 +1236,26 @@ void PathFinderActivity::operator()() {
 //            }
 
             if (!Cancelled()) {
+                // save data about the test mols
+                for (PathFinderContext::CandidateMap::iterator it = mCtx.testActives.begin(); it != mCtx.testActives.end(); it++) {
+                    std::vector<string> stringData;
+                    std::vector<double> floatData;
+                    stringData.push_back(it->second.id);
+                    floatData.push_back(it->second.distToEtalon);
+                    testMolsData.addStringData("ID", stringData);
+                    stringData[0] = it->second.smile;
+                    testMolsData.addStringData("SMILES", stringData);
+                    testMolsData.addFloatData("EtalonDistance", floatData);
+                    floatData[0] = mCtx.iterIdx;
+                    testMolsData.addFloatData("IterIdx", floatData);
+
+                    SaveIterationData::saveCSVData(it->second, mCtx.candidates, mCtx, testMolsData);
+                }
+                
+                std::string test_summary_path(output_dir + "/" + NumberToString(mCtx.jobId) + "_summary_test_mols.csv");
+                ofstream overallTestData(test_summary_path.c_str());
+                testMolsData.write(overallTestData);
+                
                 // find the closes molecule
                 double distance = DBL_MAX;
                 PathFinderContext::CandidateMap::iterator itCandidates;
@@ -1280,6 +1279,8 @@ void PathFinderActivity::operator()() {
                         << "The min. distance to etalon: " << distance
                         << " (" << bestID << ")";
                 SynchCout(ss.str());
+                
+                stageStopwatch.ReportElapsedMiliseconds("IterationSummary", true);
             }
 
             if (!Cancelled()) {

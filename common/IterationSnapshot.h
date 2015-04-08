@@ -216,12 +216,13 @@ struct IterationSnapshot
         std::vector<std::vector<double> > actives;
         adp::readRelevantData(actives_descs_CSV, relevantDescriptorNames, all_mols);
         if (saveDataAsCSVs) {
-            CSVparse::CSV actives_CSV;
-            adp::readRelevantData(actives_descs_CSV, relevantDescriptorNames, actives, actives_CSV);
-            actives_CSV.write(inputActivityDataDir + proteinTargetName + "_active_mols_selected_feats.csv");
-            CSVparse::CSV decoys_CSV;
-            adp::readRelevantData(decoys_descs_CSV, relevantDescriptorNames, all_mols, decoys_CSV);
-            decoys_CSV.write(inputActivityDataDir + proteinTargetName + "_decoy_mols_selected_feats.csv");
+            // write relevant data to disk
+//            CSVparse::CSV actives_CSV;
+            adp::readRelevantData(actives_descs_CSV, relevantDescriptorNames, actives);
+//            actives_CSV.write(inputActivityDataDir + proteinTargetName + "_active_mols_selected_feats.csv");
+//            CSVparse::CSV decoys_CSV;
+            adp::readRelevantData(decoys_descs_CSV, relevantDescriptorNames, all_mols);
+//            decoys_CSV.write(inputActivityDataDir + proteinTargetName + "_decoy_mols_selected_feats.csv");
         } else {
             adp::readRelevantData(actives_descs_CSV, relevantDescriptorNames, actives);
             adp::readRelevantData(decoys_descs_CSV, relevantDescriptorNames, all_mols);
