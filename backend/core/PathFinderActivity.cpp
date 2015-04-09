@@ -1309,32 +1309,32 @@ void PathFinderActivity::operator()() {
                     if (timeDepleted) {
                         std::stringstream ss;
                         ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
-                                << "We run out of time.";
+                                << "We ran out of time.";
                         SynchCout(ss.str());
                     }
                     if (!canContinueCurrentJob) {
                         IterationSnapshot snp;
                         PathFinderContext::ContextToSnapshot(mCtx, snp);
-                        MoleculeVector final_leaves;
-                        FindLeaves findFinalLeaves(final_leaves);
-                        if (!Cancelled()) {
-                            tbb::parallel_for(
-                                    PathFinderContext::CandidateMap::range_type(mCtx.candidates),
-                                    findFinalLeaves, tbb::auto_partitioner(), *mTbbCtx);
-                            stageStopwatch.ReportElapsedMiliseconds("FindFinalLeaves", true);
-                        }
-                        for (MoleculeVector::iterator it = final_leaves.begin(); it != final_leaves.end(); it++) {
-                            MolpherMolecule &leaf_mol = (*it);
-                            std::string mol_name(leaf_mol.id);
-                            std::string filename = GenerateFilename(output_dir, 
-                                    mCtx.jobId, mol_name + ".path");
-                            WriteMolpherPath(
-                                    filename,
-                                    leaf_mol.smile,
-                                    snp.candidates,
-                                    mCtx.pathMolecules
-                                );
-                        }
+//                        MoleculeVector final_leaves;
+//                        FindLeaves findFinalLeaves(final_leaves);
+//                        if (!Cancelled()) {
+//                            tbb::parallel_for(
+//                                    PathFinderContext::CandidateMap::range_type(mCtx.candidates),
+//                                    findFinalLeaves, tbb::auto_partitioner(), *mTbbCtx);
+//                            stageStopwatch.ReportElapsedMiliseconds("FindFinalLeaves", true);
+//                        }
+//                        for (MoleculeVector::iterator it = final_leaves.begin(); it != final_leaves.end(); it++) {
+//                            MolpherMolecule &leaf_mol = (*it);
+//                            std::string mol_name(leaf_mol.id);
+//                            std::string filename = GenerateFilename(output_dir, 
+//                                    mCtx.jobId, mol_name + ".path");
+//                            WriteMolpherPath(
+//                                    filename,
+//                                    leaf_mol.smile,
+//                                    snp.candidates,
+//                                    mCtx.pathMolecules
+//                                );
+//                        }
                     }
                 }
             }
