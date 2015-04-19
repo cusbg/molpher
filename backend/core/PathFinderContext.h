@@ -78,6 +78,7 @@ struct PathFinderContext
     //typedef tbb::concurrent_vector<std::vector<double> > ConcDoubleMatrix;
     typedef std::vector<std::vector<double> > ConcDoubleMatrix;
     CandidateMap actives;
+    CandidateMap sourceMols;
     CandidateMap testActives;
     ConcStringVector activesIDs;
     ConcDoubleVector etalonValues;

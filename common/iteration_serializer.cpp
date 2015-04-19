@@ -205,6 +205,8 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
             snp.proteinTargetName = snp.allActivesSMILESFile.substr(snp.allActivesSMILESFile.rfind("/"), 7);
         } else if (v.first == "activesDescriptors") {
             snp.activesDescriptorsFile = v.second.data();
+        } else if (v.first == "sourceMolsDescriptors") {
+            snp.sourceMolsDescriptorsFile = v.second.data();
         } else if (v.first == "testActivesDescriptors") {
             snp.testActivesDescriptorsFile = v.second.data();
         } else if (v.first == "inactivesDescriptors") {

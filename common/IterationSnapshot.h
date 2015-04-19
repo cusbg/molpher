@@ -119,11 +119,13 @@ struct IterationSnapshot
                 fs::path test_actives_descs(testActivesDescriptorsFile);
                 fs::path inactives_desc(inactivesDescriptorsFile);
                 fs::path weights(descriptorWeightsFile);
+                fs::path source_mols(sourceMolsDescriptorsFile);
                 
                 activityMorphingValid = fs::exists(actives) 
                         && fs::exists(train_actives_descs)
                         && fs::exists(test_actives_descs)
                         && fs::exists(inactives_desc)
+                        && fs::exists(source_mols)
                         && fs::exists(weights);
             } else {
                 activityMorphingValid = false;
@@ -207,6 +209,24 @@ struct IterationSnapshot
             activesIDsSet.insert(*id);
         }
         
+        // load data about source mols
+        CSVparse::CSV sources_descs_CSV(sourceMolsDescriptorsFile, ",", "");
+        sourceIDs = sources_descs_CSV.getStringData("Name");
+        for (std::vector<string>::const_iterator id = sourceIDs.begin(); id != sourceIDs.end(); id++) {
+            sourceIDsSet.insert(*id);
+        }
+        std::vector<std::vector<double> > source_mols;
+        adp::readRelevantData(sources_descs_CSV, relevantDescriptorNames, source_mols);
+        
+        // load data about test mols
+        CSVparse::CSV tests_descs_CSV(testActivesDescriptorsFile, ",", "");
+        testIDs = tests_descs_CSV.getStringData("Name");
+        for (std::vector<string>::const_iterator id = testIDs.begin(); id != testIDs.end(); id++) {
+            testIDsSet.insert(*id);
+        }
+        std::vector<std::vector<double> > test_mols;
+        adp::readRelevantData(tests_descs_CSV, relevantDescriptorNames, test_mols);
+        
         // load data about decoys
         CSVparse::CSV decoys_descs_CSV(inactivesDescriptorsFile, ",", "");
         
@@ -234,7 +254,7 @@ struct IterationSnapshot
         // use the scaled data to compute etalon values
         adp::computeEtalon(actives, etalonValues, params.etalonType);
         
-        // read structeres of the active molecules
+        // read structures of active, test and source molecules
         CSVparse::CSV all_actives(allActivesSMILESFile, "\t", "", false, false);
         const std::vector<std::string> &ids = all_actives.getStringData(1);
         const std::vector<std::string> &smiles = all_actives.getStringData(0);
@@ -256,41 +276,42 @@ struct IterationSnapshot
             this->actives.insert(std::make_pair<std::string, MolpherMolecule>(*it, mm));
         }
 
-        // read test actives and save as MolpherMolecules
-        std::vector<std::vector<double> > test_mols;
-        CSVparse::CSV test_actives_descs(testActivesDescriptorsFile, ",", "");
-        adp::readRelevantData(test_actives_descs, relevantDescriptorNames, test_mols);
-        std::ofstream outfile;
-        if (saveDataAsCSVs) {
-            std::string path(inputActivityDataDir + proteinTargetName + "_test_mols_dists.csv");
-            outfile.open(path.c_str());
-            outfile << "PMID;DistToEtalon" << std::endl;
-        }
-        unsigned int counter = 0;
+        // create MolpherMolecule from sources and tests
+        unsigned int test_counter = 0;
+        unsigned int source_counter = 0;
         for (unsigned int idx = 0; idx < ids.size(); idx++) {
-            if (activesIDsSet.find(ids[idx]) == activesIDsSet.end()) {
+            if (testIDsSet.find(ids[idx]) != testIDsSet.end()) {
                 MolpherMolecule mm(idSmileMap[ids[idx]], ids[idx]);
                 mm.descriptorsFilePath = activesDescriptorsFile;
                 
-                mm.descriptorValues = test_mols[counter];
+                mm.descriptorValues = test_mols[test_counter];
                 
                 mm.normalizeDescriptors(normalizationCoefficients, imputedValues);
                 mm.ComputeEtalonDistances(etalonValues, descWeights);
                 
-                if (saveDataAsCSVs) {
-                    outfile << mm.id << ";" << mm.distToEtalon << std::endl;
-                }
+                testActives.insert(std::make_pair<std::string, MolpherMolecule>(mm.smile, mm));
+                test_counter++;
+            }
+            if (sourceIDsSet.find(ids[idx]) != sourceIDsSet.end()) {
+                MolpherMolecule mm(idSmileMap[ids[idx]], ids[idx]);
+                mm.descriptorsFilePath = sourceMolsDescriptorsFile;
                 
-                testActives.insert(std::make_pair<std::string, MolpherMolecule>(smiles[idx], mm));
-                counter++;
+                mm.descriptorValues = source_mols[source_counter];
+                
+                mm.normalizeDescriptors(normalizationCoefficients, imputedValues);
+                mm.ComputeEtalonDistances(etalonValues, descWeights);
+                
+                sourceMols.insert(std::make_pair<std::string, MolpherMolecule>(mm.smile, mm));
+                source_counter++;
             }
         }
-        outfile.close();
 
         // save etalon distances for actives and decoys
         if (saveDataAsCSVs) {
             saveEtalonDistancesCSV(decoys_descs_CSV, inputActivityDataDir + proteinTargetName + "_decoy_mols_dists.csv");
-            saveEtalonDistancesCSV(actives_descs_CSV, inputActivityDataDir + proteinTargetName + "_train_mols_dists.csv");
+            saveEtalonDistancesCSV(actives_descs_CSV, inputActivityDataDir + proteinTargetName + "_active_mols_dists.csv");
+            saveEtalonDistancesCSV(sources_descs_CSV, inputActivityDataDir + proteinTargetName + "_source_mols_dists.csv");
+            saveEtalonDistancesCSV(tests_descs_CSV, inputActivityDataDir + proteinTargetName + "_test_mols_dists.csv");
         }
         
 //        exit(0);
@@ -365,8 +386,13 @@ struct IterationSnapshot
     CandidateMap candidates;
     CandidateMap actives;
     CandidateMap testActives;
+    CandidateMap sourceMols;
     std::vector<std::string> activesIDs;
     std::set<std::string> activesIDsSet;
+    std::vector<std::string> sourceIDs;
+    std::set<std::string> sourceIDsSet;
+    std::vector<std::string> testIDs;
+    std::set<std::string> testIDsSet;
     std::vector<double> etalonValues;
 //    std::vector<std::vector<double> > actives;
     std::vector<std::pair<double, double> > normalizationCoefficients;
@@ -383,6 +409,7 @@ struct IterationSnapshot
     std::string proteinTargetName;
     std::string allActivesSMILESFile;
     std::string activesDescriptorsFile;
+    std::string sourceMolsDescriptorsFile;
     std::string testActivesDescriptorsFile;
     std::string inactivesDescriptorsFile;
     std::string descriptorWeightsFile;

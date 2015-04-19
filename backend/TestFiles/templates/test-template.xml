@@ -19,7 +19,8 @@
   <inputActivityDataDir>../../FS/FeatSele/data/</inputActivityDataDir>
   <allActivesSMILES>../../FS/FeatSele/data/aid466_actives_all.smi</allActivesSMILES>
   <activesDescriptors>../../FS/FeatSele/data/aid466_actives.csv</activesDescriptors>
-  <testActivesDescriptors>../../FS/FeatSele/data/aid466_actives_muv.csv</testActivesDescriptors>
+  <sourceMolsDescriptors>../../FS/FeatSele/data/aid466_actives_muv.csv</sourceMolsDescriptors>
+  <testActivesDescriptors>../../FS/FeatSele/data/aid466_actives.csv</testActivesDescriptors>
   <inactivesDescriptors>../../FS/FeatSele/data/aid466_decoys.csv</inactivesDescriptors>
   <descriptorWeights>../../FS/FeatSele/FS_outputs/aid466_FS4_weights.csv</descriptorWeights>
     
@@ -31,7 +32,7 @@
 	<syntetizedFeasibility>true</syntetizedFeasibility>
 	
 	<activityMorphing>true</activityMorphing>
-	<startMolMaxCount>2</startMolMaxCount>
+	<startMolMaxCount>1000</startMolMaxCount>
 	<farProduce>10</farProduce>
 	<iterMax>20</iterMax>
 	<maxTimeMinutes>240</maxTimeMinutes>

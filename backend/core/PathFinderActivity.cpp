@@ -785,13 +785,13 @@ void PathFinderActivity::operator()() {
                     assert(mCtx.candidateScaffoldMolecules.empty());
                     
                     if (mCtx.params.startMolMaxCount == 0) {
-                        mCtx.params.startMolMaxCount = mCtx.actives.size();
+                        mCtx.params.startMolMaxCount = mCtx.sourceMols.size();
                     }
 
                     PathFinderContext::CandidateMap::accessor ac;
                     if (!mCtx.ScaffoldMode()) {
                         int counter = 1;
-                        for (PathFinderContext::CandidateMap::iterator it = mCtx.actives.begin(); it != mCtx.actives.end(); it++) {
+                        for (PathFinderContext::CandidateMap::iterator it = mCtx.sourceMols.begin(); it != mCtx.sourceMols.end(); it++) {
                             mCtx.candidates.insert(ac, it->first);
                             startMols.push_back(it->first);
                             //SynchCout(it->first);
@@ -905,6 +905,7 @@ void PathFinderActivity::operator()() {
 //                stageStopwatch.ReportElapsedMiliseconds("FindLeaves", true);
 //            }
             
+            SynchCout("Starting with " + NumberToString(mCtx.candidates.size()) + " source molecules...");
             MoleculeVector currentBag;
             FindNextBag findBag(currentBag);
             if (!Cancelled()) {

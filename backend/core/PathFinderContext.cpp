@@ -45,6 +45,12 @@ void PathFinderContext::ContextToSnapshot(
             it != ctx.candidates.end(); it++) {
         snp.candidates.insert(*it);
     }
+    
+    snp.sourceMols.clear();
+    for (CandidateMap::const_iterator it = ctx.sourceMols.begin();
+            it != ctx.sourceMols.end(); it++) {
+        snp.sourceMols.insert(*it);
+    }
 
     snp.morphDerivations.clear();
     for (MorphDerivationMap::const_iterator it = ctx.morphDerivations.begin();
@@ -157,6 +163,12 @@ void PathFinderContext::SnapshotToContext(
     for (IterationSnapshot::CandidateMap::const_iterator it = snp.candidates.begin();
             it != snp.candidates.end(); it++) {
         ctx.candidates.insert(*it);
+    }
+    
+    ctx.sourceMols.clear();
+    for (IterationSnapshot::CandidateMap::const_iterator it = snp.sourceMols.begin();
+            it != snp.sourceMols.end(); it++) {
+        ctx.sourceMols.insert(*it);
     }
 
     ctx.morphDerivations.clear();
