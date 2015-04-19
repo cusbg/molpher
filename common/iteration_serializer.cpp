@@ -247,6 +247,8 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
                     snp.params.cntMaxMorphs = toInt(v.second.data());
                 } else if (v.first == "nonProducingSurvive") {
                     snp.params.itThreshold = toInt(v.second.data());
+                } else if (v.first == "itersUntilDecay") {
+                    snp.params.decayThreshold = toInt(v.second.data());
                 } else if (v.first == "iterMax") {
                     snp.params.cntIterations = toInt(v.second.data());
                 } else if (v.first == "maxTimeMinutes") {

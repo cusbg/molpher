@@ -167,7 +167,6 @@ struct IterationSnapshot
             ids.push_back(id);
             MolpherMolecule mm("", id);
             mm.descriptorsFilePath = "";
-            mm.relevantDescriptorNames = relevantDescriptorNames;
 
             for (std::vector<std::string>::iterator it = relevantDescriptorNames.begin(); it != relevantDescriptorNames.end(); it++) {
                 mm.descriptorValues.push_back(descriptors_CSV.getFloatData(*it)[idx]);
@@ -272,7 +271,6 @@ struct IterationSnapshot
             if (activesIDsSet.find(ids[idx]) == activesIDsSet.end()) {
                 MolpherMolecule mm(idSmileMap[ids[idx]], ids[idx]);
                 mm.descriptorsFilePath = activesDescriptorsFile;
-                mm.relevantDescriptorNames = relevantDescriptorNames;
                 
                 mm.descriptorValues = test_mols[counter];
                 

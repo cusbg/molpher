@@ -88,7 +88,7 @@ void PaDELdesc::PaDELDescriptorCalculator::computeDescriptors() {
     saveDescConfigFile();
     saveSMILESFile();
     string command( "java -jar \"" + PaDELPath + "PaDEL-Descriptor.jar\" ");
-    string options("-dir \"" + SMILESFilePath + "\" -convert3d -descriptortypes \"" + configXMLPath + "\" -file \"" + outputFilePath + "\" -retainorder -log -2d -3d -maxruntime 300000 -threads " + CSVparse::DataConverter::ValToString(threadsCnt));
+    string options("-dir \"" + SMILESFilePath + "\" -convert3d -descriptortypes \"" + configXMLPath + "\" -file \"" + outputFilePath + "\" -retainorder -log -2d -3d -maxruntime 10000 -threads " + CSVparse::DataConverter::ValToString(threadsCnt));
     string call(command + options);
     cout << call << endl;
     int ret = system(call.c_str());

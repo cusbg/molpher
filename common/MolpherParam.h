@@ -36,6 +36,7 @@ struct MolpherParam
         distToTargetDepthSwitch(0.1),   // farCloseThreashold
         cntMaxMorphs(5000),             // maxMorhpsTotal
         itThreshold(6),                 // nonProducingSurvive
+        decayThreshold(12),              
         cntIterations(500),             // maxIter
         timeMaxSeconds(21600000),       // maxTime
         minAcceptableMolecularWeight(0.0),
@@ -108,6 +109,7 @@ struct MolpherParam
 	double distToTargetDepthSwitch;
     boost::uint32_t cntMaxMorphs;
 	boost::uint32_t itThreshold;
+        boost::uint32_t decayThreshold;
     boost::uint32_t cntIterations;
 	boost::uint32_t timeMaxSeconds;
     

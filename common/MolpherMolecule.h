@@ -43,6 +43,8 @@ struct MolpherMolecule
         molecularWeight(0.0),
         sascore(0.0),
         itersWithoutDistImprovement(0),
+        decayed(false),
+        itersFresh(0),
         posX(0),
         posY(0)
     {
@@ -58,6 +60,8 @@ struct MolpherMolecule
         molecularWeight(0.0),
         sascore(0.0),
         itersWithoutDistImprovement(0),
+        decayed(false),
+        itersFresh(0),
         posX(0),
         posY(0)
     {
@@ -74,6 +78,8 @@ struct MolpherMolecule
         molecularWeight(0.0),
         sascore(0.0),
         itersWithoutDistImprovement(0),
+        itersFresh(0),
+        decayed(false),
         posX(0),
         posY(0)
     {
@@ -89,8 +95,6 @@ struct MolpherMolecule
         id(id),
         descriptorValues(descriptors),
         descriptorsFilePath(descriptorsFilePath),
-//        relevantDescriptorIndices(relevantDescriptorIndices),
-        relevantDescriptorNames(relevantDescriptorNames),
         parentChemOper(0),
         scaffoldLevelCreation(0),
         distToTarget(DBL_MAX),
@@ -99,6 +103,8 @@ struct MolpherMolecule
         molecularWeight(0.0),
         sascore(0.0),
         itersWithoutDistImprovement(0),
+        itersFresh(0),
+        decayed(false),
         posX(0),
         posY(0)
     {
@@ -115,6 +121,8 @@ struct MolpherMolecule
         molecularWeight(0.0),
         sascore(0.0),
         itersWithoutDistImprovement(0),
+        itersFresh(0),
+        decayed(false),
         posX(0),
         posY(0)
     {
@@ -138,6 +146,8 @@ struct MolpherMolecule
         molecularWeight(molecularWeight),
         sascore(sascore),
         itersWithoutDistImprovement(0),
+        itersFresh(0),
+        decayed(false),
         posX(0),
         posY(0)
     {
@@ -163,8 +173,6 @@ struct MolpherMolecule
             BOOST_SERIALIZATION_NVP(itersWithoutDistImprovement) &
             BOOST_SERIALIZATION_NVP(posX) &
             BOOST_SERIALIZATION_NVP(etalonDistances) &
-//            BOOST_SERIALIZATION_NVP(relevantDescriptorIndices) &
-            BOOST_SERIALIZATION_NVP(relevantDescriptorNames) &
             BOOST_SERIALIZATION_NVP(descriptorValues) &
             BOOST_SERIALIZATION_NVP(descriptorsFilePath) &
             BOOST_SERIALIZATION_NVP(id) &
@@ -176,8 +184,8 @@ struct MolpherMolecule
         return (!smile.empty());
     }
     
-    void SaveDescriptors(std::map<std::string, double> &descriptors) {
-        for (std::vector<std::string>::iterator it = relevantDescriptorNames.begin(); it != relevantDescriptorNames.end(); it++ ) {
+    void SaveDescriptors(std::map<std::string, double> &descriptors, std::vector<std::string> &names) {
+        for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++ ) {
             descriptorValues.push_back(descriptors[*it]);
         }
     }
@@ -290,8 +298,9 @@ struct MolpherMolecule
 
     double distToTarget;
     double distToEtalon;
+    boost::uint32_t itersFresh;
+    bool decayed;
     std::vector<double> etalonDistances;
-    std::vector<std::string> relevantDescriptorNames;
     std::vector<double> descriptorValues;
     std::string descriptorsFilePath;
     std::string id;
