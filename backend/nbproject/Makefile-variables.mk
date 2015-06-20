@@ -14,6 +14,14 @@ CND_ARTIFACT_PATH_Linux64_Release=dist/Linux64_Release/GNU_4_6-Linux-x86/molpher
 CND_PACKAGE_DIR_Linux64_Release=dist/Linux64_Release/GNU_4_6-Linux-x86/package
 CND_PACKAGE_NAME_Linux64_Release=backend.tar
 CND_PACKAGE_PATH_Linux64_Release=dist/Linux64_Release/GNU_4_6-Linux-x86/package/backend.tar
+# Linux64_Release_META configuration
+CND_PLATFORM_Linux64_Release_META=GNU_4_6-Linux-x86
+CND_ARTIFACT_DIR_Linux64_Release_META=dist/Linux64_Release_META/GNU_4_6-Linux-x86
+CND_ARTIFACT_NAME_Linux64_Release_META=molpher-srv
+CND_ARTIFACT_PATH_Linux64_Release_META=dist/Linux64_Release_META/GNU_4_6-Linux-x86/molpher-srv
+CND_PACKAGE_DIR_Linux64_Release_META=dist/Linux64_Release_META/GNU_4_6-Linux-x86/package
+CND_PACKAGE_NAME_Linux64_Release_META=backend.tar
+CND_PACKAGE_PATH_Linux64_Release_META=dist/Linux64_Release_META/GNU_4_6-Linux-x86/package/backend.tar
 #
 # include compiler specific variables
 #
