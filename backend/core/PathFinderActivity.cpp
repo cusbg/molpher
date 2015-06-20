@@ -307,19 +307,19 @@ void PathFinderActivity::MOOPFilter::operator()(const tbb::blocked_range<size_t>
                 MolpherMolecule second = mMorphs[second_idx];
                 if ((first.id.compare(second.id) != 0) && mNext[second_idx]) {
                     std::vector<double>::size_type all_features_count = first.etalonDistances.size();
-                    std::vector<double>::size_type equal_features_count(0);
+                    //std::vector<double>::size_type equal_features_count(0);
                     std::vector<double>::size_type bad_features_count(0);
                     for (std::vector<double>::size_type desc_idx = 0; desc_idx != first.etalonDistances.size(); desc_idx++) {
                         double f = first.etalonDistances[desc_idx];
                         double s = second.etalonDistances[desc_idx];
-                        if (f >= s) {
-                            bad_features_count++;
+                        if (f > s) {
+                            ++bad_features_count;
                         } 
-                        if (f == s) {
-                            equal_features_count++;
-                        }
+//                        if (f == s) {
+//                            equal_features_count++;
+//                        }
                     }
-                    if (bad_features_count == all_features_count && equal_features_count != all_features_count) {
+                    if (bad_features_count == all_features_count) { // && equal_features_count != all_features_count
                         isNotOptimal = true;
                         break;
                     }
