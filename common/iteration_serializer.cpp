@@ -213,6 +213,8 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
             snp.inactivesDescriptorsFile = v.second.data();
         } else if (v.first == "descriptorWeights") {
             snp.descriptorWeightsFile = v.second.data();
+        } else if (v.first == "etalon") {
+            snp.etalonFile = v.second.data();
         } else if (v.first == "source") {
             snp.source = createMoleculeFromSmile(v.second.get<std::string>("smile"));
         } else if (v.first == "target") {

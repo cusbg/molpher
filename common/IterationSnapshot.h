@@ -127,6 +127,12 @@ struct IterationSnapshot
                         && fs::exists(inactives_desc)
                         && fs::exists(source_mols)
                         && fs::exists(weights);
+                
+                if (etalonFile.size() != 0) {
+                    fs::path et_file(etalonFile);
+                    activityMorphingValid = fs::exists(et_file);
+                }
+                
             } else {
                 activityMorphingValid = false;
             }
@@ -251,8 +257,18 @@ struct IterationSnapshot
         adp::normalizeData(all_mols, 0, 1, normalizationCoefficients, imputedValues);
         adp::normalizeData(actives, imputedValues, normalizationCoefficients);
         
-        // use the scaled data to compute etalon values
-        adp::computeEtalon(actives, etalonValues, params.etalonType);
+        if (etalonFile.size() != 0) {
+            CSVparse::CSV etalon_csv(etalonFile, ",", "");
+            assert(etalon_csv.getColumnCount() == normalizationCoefficients.size());
+            for (unsigned int desc_idx = 0; desc_idx != etalon_csv.getColumnCount(); desc_idx++ ) {
+                double A = normalizationCoefficients[desc_idx].first;
+                double B = normalizationCoefficients[desc_idx].first;
+                etalonValues.push_back(A * etalon_csv.getFloatData(desc_idx)[0] + B);
+            }
+        } else {
+            // use the scaled data to compute etalon values
+            adp::computeEtalon(actives, etalonValues, params.etalonType);
+        }
         
         // read structures of active, test and source molecules
         CSVparse::CSV all_actives(allActivesSMILESFile, "\t", "", false, false);
@@ -413,6 +429,7 @@ struct IterationSnapshot
     std::string testActivesDescriptorsFile;
     std::string inactivesDescriptorsFile;
     std::string descriptorWeightsFile;
+    std::string etalonFile;
 
     MorphDerivationMap morphDerivations;
 
