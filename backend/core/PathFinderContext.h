@@ -99,6 +99,7 @@ struct PathFinderContext
     std::string descriptorDataFileSuffix;
     std::string analysisResultsSuffix;
     bool saveDataAsCSVs;
+    bool saveOnlyMorphData;
     std::vector<double> descWeights;
     std::vector<double> imputedValues;
     

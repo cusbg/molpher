@@ -1279,7 +1279,7 @@ void PathFinderActivity::operator()() {
 //                stageStopwatch.ReportElapsedMiliseconds("DimensionReduction", true);
 //            }
 
-            if (!Cancelled()) {
+            if (!Cancelled() && !mCtx.saveOnlyMorphData) {
                 // save data about the test mols
                 for (PathFinderContext::CandidateMap::iterator it = mCtx.testActives.begin(); it != mCtx.testActives.end(); it++) {
                     std::vector<string> stringData;
@@ -1302,7 +1302,8 @@ void PathFinderActivity::operator()() {
                 ofstream overallTestData(summary_path.c_str());
                 testMolsData.write(overallTestData);
                 
-                // find the closes molecule
+                // find and print the closest molecule 
+                // write info about molecules in the current bag
                 double distance = DBL_MAX;
                 PathFinderContext::CandidateMap::iterator itCandidates;
                 std::string bestID;
@@ -1340,6 +1341,7 @@ void PathFinderActivity::operator()() {
 //                    }
                 }
                 
+                // write data about the molecules in the bag
                 std::string path(GenerateDirname(output_dir, mCtx.jobId) + "/final_bag.csv");
                 ofstream out(path.c_str());
                 finalBag.write(out);                               

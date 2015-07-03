@@ -51,7 +51,8 @@ struct IterationSnapshot
         iterIdx(0),
         elapsedSeconds(0),
         inputActivityDataDir(""),
-        saveDataAsCSVs(false),
+        saveDataAsCSVs(true),
+        saveOnlyMorphData(true),
         activityMorphingInitialized(false)
     {
         fingerprintSelector = DEFAULT_FP;
@@ -416,6 +417,7 @@ struct IterationSnapshot
     std::vector<std::string> relevantDescriptorNames;
     std::vector<double> descWeights;
     bool saveDataAsCSVs;
+    bool saveOnlyMorphData;
     bool activityMorphingInitialized;
     
     /**

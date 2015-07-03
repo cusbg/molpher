@@ -116,6 +116,7 @@ void PathFinderContext::ContextToSnapshot(
     snp.proteinTargetName = ctx.proteinTargetName;
     snp.activesDescriptorsFile = ctx.activesDescriptorsFile;
     snp.saveDataAsCSVs = ctx.saveDataAsCSVs;
+    snp.saveOnlyMorphData = ctx.saveOnlyMorphData;
     snp.descWeights = ctx.descWeights;
     snp.imputedValues = ctx.imputedValues;
 
@@ -236,6 +237,7 @@ void PathFinderContext::SnapshotToContext(
     ctx.proteinTargetName = snp.proteinTargetName;
     ctx.activesDescriptorsFile = snp.activesDescriptorsFile;
     ctx.saveDataAsCSVs = snp.saveDataAsCSVs;
+    ctx.saveOnlyMorphData = snp.saveOnlyMorphData;
     ctx.descWeights = snp.descWeights;
     ctx.imputedValues = snp.imputedValues;
     

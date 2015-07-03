@@ -225,7 +225,9 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
             snp.simCoeffSelector = SimCoeffParse(v.second.data());
         } else if (v.first == "saveDataAsCSVs") {
             snp.saveDataAsCSVs = v.second.data() == "1" || v.second.data() == "true";
-        } else if (v.first == "param") {
+        } else if (v.first == "morphSummaryOnly") {
+            snp.saveOnlyMorphData = v.second.data() == "1" || v.second.data() == "true";
+        }else if (v.first == "param") {
             BOOST_FOREACH( boost::property_tree::ptree::value_type const& v, 
                     v.second ) {
                 // parameters .. 
