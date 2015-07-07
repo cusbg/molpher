@@ -263,8 +263,9 @@ struct IterationSnapshot
             assert(etalon_csv.getColumnCount() == normalizationCoefficients.size());
             for (unsigned int desc_idx = 0; desc_idx != etalon_csv.getColumnCount(); desc_idx++ ) {
                 double A = normalizationCoefficients[desc_idx].first;
-                double B = normalizationCoefficients[desc_idx].first;
-                etalonValues.push_back(A * etalon_csv.getFloatData(desc_idx)[0] + B);
+                double B = normalizationCoefficients[desc_idx].second;
+                double val = A * etalon_csv.getFloatData(desc_idx)[0] + B;
+                etalonValues.push_back(val);
             }
         } else {
             // use the scaled data to compute etalon values
