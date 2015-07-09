@@ -219,6 +219,7 @@ struct IterationSnapshot
         // load data about source mols
         CSVparse::CSV sources_descs_CSV(sourceMolsDescriptorsFile, ",", "");
         sourceIDs = sources_descs_CSV.getStringData("Name");
+        assert(sourceIDs.size() != 0);
         for (std::vector<string>::const_iterator id = sourceIDs.begin(); id != sourceIDs.end(); id++) {
             sourceIDsSet.insert(*id);
         }
@@ -323,6 +324,8 @@ struct IterationSnapshot
                 source_counter++;
             }
         }
+        
+        assert(sourceMols.size() != 0);
 
         // save etalon distances for actives and decoys
         if (saveDataAsCSVs) {
