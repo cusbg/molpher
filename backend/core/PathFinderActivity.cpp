@@ -1045,7 +1045,7 @@ void PathFinderActivity::operator()() {
             
             // prepare directory for descriptor computation
             std::string output_dir(mJobManager->GetStorageDir());
-                std::string storage_dir(GenerateDirname(output_dir, mCtx.jobId, mCtx.proteinTargetName + "_" + NumberToString(mCtx.iterIdx)));
+            std::string storage_dir(GenerateDirname(output_dir, mCtx.jobId, mCtx.proteinTargetName + "_" + NumberToString(mCtx.iterIdx)));
             try {
                 boost::filesystem::create_directories(storage_dir);
             } catch (boost::filesystem::filesystem_error &exc) {
@@ -1055,36 +1055,64 @@ void PathFinderActivity::operator()() {
             // calculate descriptors
             // TODO: could be concurrent (use the tbb::concurrent_* structures in PathFinderContext) -> concurrent file IO needed too
             if (!Cancelled()) {
-                PaDELdesc::PaDELDescriptorCalculator calculator(
+                
+                unsigned int mols_per_step = 1000;
+                unsigned int morph_count = morphs.size();
+                unsigned int steps = morph_count / mols_per_step + 1;
+                
+                for (unsigned int i = 0; i != steps; i++) {
+
+                    std::string storage_path(GenerateDirname(output_dir, mCtx.jobId, mCtx.proteinTargetName + "_" + NumberToString(mCtx.iterIdx) + "/" + NumberToString(i)));
+                    PaDELdesc::PaDELDescriptorCalculator calculator(
                         "../dependencies/padel/"
-                        , storage_dir
+                        , storage_path
                         , mCtx.relevantDescriptorNames
                         , mThreadCnt
                         );
-
-                unsigned int idx = 0;
-                for (MoleculeVector::iterator it = morphs.begin(); it != morphs.end(); it++, idx++) {
-                    MolpherMolecule &morph = (*it);
-                    morph.id = "MORPH_" + NumberToString(mCtx.iterIdx) + "_" + NumberToString(idx + 1);
-                    if (survivors[idx]) {
-                        calculator.addMol(morph.id, morph.smile);
-                        morph.descriptorsFilePath = calculator.getOutputFilePath();
+                    
+                    bool mol_added = false;
+                    for (unsigned int idx = i * mols_per_step; idx != i * mols_per_step + mols_per_step; idx++) {
+                        if (idx == morph_count) {
+                            break;
+                        }
+                        MolpherMolecule &morph = morphs[idx];
+                        morph.id = "MORPH_" + NumberToString(mCtx.iterIdx) + "_" + NumberToString(idx + 1);
+                        if (survivors[idx]) {
+                            mol_added = true;
+                            calculator.addMol(morph.id, morph.smile);
+                            morph.descriptorsFilePath = calculator.getOutputFilePath();
+                        }
                     }
-                }
-
-                // compute descriptors using PaDEL
-                calculator.computeDescriptors();
-
-                // load and normalize the data + compute etalon distances 
-                idx = 0;
-                for (MoleculeVector::iterator it = morphs.begin(); it != morphs.end(); it++, idx++) {
-                    if (survivors[idx]) {
-                        MolpherMolecule &morph = (*it);
-                        morph.SaveDescriptors(calculator.getDescValues(morph.id), mCtx.relevantDescriptorNames);
-                        morph.normalizeDescriptors(mCtx.normalizationCoefficients, mCtx.imputedValues);
-                        morph.ComputeEtalonDistances(mCtx.etalonValues, mCtx.descWeights);
+                    
+                    // if there are no survivors, just continue
+                    if (!mol_added) {
+                        continue;
                     }
-                }
+                                        
+                    try {
+                        boost::filesystem::create_directories(storage_path);
+                    } catch (boost::filesystem::filesystem_error &exc) {
+                        SynchCout(exc.what());
+                    }
+                    
+                    
+
+                    // compute descriptors using PaDEL
+                    calculator.computeDescriptors();
+
+                    // load and normalize the data + compute etalon distances
+                    for (unsigned int idx = i * mols_per_step; (idx != i * mols_per_step + mols_per_step) ; idx++) {
+                        if (idx == morph_count) {
+                            break;
+                        }
+                        if (survivors[idx]) {
+                            MolpherMolecule &morph = morphs[idx];
+                            morph.SaveDescriptors(calculator.getDescValues(morph.id), mCtx.relevantDescriptorNames);
+                            morph.normalizeDescriptors(mCtx.normalizationCoefficients, mCtx.imputedValues);
+                            morph.ComputeEtalonDistances(mCtx.etalonValues, mCtx.descWeights);
+                        }
+                    }
+                }             
 
                 if (!Cancelled()) {
                     stageStopwatch.ReportElapsedMiliseconds("ComputeDescriptors", true);
