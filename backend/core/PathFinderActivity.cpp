@@ -421,12 +421,12 @@ void PathFinderActivity::UpdateTree::operator()(
     PathFinderActivity::SmileSet::iterator itParent;
     for (itParent = modifiedParents.begin();
             itParent != modifiedParents.end(); itParent++) {
-
+        
         // Determine what child is the closest to the etalon.
         double minDistance = DBL_MAX;
         PathFinderContext::CandidateMap::accessor acParent;
         if (mCtx.candidates.find(acParent, itParent->first)) {
-
+            
             std::set<std::string>::iterator itChild;
             for (itChild = acParent->second.descendants.begin();
                     itChild != acParent->second.descendants.end();
@@ -455,6 +455,9 @@ void PathFinderActivity::UpdateTree::operator()(
                 acParent->second.itersWithoutDistImprovement = 0;
             }
             std::string smile = acParent->second.parentSmile;
+            if (smile.empty()) {
+                acParent->second.itersWithoutDistImprovement = 0;
+            }
             acParent.release();
             if (!smile.empty()) {
                 mCtx.candidates.find(acParent, smile);
@@ -503,12 +506,8 @@ void PathFinderActivity::PruneTree::operator()(
     bool deferred = mDeferred.find(dummy, smile);
     bool prune = (deferred ||
             (ac->second.itersWithoutDistImprovement > mCtx.params.itThreshold));
-    if (prune) {
+    if (prune && !ac->second.parentSmile.empty()) {
         SynchCout("Pruning " + ac->second.id + "...");
-        
-        if(ac->second.parentSmile.empty()) {
-            ac->second.decayed = true;
-        }
 
         bool tooManyDerivations = false;
         PathFinderContext::MorphDerivationMap::const_accessor acDerivations;
