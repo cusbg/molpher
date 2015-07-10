@@ -53,7 +53,8 @@ struct IterationSnapshot
         inputActivityDataDir(""),
         saveDataAsCSVs(true),
         saveOnlyMorphData(true),
-        activityMorphingInitialized(false)
+        activityMorphingInitialized(false),
+        padelBatchSize(1000)
     {
         fingerprintSelector = DEFAULT_FP;
         simCoeffSelector = DEFAULT_SC;
@@ -436,6 +437,7 @@ struct IterationSnapshot
     std::string inactivesDescriptorsFile;
     std::string descriptorWeightsFile;
     std::string etalonFile;
+    unsigned int padelBatchSize;
 
     MorphDerivationMap morphDerivations;
 

@@ -1056,7 +1056,7 @@ void PathFinderActivity::operator()() {
             // TODO: could be concurrent (use the tbb::concurrent_* structures in PathFinderContext) -> concurrent file IO needed too
             if (!Cancelled()) {
                 
-                unsigned int mols_per_step = 1000;
+                unsigned int mols_per_step = mCtx.padelBatchSize;
                 unsigned int morph_count = morphs.size();
                 unsigned int steps = morph_count / mols_per_step + 1;
                 

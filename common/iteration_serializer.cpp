@@ -215,6 +215,8 @@ void loadXmlTemplate(std::istream &is, IterationSnapshot &snp) {
             snp.descriptorWeightsFile = v.second.data();
         } else if (v.first == "etalon") {
             snp.etalonFile = v.second.data();
+        } else if (v.first == "padelBatchSize") {
+            snp.padelBatchSize = toInt(v.second.data());
         } else if (v.first == "source") {
             snp.source = createMoleculeFromSmile(v.second.get<std::string>("smile"));
         } else if (v.first == "target") {

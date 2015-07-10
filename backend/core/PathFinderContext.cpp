@@ -23,6 +23,8 @@ void PathFinderContext::ContextToSnapshot(
     snp.jobId = ctx.jobId;
     snp.iterIdx = ctx.iterIdx;
     snp.elapsedSeconds = ctx.elapsedSeconds;
+    
+    snp.padelBatchSize = ctx.padelBatchSize;
 
     snp.fingerprintSelector = ctx.fingerprintSelector;
     snp.simCoeffSelector = ctx.simCoeffSelector;
@@ -143,6 +145,8 @@ void PathFinderContext::SnapshotToContext(
     ctx.jobId = snp.jobId;
     ctx.iterIdx = snp.iterIdx;
     ctx.elapsedSeconds = snp.elapsedSeconds;
+    
+    ctx.padelBatchSize = snp.padelBatchSize;
 
     ctx.fingerprintSelector = (FingerprintSelector) snp.fingerprintSelector;
     ctx.simCoeffSelector = (SimCoeffSelector) snp.simCoeffSelector;

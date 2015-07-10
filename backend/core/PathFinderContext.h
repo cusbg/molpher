@@ -87,6 +87,8 @@ struct PathFinderContext
 //    ConcBoolVector relevantDescriptorIndices;
     bool activityMorphingInitialized;
     
+    unsigned int padelBatchSize;
+    
     /**
      * activity data files information
      */
