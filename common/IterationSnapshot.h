@@ -54,6 +54,7 @@ struct IterationSnapshot
         saveDataAsCSVs(true),
         saveOnlyMorphData(true),
         activityMorphingInitialized(false),
+        etalonIsScaled(false),
         padelBatchSize(1000)
     {
         fingerprintSelector = DEFAULT_FP;
@@ -264,10 +265,15 @@ struct IterationSnapshot
             CSVparse::CSV etalon_csv(etalonFile, ",", "");
             assert(etalon_csv.getColumnCount() == normalizationCoefficients.size());
             for (unsigned int desc_idx = 0; desc_idx != etalon_csv.getColumnCount(); desc_idx++ ) {
-                double A = normalizationCoefficients[desc_idx].first;
-                double B = normalizationCoefficients[desc_idx].second;
-                double val = A * etalon_csv.getFloatData(desc_idx)[0] + B;
-                etalonValues.push_back(val);
+                if (!etalonIsScaled) {
+                    double A = normalizationCoefficients[desc_idx].first;
+                    double B = normalizationCoefficients[desc_idx].second;
+                    double val = A * etalon_csv.getFloatData(desc_idx)[0] + B;
+                    etalonValues.push_back(val);
+                } else {
+                    double val = etalon_csv.getFloatData(desc_idx)[0];
+                    etalonValues.push_back(val);
+                }
             }
         } else {
             // use the scaled data to compute etalon values
@@ -424,6 +430,7 @@ struct IterationSnapshot
     bool saveDataAsCSVs;
     bool saveOnlyMorphData;
     bool activityMorphingInitialized;
+    bool etalonIsScaled;
     
     /**
      * activity data files information

@@ -17,33 +17,36 @@
 -->
 <iteration>
   
-  <inputActivityDataDir>../../FS/</inputActivityDataDir>
-  <allActivesSMILES>../../FS/aid466_actives_cluster2.smi</allActivesSMILES>
-  <activesDescriptors>../../FS/aid466_actives_cluster2.csv</activesDescriptors>
-  <sourceMolsDescriptors>../../FS/aid466_sourcemols_cluster2.csv</sourceMolsDescriptors>
-  <testActivesDescriptors>../../FS/aid466_testmols_cluster2.csv</testActivesDescriptors>
-  <inactivesDescriptors>../../FS/aid466_decoys.csv</inactivesDescriptors>
-  <descriptorWeights>../../FS/aid466_FS7_weights.csv</descriptorWeights>
-  <etalon>../../FS/aid466_etalon.csv</etalon>
+  <inputActivityDataDir>../../FS/aid713_clust1/</inputActivityDataDir>
+  <allActivesSMILES>../../FS/aid713_clust1/aid713_actives_cluster1.smi</allActivesSMILES>
+  <activesDescriptors>../../FS/FeatSele/data/aid713_actives_all</activesDescriptors>
+  <sourceMolsDescriptors>../../FS/aid713_clust1/aid713_sourcemols_cluster1.csv</sourceMolsDescriptors>
+  <testActivesDescriptors>../../FS/aid713_clust1/aid713_testmols_cluster1.csv</testActivesDescriptors>
+  <inactivesDescriptors>../../FS/aid713_clust1/aid713_decoys.csv</inactivesDescriptors>
+  <descriptorWeights>../../FS/aid713_clust1/aid713_FS7_weights.csv</descriptorWeights>
+  <etalon>../../FS/aid713_clust1/aid713_FS7_etalon.csv</etalon>
+  <etalonIsScaled>true</etalonIsScaled>
     
+  <padelBatchSize>500</padelBatchSize>
+  
   <fingerprint>FP_MORGAN</fingerprint>
   <similarity>SC_TANIMOTO</similarity>
   <saveDataAsCSVs>true</saveDataAsCSVs>
   <morphSummaryOnly>true</morphSummaryOnly>
     <param>
-	<substructureRestriction>false</substructureRestriction>
-	<syntetizedFeasibility>true</syntetizedFeasibility>
-	
-	<activityMorphing>true</activityMorphing>
-	<startMolMaxCount>10</startMolMaxCount>
-	<farProduce>30</farProduce>
-	<iterMax>10</iterMax>
-	<maxTimeMinutes>660</maxTimeMinutes>
-	<maxMOOPruns>1</maxMOOPruns>
-	<nonProducingSurvive>2</nonProducingSurvive>
-        <itersUntilDecay>3</itersUntilDecay>
-	<maxMorhpsTotal>1000</maxMorhpsTotal>
-	<etalonType>mean</etalonType>
-	<!--this is turned off <maxAcceptableEtalonDistance>10000</maxAcceptableEtalonDistance> -->
+	  <substructureRestriction>false</substructureRestriction>
+	  <syntetizedFeasibility>true</syntetizedFeasibility>
+	  
+	  <activityMorphing>true</activityMorphing>
+	  <startMolMaxCount>1000</startMolMaxCount>
+	  <farProduce>20</farProduce>
+	  <iterMax>100</iterMax>
+	  <maxTimeMinutes>1200</maxTimeMinutes>
+	  <maxMOOPruns>1</maxMOOPruns>
+	  <nonProducingSurvive>4</nonProducingSurvive>
+	  <itersUntilDecay>6</itersUntilDecay>
+	  <maxMorhpsTotal>2000</maxMorhpsTotal>
+	  <etalonType>mean</etalonType>
+	  <!--this is turned off <maxAcceptableEtalonDistance>10000</maxAcceptableEtalonDistance> -->
     </param>
 </iteration>
