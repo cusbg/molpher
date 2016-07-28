@@ -27,6 +27,7 @@
 #include <tbb/blocked_range.h>
 
 #include "chemoper_selectors.h"
+#include "scaffold_selectors.hpp"
 #include "chem/fingerprintStrategy/FingerprintStrategy.h"
 #include "chem/simCoefStrategy/SimCoefStrategy.h"
 #include "MolpherMolecule.h"
@@ -42,6 +43,8 @@ public:
         std::string *smiles,
         std::string *formulas,
         std::string &parentSmile,
+        std::string *scaffoldSmiles,
+        ScaffoldSelector scaffoldSelector,
         ChemOperSelector *opers,
         double *weights,
         double *sascores,
@@ -58,6 +61,8 @@ private:
     std::string *mSmiles;
     std::string *mFormulas;
     std::string &mParentSmile;
+    std::string *mScaffSmiles;
+    ScaffoldSelector mScaffSelector;
     ChemOperSelector *mOpers;
     double *mWeights;
     double *mSascore;
@@ -66,14 +71,14 @@ private:
 
     void *mCallerState;
     void (*mDeliver)(MolpherMolecule *, void *);
-    
+
     /**
      * Value of last next target decoy for new molecules. If the current molecule
      * distToClosestDecoy is equal to one then the value of lastDecoy for molecule
      * is increased by one up to mDecoySize.
      */
     int mNextDecoy;
-    
+
     /**
      * The number of decoys used by the exploration process.
      */

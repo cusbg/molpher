@@ -31,6 +31,7 @@
 
 #include "inout.h"
 #include "core/PathFinder.h"
+#include "core/PathFinderActivity.h"
 #include "core/NeighborhoodGenerator.h"
 #include "core/JobManager.h"
 #include "core/NeighborhoodTaskQueue.h"
@@ -58,6 +59,7 @@ void Run(int argc, char *argv[])
         ("job-list,L", boost::program_options::value<std::string>(), "Path to the job list file")
         ("interactive,I", boost::program_options::value<bool>(), "Enable/disable interactive mode")
         ("threads,T", boost::program_options::value<int>(), "Limit number of worker threads")
+        ("job-file,J", boost::program_options::value<std::string>(), "Path to the job file.")
             ;
 
     boost::program_options::variables_map varMap;
@@ -107,6 +109,7 @@ void Run(int argc, char *argv[])
     // Default parameter values.
     std::string storagePath("Results");
     std::string jobListFile;
+    std::string jobFile;
     bool interactiveSession = true;
     int threadCnt = 0;
 
@@ -127,6 +130,10 @@ void Run(int argc, char *argv[])
         jobListFile = varMap["job-list"].as<std::string>();
     }
 
+    if (varMap.count("job-file")) {
+        jobFile = varMap["job-file"].as<std::string>();
+    }
+
     std::cout << "Initializing..." << std::endl;
 
     if (interactiveSession) {
@@ -135,6 +142,10 @@ void Run(int argc, char *argv[])
 
         JobManager jobManager(
             &pathFinderTbbCtx, storagePath, jobListFile, interactiveSession);
+        if (!jobFile.empty()) {
+            jobManager.AddJobFromFile(jobFile);
+        }
+
         NeighborhoodTaskQueue taskQueue(&neighborhoodGeneratorTbbCtx);
 
         PathFinder pathFinder(
@@ -166,7 +177,12 @@ void Run(int argc, char *argv[])
         tbb::task_group_context pathFinderTbbCtx;
         JobManager jobManager(
             &pathFinderTbbCtx, storagePath, jobListFile, interactiveSession);
-        PathFinder pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);
+        if (!jobFile.empty()) {
+            jobManager.AddJobFromFile(jobFile);
+        }
+
+        // PathFinder pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);
+        PathFinderActivity pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);        
         std::thread pathFinderThread(std::tr1::ref(pathFinder));
         SynchCout(std::string("Backend initialized.\nWorking..."));
         pathFinderThread.join();
@@ -186,23 +202,24 @@ int main(int argc, char *argv[])
 #if RDKIT_LOGGING == 0
     boost::logging::disable_logs("rdApp.*");
 #endif
-    
+
     // print just those information that we have
     std::cout << "Molpher backend version " << MOLPH_VERSION;
     if (MOLPH_REVISION != "")
         std::cout << " revision "<< MOLPH_REVISION;
     std::cout << " built on " << MOLPH_DATE << ", " <<  MOLPH_TIME  << std::endl;
-    
-    std::cout << "Copyright (c) 2012 Vladimir Fiklik, Petr Koupy, Peter Szepe" << std::endl;
-    std::cout << "          (c) 2013 Petr Skoda" << std::endl;    
-    
-    SAScore::loadData(); // load data for prediction of synthetic feasibility   
-    
+
+    std::cout << "Copyright (c) 2012 Vladimir Fiklik, David Hoksza, Petr Koupy, Peter Szepe" << std::endl;
+    std::cout << "          (c) 2013 Petr Skoda" << std::endl;
+    std::cout << "          (c) 2014 Marek Mikes" << std::endl;
+
+    SAScore::loadData(); // load data for prediction of synthetic feasibility
+
     RCF::init();
     Run(argc, argv);
-    
+
     SAScore::destroyInstance(); // should free data, maybe not necessary
     RCF::deinit();
-    
+
     return 0;
 }

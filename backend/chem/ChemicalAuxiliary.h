@@ -59,3 +59,9 @@ void GetAtomsNotInRing(RDKit::ROMol &mol, std::vector<RDKit::Atom *> &atomsNIR);
 void GetAtomsWithNotMaxValence(RDKit::ROMol &mol, std::vector<RDKit::Atom *> &atomsNMV);
 
 void CopyMol(RDKit::ROMol &mol, RDKit::RWMol &copy);
+
+void GetNeighbors(const RDKit::Atom &atom, std::vector<unsigned int> &nbrAtoms);
+
+bool IsBetweenRings(const RDKit::Atom &atom);
+
+bool IsBetweenRings(const RDKit::Bond &bond, bool justTheBond = false);

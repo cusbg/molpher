@@ -15,6 +15,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <queue>
 
 #include <GraphMol/RDKitBase.h>
@@ -24,11 +25,13 @@
 #include "chemoper_selectors.h"
 #include "chem/ChemicalAuxiliary.h"
 #include "MorphingData.h"
+#include "inout.h"
 
 MorphingData::MorphingData(
     RDKit::ROMol &molecule,
     RDKit::ROMol &target,
-    std::vector<ChemOperSelector> &operators
+    std::vector<ChemOperSelector> &operators,
+    ScaffoldSelector scaffLevel
     ) :
     mol(molecule),
     operators(operators)
@@ -36,6 +39,11 @@ MorphingData::MorphingData(
     GetAtomTypesFromMol(target, atoms);
 
     for (int i = 0; i < operators.size(); ++i) {
+
+        // check that in vector of operators are not duplications
+        assert(std::find(operators.begin()+i+1, operators.end(), operators[i]) ==
+                operators.end());
+
         switch (operators[i]) {
         case OP_ADD_ATOM:
             InitAddAtom();
@@ -50,16 +58,16 @@ MorphingData::MorphingData(
             InitRemoveBond();
             break;
         case OP_MUTATE_ATOM:
-            InitMutateAtom();
+            InitMutateAtom(scaffLevel);
             break;
         case OP_INTERLAY_ATOM:
-            InitInterlayAtom();
+            InitInterlayAtom(scaffLevel);
             break;
         case OP_BOND_REROUTE:
-            InitBondReroute();
+            InitBondReroute(scaffLevel);
             break;
         case OP_BOND_CONTRACTION:
-            InitBondContraction();
+            InitBondContraction(scaffLevel);
             break;
         }
     }
@@ -113,19 +121,25 @@ void MorphingData::InitAddBond()
     }
 }
 
-void MorphingData::InitMutateAtom()
+void MorphingData::InitMutateAtom(ScaffoldSelector scaffLevel)
 {
     // Determine possible substitutions.
     RDKit::Atom *atom;
-    RDKit::PeriodicTable *pt = RDKit::PeriodicTable::getTable();
+    bool canBeCandidate;
     RDKit::ROMol::AtomIterator iter;
     for (iter = mol.beginAtoms(); iter != mol.endAtoms(); iter++) {
         atom = *iter;
         std::vector<MolpherAtom> sub;
-        for (MolpherAtomIdx idx = 0; idx < atoms.size(); ++idx) {
-            if ((atom->getAtomicNum() != atoms[idx].atomicNum) &&
-                    (atom->getExplicitValence() <= GetMaxBondsMod(atoms[idx]))) {
-                sub.push_back(atoms[idx]);
+        canBeCandidate = SF_NONE == scaffLevel ||
+                SF_ORIGINAL_MOLECULE == scaffLevel ||
+                (SF_RINGS_WITH_LINKERS_1 == scaffLevel &&
+                    (RDKit::queryIsAtomInRing(atom) || IsBetweenRings(*atom)));
+        if (canBeCandidate) {
+            for (MolpherAtomIdx idx = 0; idx < atoms.size(); ++idx) {
+                if ((atom->getAtomicNum() != atoms[idx].atomicNum) &&
+                        (atom->getExplicitValence() <= GetMaxBondsMod(atoms[idx]))) {
+                    sub.push_back(atoms[idx]);
+                }
             }
         }
         mutateAtomCandidates.push_back(sub);
@@ -158,13 +172,22 @@ void MorphingData::InitRemoveBond()
     }
 }
 
-void MorphingData::InitInterlayAtom()
+void MorphingData::InitInterlayAtom(ScaffoldSelector scaffLevel)
 {
     RDKit::Bond *bond;
+    bool canBeCandidate;
     RDKit::ROMol::BondIterator iter;
     for (MolpherAtomIdx idx = 0; idx < atoms.size(); ++idx) {
         for (iter = mol.beginBonds(); iter != mol.endBonds(); iter++) {
             bond = *iter;
+            canBeCandidate = SF_NONE == scaffLevel ||
+                    SF_ORIGINAL_MOLECULE == scaffLevel ||
+                    (SF_MURCKO_2 == scaffLevel && RDKit::queryIsBondInRing(bond)) ||
+                    (SF_RINGS_WITH_LINKERS_1 == scaffLevel &&
+                        (RDKit::queryIsBondInRing(bond) || IsBetweenRings(*bond)));
+            if (!canBeCandidate) {
+                continue;
+            }
             // the aromatic bonds are reduced to single and double bonds
             if ((RDKit::queryBondOrder(bond) * 2) <= GetMaxBondsMod(atoms[idx])) {
                 interlayAtomCandidates[idx].push_back(bond->getIdx());
@@ -173,20 +196,30 @@ void MorphingData::InitInterlayAtom()
     }
 }
 
-void MorphingData::InitBondReroute()
+void MorphingData::InitBondReroute(ScaffoldSelector scaffLevel)
 {
     RDKit::Bond *bond;
     RDKit::Atom *atom0, *atom1, *bondAtoms[2];
     std::vector<RDKit::Atom *> candidates[2];
     std::queue<RDKit::Atom *> q;
+    bool canBeCandidate;
 
     RDKit::ROMol::BondIterator iter;
     // for each bond in the molecule
     for (iter = mol.beginBonds(); iter != mol.endBonds(); iter++) {
-        // for begin and end atom of the selected bond
         bond = *iter;
+        canBeCandidate = SF_NONE == scaffLevel ||
+                SF_ORIGINAL_MOLECULE == scaffLevel ||
+                ((SF_OPREA_1 == scaffLevel || SF_MURCKO_2 == scaffLevel || SF_RINGS_WITH_LINKERS_1 == scaffLevel) &&
+                    (RDKit::queryIsBondInRing(bond) || IsBetweenRings(*bond)));
+        // for begin and end atom of the selected bond
         for (int i = 0; i < 2; ++i) {
             candidates[i].clear();
+
+            if (!canBeCandidate) {
+                continue;
+            }
+
             // set for which one re-routing candidates will be identified
             if (i == 0) {
                 bondAtoms[0] = bond->getBeginAtom();
@@ -264,12 +297,24 @@ void MorphingData::InitBondReroute()
     }
 }
 
-void MorphingData::InitBondContraction()
+void MorphingData::InitBondContraction(ScaffoldSelector scaffLevel)
 {
     RDKit::Bond *bond;
+    bool canBeCandidate;
     RDKit::ROMol::BondIterator iter;
     for (iter = mol.beginBonds(); iter != mol.endBonds(); iter++) {
         bond = *iter;
+
+        canBeCandidate = SF_NONE == scaffLevel ||
+                SF_ORIGINAL_MOLECULE == scaffLevel ||
+                ((SF_OPREA_1 == scaffLevel || SF_MURCKO_2 == scaffLevel) &&
+                    (RDKit::queryIsBondInRing(bond) || IsBetweenRings(*bond, true))) ||
+                (SF_RINGS_WITH_LINKERS_1 == scaffLevel &&
+                    (RDKit::queryIsBondInRing(bond) || IsBetweenRings(*bond)));
+        if (!canBeCandidate) {
+            continue;
+        }
+
         RDKit::Atom *atomToStay = bond->getBeginAtom();
         RDKit::Atom *atomToRemove = bond->getEndAtom();
 

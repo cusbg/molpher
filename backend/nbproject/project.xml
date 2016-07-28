@@ -9,7 +9,10 @@
             <header-extensions>h,hpp</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
-            <sourceRootList/>
+            <sourceRootList>
+                <sourceRootElem>../common/CSV_parser/include</sourceRootElem>
+                <sourceRootElem>../common/PaDEL_descriptor_calculator/include</sourceRootElem>
+            </sourceRootList>
             <confList>
                 <confElem>
                     <name>Win32_Debug</name>
@@ -21,6 +24,10 @@
                 </confElem>
                 <confElem>
                     <name>Linux64_Release</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Linux64_Release_META</name>
                     <type>1</type>
                 </confElem>
             </confList>

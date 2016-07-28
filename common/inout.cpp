@@ -37,6 +37,7 @@
 #include <RDGeneral/BadFileException.h>
 
 #include "chemoper_selectors.h"
+#include "scaffold_selectors.hpp"
 #include "inout.h"
 #include "iteration_serializer.hpp"
 
@@ -61,6 +62,13 @@ std::string GenerateFilename(
     return filename.str();
 }
 
+std::string GenerateSmilesFilename(
+        std::string &base, unsigned int iterIdx) {
+    std::stringstream filename;
+    filename << base << "/" << iterIdx << ".smi";
+    return filename.str();
+}
+
 std::string GenerateFilename(
         std::string &base, JobId jobId, std::string name) {
     std::stringstream filename;
@@ -74,24 +82,61 @@ std::string GenerateDirname(std::string &base, JobId jobId) {
     return dirname.str();
 }
 
+std::string GenerateDirname(std::string &base, JobId jobId, const std::string& targetId) {
+    std::stringstream dirname;
+    dirname << base << "/" << jobId << "/" << targetId;
+    return dirname.str();
+}
+
+std::string GenerateDirname(std::string &base, const std::string& targetId) {
+    std::stringstream dirname;
+    dirname << base << "/" << targetId;
+    return dirname.str();
+}
+
 void WriteMolpherPath(const std::string &file, const std::string &targetSmile,
-        const IterationSnapshot::CandidateMap &candidates) {
+        const IterationSnapshot::CandidateMap &candidates,
+        const std::vector<MolpherMolecule> &pathMols) {
     std::vector<std::string> smiles;
+    std::vector<const MolpherMolecule*> mols;
+    std::vector<ScaffoldSelector> scaffs;
     std::vector<ChemOperSelector> opers;
 
     IterationSnapshot::CandidateMap::const_iterator it;
     it = candidates.find(targetSmile);
     assert(it != candidates.end());
     smiles.push_back(targetSmile);
+    mols.push_back(&(it->second));
+    scaffs.push_back((ScaffoldSelector) it->second.scaffoldLevelCreation);
 
     while (!it->second.parentSmile.empty()) {
         opers.push_back((ChemOperSelector) it->second.parentChemOper);
         it = candidates.find(it->second.parentSmile);
         assert(it != candidates.end());
         smiles.push_back(it->second.smile);
+        mols.push_back(&(it->second));
+        scaffs.push_back((ScaffoldSelector) it->second.scaffoldLevelCreation);
     }
 
-    assert(smiles.size() == opers.size() + 1);
+    if (!pathMols.empty()) { // scaffold hopping is enabled
+        assert(pathMols.size() >= 2); // at least source and target are in
+        std::vector<MolpherMolecule>::const_reverse_iterator rIt;
+        rIt = pathMols.rbegin();
+        // last path molecule is target
+        assert(rIt->smile.compare(targetSmile) == 0);
+        ++rIt;
+        // next-to-last path molecule is temporary source
+        assert(rIt->smile.compare(it->second.smile) == 0);
+        while (!rIt->parentSmile.empty()) {
+            opers.push_back((ChemOperSelector) rIt->parentChemOper);
+            ++rIt;
+            assert(rIt != pathMols.rend());
+            smiles.push_back(rIt->smile);
+            scaffs.push_back((ScaffoldSelector) rIt->scaffoldLevelCreation);
+        }
+    }
+
+    assert(smiles.size() == scaffs.size() && scaffs.size() == opers.size() + 1);
 
     std::ofstream outStream;
     outStream.open(file.c_str());
@@ -104,8 +149,14 @@ void WriteMolpherPath(const std::string &file, const std::string &targetSmile,
         }
 
         if (!smiles.empty()) {
-            outStream << smiles.back() << std::endl;
+            assert(!scaffs.empty());
+            outStream << smiles.back() 
+                    << ";" << "Dist to etalon: " << mols.back()->distToEtalon
+                    << ";" << "SAScore: " << mols.back()->sascore
+                    << ";" << ScaffoldLongDesc(scaffs.back()) << std::endl;
             smiles.pop_back();
+            mols.pop_back();
+            scaffs.pop_back();
         }
 
         if (!opers.empty()) {
@@ -201,7 +252,7 @@ void WriteMolphMolsToSDF(const std::string &file,
 }
 
 /**
- * Read molecules from txt file where each line contains just one smile 
+ * Read molecules from txt file where each line contains just one smile
  * without white spaces.
  * @param file
  * @param mols
@@ -210,15 +261,24 @@ void ReadRWMolFromTxtFile(const std::string &file,
         std::vector<RDKit::RWMol *> &mols) {
     std::ifstream stream;
     stream.open(file.c_str());
-    
+
     if (stream.is_open()) {
 		while (stream.good())  {
             std::string line;
 			std::getline(stream, line);
-			// parse smiles .. 
-            RDKit::RWMol* mol = RDKit::SmilesToMol(line);
-            // add to result
-            mols.push_back(mol);
+            if (line.empty()) {
+                // skip empty line
+                continue;
+            }
+			// parse smiles ..
+            try {
+                RDKit::RWMol* mol = RDKit::SmilesToMol(line);
+                // add to result
+                mols.push_back(mol);
+            } catch (std::exception e) {
+                // failed to load the moll
+                SynchCout("Failed to load mol from smile: " + line);
+            }
 		}
 		stream.close();
 	} else {
@@ -229,13 +289,16 @@ void ReadRWMolFromTxtFile(const std::string &file,
 void ReadMolphMolsFromFile(const std::string &file,
         std::vector<MolpherMolecule> &mols) {
     std::vector<RDKit::RWMol *> rdkMols;
-    
+
     std::string fileLowerCase = file;
-    std::transform(fileLowerCase.begin(), fileLowerCase.end(), fileLowerCase.begin(), tolower);
+    assert(false);
+//    FIXME this line doesn't compile with g++ 4.6 for some reason
+//    this function is not needed by backend -> will fix later
+//    std::transform(fileLowerCase.begin(), fileLowerCase.end(), fileLowerCase.begin(), tolower);
     if (fileLowerCase.find(".sdf") != std::string::npos ||
         fileLowerCase.find(".mol") != std::string::npos) {
-        // sdf, mol file .. 
-    ReadRWMolsFromSDF(file, rdkMols);
+        // sdf, mol file ..
+        ReadRWMolsFromSDF(file, rdkMols);
     } else if (fileLowerCase.find(".txt") != std::string::npos) {
         // txt file with smiles
         ReadRWMolFromTxtFile(file, rdkMols);

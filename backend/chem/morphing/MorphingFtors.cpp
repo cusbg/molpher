@@ -35,8 +35,11 @@ CalculateMorphs::CalculateMorphs(
     std::vector<MorphingStrategy *> &strategies,
     ChemOperSelector *opers,
     RDKit::RWMol **newMols,
+    RDKit::RWMol **newScaffMols,
     std::string *smiles,
     std::string *formulas,
+    std::string *scaffSmiles,
+    Scaffold *scaff,
     double *weights,
     double *sascore, // added for SAScore
     tbb::atomic<unsigned int> &kekulizeFailureCount,
@@ -47,8 +50,11 @@ CalculateMorphs::CalculateMorphs(
     mStrategies(strategies),
     mOpers(opers),
     mNewMols(newMols),
+    mNewScaffMols(newScaffMols),
     mSmiles(smiles),
     mFormulas(formulas),
+    mScaffSmiles(scaffSmiles),
+    mScaff(scaff),
     mWeights(weights),
     mSascore(sascore), // added for SAScore
     mKekulizeFailureCount(kekulizeFailureCount),
@@ -61,7 +67,7 @@ CalculateMorphs::CalculateMorphs(
 void CalculateMorphs::operator()(const tbb::blocked_range<int> &r) const
 {
 //    DEBUG_REPORT("CalculateMorphs::operator")
-    
+
     for (int i = r.begin(); i != r.end(); ++i) {
         int randPos = SynchRand::GetRandomNumber(mStrategies.size() - 1);
         MorphingStrategy *strategy = mStrategies[randPos];
@@ -88,10 +94,14 @@ void CalculateMorphs::operator()(const tbb::blocked_range<int> &r) const
                 RDKit::MolOps::Kekulize(*(mNewMols[i]));
                 RDKit::MolOps::adjustHs(*(mNewMols[i]));
 
-                //RDKit::MolOps::sanitizeMol(*(mNewMols[i]));
-
                 mSmiles[i] = RDKit::MolToSmiles(*(mNewMols[i]));
                 mFormulas[i] = RDKit::Descriptors::calcMolFormula(*(mNewMols[i]));
+                if (mScaff) {
+                    mScaff->GetScaffold(mSmiles[i], &mNewScaffMols[i]);
+                    if (mNewScaffMols[i]) {
+                        mScaffSmiles[i] = RDKit::MolToSmiles(*(mNewScaffMols[i]));
+                    }
+                }
                 mWeights[i] = RDKit::Descriptors::calcExactMW(*(mNewMols[i]));
                 mSascore[i] = SAScore::getInstance()->getScore(*(mNewMols[i])); // added for SAScore
             } catch (const ValueErrorException &exc) {
@@ -139,21 +149,21 @@ void CalculateDistances::operator()(const tbb::blocked_range<int> &r) const
     for (int i = r.begin(); i != r.end(); ++i) {
         if (mNewMols[i]) {
             fp = mScCalc.GetFingerprint(mNewMols[i]);
-            mDistToTarget[i] = mScCalc.ConvertToDistance(
-                mScCalc.GetSimCoef(mTargetFp, fp));
+            mDistToTarget[i] = mTargetFp ?
+                mScCalc.ConvertToDistance(mScCalc.GetSimCoef(mTargetFp, fp)) :
+                1.0; // set max. distance if target fingerprint does not exist
 
             dist = 0;
-            // Calculate distance to the current decoy (mLastDecoy)
-            if (mNextDecoy == -1 || mNextDecoy >= mDecoysFp.size() ) {
-                // no calculation need, all the decoys are behind us 
-                dist = 0;
-            } else {
-                // calculate distance to the next decoy for visit
+            minDist = DBL_MAX;
+            for (int j = 0; j < mDecoysFp.size(); ++j) {
                 dist = mScCalc.ConvertToDistance(
-                    mScCalc.GetSimCoef(mDecoysFp[mNextDecoy], fp));                
+                    mScCalc.GetSimCoef(mDecoysFp[j], fp));
+                if (dist < minDist) {
+                    minDist = dist;
+                }
             }
-            mDistToClosestDecoy[i] = dist;
-            
+            mDistToClosestDecoy[i] = minDist;
+
             delete fp;
         }
     }
@@ -164,6 +174,8 @@ ReturnResults::ReturnResults(
     std::string *smiles,
     std::string *formulas,
     std::string &parentSmile,
+    std::string *scaffoldSmiles,
+    ScaffoldSelector scaffoldSelector,
     ChemOperSelector *opers,
     double *weights,
     double *sascore, // added for SAScore
@@ -176,6 +188,8 @@ ReturnResults::ReturnResults(
     mSmiles(smiles),
     mFormulas(formulas),
     mParentSmile(parentSmile),
+    mScaffSmiles(scaffoldSmiles),
+    mScaffSelector(scaffoldSelector),
     mOpers(opers),
     mWeights(weights),
     mSascore(sascore), // added for SAScore
@@ -193,23 +207,12 @@ void ReturnResults::operator()(const tbb::blocked_range<int> &r) const
     // that are close enough to the current decoy
     int nextDecoyForPassed = mNextDecoy;
     nextDecoyForPassed += mNextDecoy <= mDecoySize ? 1 : 0;
-    
+
     for (int i = r.begin(); i != r.end(); ++i) {
         if (mNewMols[i]) {
             MolpherMolecule result(mSmiles[i], mFormulas[i], mParentSmile,
-                mOpers[i], mDistToTarget[i], mDistToClosestDecoy[i],
-                mWeights[i], mSascore[i]);
-            
-            /* Advance decoy functionality
-            // are we close enough ?            
-            if (result.distToClosestDecoy < mDecoyRange) {
-                ++result.nextDecoy;
-            }
-            // update result.nextDecoy if need
-            if (result.nextDecoy >= mDecoySize) {
-                result.nextDecoy = mDecoySize;
-            }*/
-
+                mOpers[i], mScaffSmiles[i], mScaffSelector, mDistToTarget[i],
+                mDistToClosestDecoy[i], mWeights[i], mSascore[i]);
             mDeliver(&result, mCallerState);
         }
     }

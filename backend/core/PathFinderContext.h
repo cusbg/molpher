@@ -28,6 +28,7 @@
 #include "simcoeff_selectors.h"
 #include "dimred_selectors.h"
 #include "chemoper_selectors.h"
+#include "scaffold_selectors.hpp"
 
 #include "MolpherParam.h"
 #include "MolpherMolecule.h"
@@ -40,8 +41,8 @@ struct PathFinderContext
 
     static void ContextToLightSnapshot(const PathFinderContext &ctx, IterationSnapshot &snp);
 
-    void clear();
-
+    bool ScaffoldMode() const;
+    
     JobId jobId;
     unsigned int iterIdx;
     unsigned int elapsedSeconds;
@@ -60,10 +61,58 @@ struct PathFinderContext
     typedef tbb::concurrent_hash_map<std::string, MolpherMolecule> CandidateMap;
     typedef tbb::concurrent_hash_map<std::string, unsigned int> MorphDerivationMap;
     typedef tbb::concurrent_vector<std::string> PrunedMoleculeVector;
+    typedef tbb::concurrent_hash_map<std::string, std::string> ScaffoldSmileMap;
 
     CandidateMap candidates;
+    
+    /**
+     * activity data information and types
+     */
+    typedef std::vector<std::string> ConcStringVector;
+    //typedef tbb::concurrent_vector<double> ConcDoubleVector;
+    typedef std::vector<double> ConcDoubleVector;
+    //typedef tbb::concurrent_vector<std::pair<double, double> > ConcDoublePairVector;
+    typedef std::vector<std::pair<double, double> > ConcDoublePairVector;
+    //typedef tbb::concurrent_vector<bool> ConcBoolVector;
+    typedef std::vector<bool> ConcBoolVector;
+    //typedef tbb::concurrent_vector<std::vector<double> > ConcDoubleMatrix;
+    typedef std::vector<std::vector<double> > ConcDoubleMatrix;
+    CandidateMap actives;
+    CandidateMap sourceMols;
+    CandidateMap testActives;
+    ConcStringVector activesIDs;
+    ConcDoubleVector etalonValues;
+    ConcDoublePairVector normalizationCoefficients;
+    ConcStringVector relevantDescriptorNames;
+//    ConcBoolVector relevantDescriptorIndices;
+    bool activityMorphingInitialized;
+    
+    unsigned int padelBatchSize;
+    
+    /**
+     * activity data files information
+     */
+    std::string inputActivityDataDir;
+    std::string activesSDFFile;
+//    std::string inactivesSDFFile;
+    std::string proteinTargetName;
+    std::string activesDescriptorsFile;
+//    std::string inactivesDescriptorsFile;
+    std::string descriptorDataFileSuffix;
+    std::string analysisResultsSuffix;
+    bool saveDataAsCSVs;
+    bool saveOnlyMorphData;
+    std::vector<double> descWeights;
+    std::vector<double> imputedValues;
+    
     MorphDerivationMap morphDerivations;
     PrunedMoleculeVector prunedDuringThisIter;
     
+    MolpherMolecule tempSource;
+    ScaffoldSelector scaffoldSelector;
+    std::vector<MolpherMolecule> pathMolecules;
+    ScaffoldSmileMap pathScaffoldMolecules;
+    ScaffoldSmileMap candidateScaffoldMolecules;
+
     MolpherMolecule substructure;
 };

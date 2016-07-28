@@ -15,6 +15,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <map>
 #include <queue>
 
@@ -248,5 +249,96 @@ void CopyMol(RDKit::ROMol &mol, RDKit::RWMol &copy)
     for (BondIdx i = 0; i < mol.getNumBonds(); ++i) {
         bond = mol.getBondWithIdx(i);
         copy.addBond(bond->getBeginAtomIdx(), bond->getEndAtomIdx(), bond->getBondType());
+    }
+}
+
+void GetNeighbors(const RDKit::Atom &atom, std::vector<unsigned int> &nbrAtoms)
+{
+    nbrAtoms.clear();
+
+    const RDKit::ROMol &mol = atom.getOwningMol();
+    RDKit::ROMol::ADJ_ITER nbrIdx;
+    RDKit::ROMol::ADJ_ITER endNbrs;
+    boost::tie(nbrIdx, endNbrs) = mol.getAtomNeighbors(&atom);
+    while (nbrIdx != endNbrs) {
+        const RDKit::Atom::ATOM_SPTR nbrAtom = mol[*nbrIdx];
+        assert(nbrAtom.get());
+        nbrAtoms.push_back(nbrAtom.get()->getIdx());
+        ++nbrIdx;
+    }
+}
+
+bool IsBetweenRings(const RDKit::Atom &atom)
+{
+    if (RDKit::queryIsAtomInRing(&atom)) {
+        return false;
+    }
+
+    // looking for two different paths (each one contains different neighbor)
+    // from the atom to some ring. If success, the atom is between rings
+
+    bool nbrConnectedWithRing = false;
+    std::vector<unsigned int> inputAtomNbrs;
+    GetNeighbors(atom, inputAtomNbrs);
+    std::vector<unsigned int>::const_iterator itNbr;
+    for (itNbr = inputAtomNbrs.begin(); itNbr != inputAtomNbrs.end(); ++itNbr) {
+
+        // BFS of descendants
+        std::vector<unsigned int> nbrDescendants;
+        nbrDescendants.push_back(atom.getIdx());
+        nbrDescendants.push_back(*itNbr);
+        int i = 1;
+        while (i < nbrDescendants.size()) {
+            const RDKit::Atom *descendant = atom.getOwningMol().getAtomWithIdx(
+                    nbrDescendants[i]);
+            std::vector<unsigned int> newDescAtoms;
+            GetNeighbors(*descendant, newDescAtoms);
+            std::vector<unsigned int>::const_iterator itNewDesc;
+            for (itNewDesc = newDescAtoms.begin();
+                    itNewDesc != newDescAtoms.end(); ++itNewDesc) {
+                if (std::find(nbrDescendants.begin(), nbrDescendants.end(), *itNewDesc)
+                        != nbrDescendants.end()) {
+                    continue;
+                }
+                if (RDKit::queryIsAtomInRing(atom.getOwningMol().getAtomWithIdx(
+                        *itNewDesc))) {
+                    if (nbrConnectedWithRing) {
+                        // two different neighbors of the atom are connected with ring
+                        return true;
+                    } else {
+                        nbrConnectedWithRing = true;
+                        nbrDescendants.clear(); // cause end of while cycle
+                        break;
+                    }
+                } else {
+                    nbrDescendants.push_back(*itNewDesc);
+                }
+            }
+            ++i;
+        }
+
+    }
+
+    return false;
+}
+
+bool IsBetweenRings(const RDKit::Bond &bond, bool justTheBond)
+{
+    if (RDKit::queryIsBondInRing(&bond)) {
+        return false;
+    }
+
+    RDKit::Atom *beginAtom = bond.getBeginAtom();
+    RDKit::Atom *endAtom = bond.getEndAtom();
+    bool isBeginAtomInRing = RDKit::queryIsAtomInRing(beginAtom);
+    bool isEndAtomInRing = RDKit::queryIsAtomInRing(endAtom);
+
+    if (justTheBond) {
+        return isBeginAtomInRing && isEndAtomInRing;
+    } else {
+        return (isBeginAtomInRing && isEndAtomInRing) ||
+                (isBeginAtomInRing && IsBetweenRings(*endAtom)) ||
+                (IsBetweenRings(*beginAtom) && isEndAtomInRing) ||
+                (IsBetweenRings(*beginAtom) && IsBetweenRings(*endAtom));
     }
 }

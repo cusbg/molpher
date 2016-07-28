@@ -48,12 +48,13 @@ public:
     JobManager(tbb::task_group_context *pathFinderStopper,
         std::string &storagePath, std::string &jobListFile, bool interactive);
     ~JobManager();
+    void AddJobFromFile(const std::string &jobFile);
     void SetCommunicator(BackendCommunicator *comm);
     void Halt();
 
     // Functions called by path finder top-level thread.
     bool GetJob(PathFinderContext &ctx);
-    bool CommitIteration(PathFinderContext &ctx, bool canContinue, bool pathFound);
+    bool CommitIteration(PathFinderContext &ctx, bool canContinue, bool &pathFound);
     bool GetFingerprintSelector(FingerprintSelector &selector);
     bool GetSimCoeffSelector(SimCoeffSelector &selector);
     bool GetDimRedSelector(DimRedSelector &selector);
@@ -61,6 +62,7 @@ public:
     bool GetParams(MolpherParam &params);
     bool GetDecoys(std::vector<MolpherMolecule> &decoys);
     void GetPruned(std::vector<MolpherMolecule> &pruned);
+    std::string GetStorageDir();
 
     // Functions called by communicator thread.
     void OnConnect(std::string &backendId);

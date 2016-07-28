@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <data xmlns="http://www.netbeans.org/ns/make-project-private/1">
+        <activeConfTypeElem>1</activeConfTypeElem>
+        <activeConfIndexElem>2</activeConfIndexElem>
+    </data>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/martin/temp/diplomka/Molpher/backend/core/PathFinderContext.h</file>
+            <file>file:/home/martin/temp/diplomka/Molpher/backend/core/PathFinderActivity.h</file>
+            <file>file:/home/martin/temp/diplomka/Molpher/common/MolpherMolecule.h</file>
+            <file>file:/home/martin/temp/diplomka/Molpher/common/iteration_serializer.cpp</file>
+            <file>file:/home/martin/temp/diplomka/Molpher/backend/TestFiles/templates/test-template.xml</file>
+            <file>file:/home/martin/temp/diplomka/Molpher/common/IterationSnapshot.h</file>
+            <file>file:/home/martin/temp/diplomka/Molpher/common/inout.cpp</file>
+            <file>file:/home/martin/temp/diplomka/Molpher/common/CSV_parser/include/CSV.h</file>
+            <file>file:/home/martin/temp/diplomka/Molpher/backend/core/PathFinderActivity.cpp</file>
+        </group>
+    </open-files>
+</project-private>
