@@ -1,4 +1,7 @@
-# Ignore all in dependencies except the build scripts.
+# All starting with dot
+.*
+
+# Ignore all in dependencies except the build scripts
 dependencies/*
 !dependencies/*.sh
 
@@ -18,3 +21,8 @@ dependencies/*
 
 # Executables
 *.exe
+
+# Netbeans.
+*.mk
+backend/nbproject/*.bash
+backend/nbproject/private/*
