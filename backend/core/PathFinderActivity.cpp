@@ -714,7 +714,7 @@ std::pair<double, double> PathFinderActivity::SaveIterationData::getClosestTestA
         delete mol;
         delete test;
     }
-    return std::make_pair<double, double>(current_min_struct, current_min_activity);
+    return std::make_pair(current_min_struct, current_min_activity);
 }
 
 void PathFinderActivity::SaveIterationData::saveCSVData(

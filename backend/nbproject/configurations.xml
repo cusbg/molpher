@@ -282,6 +282,7 @@
             <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_system-mgw61-mt-1_61.a</linkerLibFileItem>
             <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_thread-mgw61-mt-1_61.a</linkerLibFileItem>
             <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_wserialization-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libChemTransforms_static.a</linkerLibFileItem>
             <linkerLibFileItem>../dependencies/rdkit/lib/libFingerprints_static.a</linkerLibFileItem>
             <linkerLibFileItem>../dependencies/rdkit/lib/libSmilesParse_static.a</linkerLibFileItem>
             <linkerLibFileItem>../dependencies/rdkit/lib/libGraphMol_static.a</linkerLibFileItem>
