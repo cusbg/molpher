@@ -15,19 +15,7 @@
             </sourceRootList>
             <confList>
                 <confElem>
-                    <name>Win32_Debug</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
-                    <name>Win32_Release</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
-                    <name>Linux64_Release</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
-                    <name>Linux64_Release_META</name>
+                    <name>Win64_Release</name>
                     <type>1</type>
                 </confElem>
             </confList>
@@ -35,5 +23,9 @@
                 <project-formatting-style>false</project-formatting-style>
             </formatting>
         </data>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>Initialize</word>
+            <word>Sanitization</word>
+        </spellchecker-wordlist>
     </configuration>
 </project>
