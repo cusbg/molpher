@@ -121,8 +121,8 @@ void PaDELdesc::PaDELDescriptorCalculator::saveSMILESFile() {
 }
 
 void PaDELdesc::PaDELDescriptorCalculator::saveDescConfigFile(const string &path) {
-    boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-    boost::property_tree::write_xml(path, configXML, std::locale(), settings);
+    boost::property_tree::write_xml(path, configXML, std::locale(),
+            boost::property_tree::xml_writer_make_settings<std::string>('\t', 1));
 }
 
 void PaDELdesc::PaDELDescriptorCalculator::saveDescConfigFile() {

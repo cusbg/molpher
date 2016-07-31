@@ -554,7 +554,7 @@ void PathFinder::operator()() {
     while (true) {
 
         if (!canContinueCurrentJob) {
-            if (mJobManager->GetJob(mCtx)) {
+            if (mJobManager->GetPathJob(mCtx)) {
                 canContinueCurrentJob = true;
                 pathFound = false;
 

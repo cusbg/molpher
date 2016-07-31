@@ -34,6 +34,6 @@ AtomPairsFngpr::~AtomPairsFngpr()
 Fingerprint *AtomPairsFngpr::GetFingerprint(RDKit::ROMol *mol)
 {
     return RDKit::AtomPairs::getHashedAtomPairFingerprintAsBitVect(*mol,
-        mNBits, mMinLength, mMaxLength, mFromAtoms, mIgnoreAtoms,
+        mNBits, mMinLength, mMaxLength, mFromAtoms, mIgnoreAtoms, 0,
         mNBitsPerEntry);
 }

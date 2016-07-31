@@ -23,7 +23,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "inout.h"
-#include "BackendCommunicator.h"
 #include "JobManager.h"
 #include "../chem/scaffold/Scaffold.hpp"
 #include "../chem/scaffold/ScaffoldDatabase.hpp"
@@ -35,7 +34,6 @@ mHalted(false),
 mInteractive(interactive),
 mPathFinderStopper(pathFinderStopper),
 mJobIdCounter(0),
-mCommunicator(0),
 mDeferredFingerprintSelectorIsSet(false),
 mDeferredSimCoeffSelectorIsSet(false),
 mDeferredDimRedSelectorIsSet(false),
@@ -91,10 +89,6 @@ void JobManager::AddJobFromFile(const std::string &jobFile) {
     }
 }
 
-void JobManager::SetCommunicator(BackendCommunicator *comm) {
-    mCommunicator = comm;
-}
-
 void JobManager::Halt() {
     Lock lock(mJobManagerGuard);
     mHalted = true;
@@ -117,7 +111,7 @@ JobManager::~JobManager() {
     // no-op
 }
 
-bool JobManager::GetJob(PathFinderContext &ctx) {
+bool JobManager::GetPathJob(PathFinderContext &ctx) {
     Lock lock(mJobManagerGuard);
     while (mJobs.mLiveJobQueue.empty()) {
         if (mHalted || !mInteractive) {
@@ -859,16 +853,12 @@ bool JobManager::AddPruned(
 
 void JobManager::PublishJobs() {
     // Already locked by caller.
-    if (mCommunicator) {
-        mCommunicator->PublishJobs(mJobs);
-    }
+    // Nothing to do here.
 }
 
 void JobManager::PublishIteration(IterationSnapshot &snp) {
     // Already locked by caller.
-    if (mCommunicator) {
-        mCommunicator->PublishIteration(snp);
-    }
+    // Nothing to do here.
 }
 
 bool JobManager::VerifyPassword(JobId jobId, std::string &password) {

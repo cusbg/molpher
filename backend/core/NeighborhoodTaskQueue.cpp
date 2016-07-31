@@ -17,7 +17,6 @@
  */
 
 #include "inout.h"
-#include "BackendCommunicator.h"
 #include "NeighborhoodTaskQueue.h"
 
 NeighborhoodTaskQueue::NeighborhoodTaskQueue(
@@ -25,15 +24,9 @@ NeighborhoodTaskQueue::NeighborhoodTaskQueue(
     ) :
     mHalted(false),
     mNeighborhoodGeneratorStopper(neighborhoodGeneratorStopper),
-    mCommunicator(0),
     mCurrentTaskTimestamp(boost::date_time::min_date_time)
 {
     SynchCout(std::string("NeighborhoodTaskQueue initialized."));
-}
-
-void NeighborhoodTaskQueue::SetCommunicator(BackendCommunicator *comm)
-{
-    mCommunicator = comm;
 }
 
 void NeighborhoodTaskQueue::Halt()
@@ -110,7 +103,5 @@ void NeighborhoodTaskQueue::SkipNeighborhoodTask(boost::posix_time::ptime timest
 void NeighborhoodTaskQueue::PublishTaskResult(NeighborhoodTaskResult &res)
 {
     // Already locked by caller.
-    if (mCommunicator) {
-        mCommunicator->PublishNeighborhoodTaskResult(res);
-    }
+    // No action here.
 }

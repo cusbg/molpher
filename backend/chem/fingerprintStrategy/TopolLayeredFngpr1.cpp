@@ -40,6 +40,5 @@ TopolLayeredFngpr1::~TopolLayeredFngpr1()
 Fingerprint *TopolLayeredFngpr1::GetFingerprint(RDKit::ROMol *mol)
 {
     return RDKit::LayeredFingerprintMol(*mol, mLayerFlags, mMinPath, mMaxPath,
-        mFpSize, mTgtDensity, mMinSize, mAtomCounts, mSetOnlyBits,
-        mBranchedPaths);
+        mFpSize, mAtomCounts, mSetOnlyBits, mBranchedPaths);
 }

@@ -520,9 +520,9 @@ void TestInterlay(RDKit::RWMol mol, AtomIdx at1, AtomIdx at2, AtomicNum newAt, o
     st << "bond to interly: " << at1 + 1 << "-" << at2 + 1 << endl << endl;
 
     RDKit::Atom atom(newAt);
-    double mass =
-        RDKit::PeriodicTable::getTable()->getMostCommonIsotopeMass(atom.getAtomicNum());
-    atom.setMass(mass);
+    int isotopoe =
+        RDKit::PeriodicTable::getTable()->getMostCommonIsotope(atom.getAtomicNum());
+    atom.setIsotope(isotopoe);
 
     RDKit::Bond::BondType bt = mol.getBondBetweenAtoms(0, 15)->getBondType();
     int newAtom = mol.addAtom(&atom);
@@ -824,9 +824,9 @@ void TestInterlay(RDKit::RWMol mol, AtomIdx at1, AtomIdx at2, AtomicNum newAt)
     mol.getRingInfo()->reset();
 
     RDKit::Atom atom(newAt);
-    double mass =
-        RDKit::PeriodicTable::getTable()->getMostCommonIsotopeMass(atom.getAtomicNum());
-    atom.setMass(mass);
+    int isotopoe =
+        RDKit::PeriodicTable::getTable()->getMostCommonIsotope(atom.getAtomicNum());
+    atom.setIsotope(isotopoe);
 
     RDKit::Bond::BondType bt = mol.getBondBetweenAtoms(0, 15)->getBondType();
     int newAtom = mol.addAtom(&atom);

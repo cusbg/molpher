@@ -299,7 +299,7 @@ struct IterationSnapshot
         for (std::vector<std::string>::iterator it = actives_smiles.begin(); it != actives_smiles.end(); it++, idx++) {
             MolpherMolecule mm(*it, activesIDs[idx], actives[idx], activesDescriptorsFile, relevantDescriptorNames);
             mm.ComputeEtalonDistances(etalonValues, descWeights);
-            this->actives.insert(std::make_pair<std::string, MolpherMolecule>(*it, mm));
+            this->actives.insert(std::make_pair(*it, mm));
         }
 
         // create MolpherMolecule from sources and tests
@@ -314,8 +314,8 @@ struct IterationSnapshot
                 
                 mm.normalizeDescriptors(normalizationCoefficients, imputedValues);
                 mm.ComputeEtalonDistances(etalonValues, descWeights);
-                
-                testActives.insert(std::make_pair<std::string, MolpherMolecule>(mm.smile, mm));
+
+                testActives.insert(std::make_pair(mm.smile, mm));
                 test_counter++;
             }
             if (sourceIDsSet.find(ids[idx]) != sourceIDsSet.end()) {
@@ -326,8 +326,8 @@ struct IterationSnapshot
                 
                 mm.normalizeDescriptors(normalizationCoefficients, imputedValues);
                 mm.ComputeEtalonDistances(etalonValues, descWeights);
-                
-                sourceMols.insert(std::make_pair<std::string, MolpherMolecule>(mm.smile, mm));
+
+                sourceMols.insert(std::make_pair(mm.smile, mm));
                 source_counter++;
             }
         }

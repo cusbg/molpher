@@ -28,15 +28,12 @@
 
 #include "NeighborhoodTask.h"
 
-class BackendCommunicator;
-
 class NeighborhoodTaskQueue
 {
 public:
     // Functions called by backend main thread.
     NeighborhoodTaskQueue(tbb::task_group_context *neighborhoodGeneratorStopper);
     ~NeighborhoodTaskQueue();
-    void SetCommunicator(BackendCommunicator *comm);
     void Halt();
 
     // Functions called by neighborhood generator top-level thread.
@@ -55,7 +52,6 @@ private:
     typedef boost::mutex Guard;
     typedef boost::unique_lock<Guard> Lock;
 
-    BackendCommunicator *mCommunicator; // Provides publishing functionality.
     tbb::task_group_context *mNeighborhoodGeneratorStopper; // Flushes current task.
     bool mHalted; // Used for neighborhood generator thread termination.
     boost::condition_variable mTaskReadyCondition; // Wakes sleeping neighborhood generator.

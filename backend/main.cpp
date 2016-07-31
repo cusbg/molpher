@@ -25,17 +25,12 @@
 
 #include <boost/program_options.hpp>
 
-#include <RCF/RCF.hpp>
-
-#include <RDGeneral/RDLog.h>
-
 #include "inout.h"
 #include "core/PathFinder.h"
 #include "core/PathFinderActivity.h"
 #include "core/NeighborhoodGenerator.h"
 #include "core/JobManager.h"
 #include "core/NeighborhoodTaskQueue.h"
-#include "BackendCommunicator.h"
 #include "tests/MorphingTest.h"
 // syntetize feasibility
 #include "extensions/SAScore.h"
@@ -136,90 +131,43 @@ void Run(int argc, char *argv[])
 
     std::cout << "Initializing..." << std::endl;
 
-    if (interactiveSession) {
-        tbb::task_group_context pathFinderTbbCtx;
-        tbb::task_group_context neighborhoodGeneratorTbbCtx;
-
-        JobManager jobManager(
+    tbb::task_group_context pathFinderTbbCtx;
+    JobManager jobManager(
             &pathFinderTbbCtx, storagePath, jobListFile, interactiveSession);
-        if (!jobFile.empty()) {
-            jobManager.AddJobFromFile(jobFile);
-        }
-
-        NeighborhoodTaskQueue taskQueue(&neighborhoodGeneratorTbbCtx);
-
-        PathFinder pathFinder(
-            &pathFinderTbbCtx, &jobManager, threadCnt);
-        NeighborhoodGenerator neighborhoodGenerator(
-            &neighborhoodGeneratorTbbCtx, &taskQueue, threadCnt);
-
-        BackendCommunicator communicator(&jobManager, &taskQueue);
-        jobManager.SetCommunicator(&communicator);
-        taskQueue.SetCommunicator(&communicator);
-
-        std::thread pathFinderThread(std::tr1::ref(pathFinder));
-        std::thread neighborhoodGeneratorThread(std::tr1::ref(neighborhoodGenerator));
-
-        // TODO make this more safe (e.g. type "exit") to avoid unintentional termination
-        SynchCout(std::string("Backend initialized, press Enter to terminate."));
-        std::cin.ignore(); // Sleep on input.
-
-        SynchCout(std::string("Halting..."));
-
-        communicator.Halt();
-        jobManager.Halt();
-        taskQueue.Halt();
-        pathFinderThread.join();
-        neighborhoodGeneratorThread.join();
-
-        std::cout << "Backend terminated." << std::endl;
-    } else {
-        tbb::task_group_context pathFinderTbbCtx;
-        JobManager jobManager(
-            &pathFinderTbbCtx, storagePath, jobListFile, interactiveSession);
-        if (!jobFile.empty()) {
-            jobManager.AddJobFromFile(jobFile);
-        }
-
-        // PathFinder pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);
-        PathFinderActivity pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);        
-        std::thread pathFinderThread(std::tr1::ref(pathFinder));
-        SynchCout(std::string("Backend initialized.\nWorking..."));
-        pathFinderThread.join();
-        SynchCout(std::string("Halting..."));
-        jobManager.Halt();
-        std::cout << "Backend terminated." << std::endl;
+    if (!jobFile.empty()) {
+        jobManager.AddJobFromFile(jobFile);
     }
+
+    // PathFinder pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);
+    PathFinderActivity pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);
+    std::thread pathFinderThread(std::tr1::ref(pathFinder));
+    SynchCout(std::string("Backend initialized.\nWorking..."));
+    pathFinderThread.join();
+    SynchCout(std::string("Halting..."));
+    jobManager.Halt();
+    std::cout << "Backend terminated." << std::endl;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 #if MORPHING_TEST_MODE == 1
     MorphingSandbox();
     return 0;
 #endif
 
-#if RDKIT_LOGGING == 0
-    boost::logging::disable_logs("rdApp.*");
-#endif
-
     // print just those information that we have
     std::cout << "Molpher backend version " << MOLPH_VERSION;
     if (MOLPH_REVISION != "")
-        std::cout << " revision "<< MOLPH_REVISION;
-    std::cout << " built on " << MOLPH_DATE << ", " <<  MOLPH_TIME  << std::endl;
+        std::cout << " revision " << MOLPH_REVISION;
+    std::cout << " built on " << MOLPH_DATE << ", " << MOLPH_TIME << std::endl;
 
     std::cout << "Copyright (c) 2012 Vladimir Fiklik, David Hoksza, Petr Koupy, Peter Szepe" << std::endl;
-    std::cout << "          (c) 2013 Petr Skoda" << std::endl;
     std::cout << "          (c) 2014 Marek Mikes" << std::endl;
+    std::cout << "          (c) 2016 Petr Skoda" << std::endl;
 
     SAScore::loadData(); // load data for prediction of synthetic feasibility
 
-    RCF::init();
     Run(argc, argv);
-
     SAScore::destroyInstance(); // should free data, maybe not necessary
-    RCF::deinit();
 
     return 0;
 }

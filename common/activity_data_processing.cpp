@@ -18,7 +18,6 @@ namespace ba = boost::accumulators;
 
 #include <GraphMol/FileParsers/MolSupplier.h>
 #include <GraphMol/ROMol.h>
-#include <RDBoost/Exceptions.h>
 
 void adp::normalizeData(
     std::vector<std::vector<double> > &data,

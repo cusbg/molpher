@@ -20,15 +20,15 @@ struct MolpherAtom
 public:    
     MolpherAtom(RDKit::Atom *atom) :
         atomicNum(atom->getAtomicNum()), formalCharge(atom->getFormalCharge()),
-        mass(atom->getMass())
+        isotope(atom->getIsotope())
     { }
 public:
     
     AtomicNum atomicNum;
     
     int formalCharge;
-    
-    double mass;
+
+    unsigned int isotope;
 };
 
 
