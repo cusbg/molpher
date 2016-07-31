@@ -2,6 +2,9 @@
 dependencies/*
 !dependencies/*.sh
 
+# Prerequisites
+*.d
+
 # Compiled Object files
 *.slo
 *.lo
