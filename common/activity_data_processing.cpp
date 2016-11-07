@@ -18,7 +18,6 @@ namespace ba = boost::accumulators;
 
 #include <GraphMol/FileParsers/MolSupplier.h>
 #include <GraphMol/ROMol.h>
-#include <RDBoost/Exceptions.h>
 
 void adp::normalizeData(
     std::vector<std::vector<double> > &data,
@@ -36,24 +35,24 @@ void adp::normalizeData(
     for (int desc_idx = 0; desc_idx < column_count; desc_idx++) {
         ba::accumulator_set< double, ba::features<ba::tag::min, ba::tag::max, ba::tag::median> > acc;
         std::vector<int> nan_indices;
-        
+
         // save nan indices for imputation and prepare accumulator
         for (int mol_idx = 0; mol_idx < row_count; mol_idx++) {
             double value = data[mol_idx][desc_idx];
-            if ( !((boost::math::isnan)(value)) ) { 
+            if ( !((boost::math::isnan)(value)) ) {
                 acc(value);
             } else {
                 nan_indices.push_back(mol_idx);
             }
         }
-        
+
         // impute missing values
         double median = median_( acc );
         imputed_values.push_back(median);
         for (std::vector<int>::iterator it = nan_indices.begin(); it != nan_indices.end(); it++) {
             data[*it][desc_idx] = median;
         }
-        
+
         // normalize data
         double minimum = min_( acc );
         double maximum = max_( acc );
@@ -114,7 +113,7 @@ void adp::computeEtalon(
         ba::accumulator_set< double, ba::features< ba::tag::mean, ba::tag::median > > acc;
         for (int mol_idx = 0; mol_idx < row_count; mol_idx++) {
             double value = data[mol_idx][desc_idx];
-            if ( !((boost::math::isnan)(value)) ) { 
+            if ( !((boost::math::isnan)(value)) ) {
                 acc(value);
             }
         }
@@ -131,7 +130,7 @@ void adp::computeEtalon(
 void adp::readPropFromSDF(const std::string &SDFpath, const std::string &property_name, std::vector<std::string> &smiles) {
     RDKit::SDMolSupplier suppl(SDFpath);
     RDKit::ROMol* mol = 0;
-    
+
     unsigned int mol_count = suppl.length();
     for (unsigned int idx = 0; idx < mol_count; idx++) {
         mol = suppl[idx];

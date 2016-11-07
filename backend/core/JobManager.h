@@ -39,8 +39,6 @@
 #include "dimred_selectors.h"
 #include "chemoper_selectors.h"
 
-class BackendCommunicator;
-
 class JobManager
 {
 public:
@@ -49,7 +47,6 @@ public:
         std::string &storagePath, std::string &jobListFile, bool interactive);
     ~JobManager();
     void AddJobFromFile(const std::string &jobFile);
-    void SetCommunicator(BackendCommunicator *comm);
     void Halt();
 
     // Functions called by path finder top-level thread.
@@ -96,7 +93,6 @@ private:
     typedef boost::mutex Guard; // Could be changed to recursive mutex if needed.
     typedef boost::unique_lock<Guard> Lock;
 
-    BackendCommunicator *mCommunicator; // Provides publishing functionality.
     tbb::task_group_context *mPathFinderStopper; // Flushes current iteration.
     boost::condition_variable mJobReadyCondition; // Wakes sleeping path finder.
     bool mHalted; // Used for path finder thread termination.

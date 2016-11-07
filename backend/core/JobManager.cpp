@@ -23,7 +23,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "inout.h"
-#include "BackendCommunicator.h"
 #include "JobManager.h"
 #include "../chem/scaffold/Scaffold.hpp"
 #include "../chem/scaffold/ScaffoldDatabase.hpp"
@@ -35,7 +34,6 @@ mHalted(false),
 mInteractive(interactive),
 mPathFinderStopper(pathFinderStopper),
 mJobIdCounter(0),
-mCommunicator(0),
 mDeferredFingerprintSelectorIsSet(false),
 mDeferredSimCoeffSelectorIsSet(false),
 mDeferredDimRedSelectorIsSet(false),
@@ -89,10 +87,6 @@ void JobManager::AddJobFromFile(const std::string &jobFile) {
     } else {
         SynchCout(std::string("Cannot open job: ").append(jobFile));
     }
-}
-
-void JobManager::SetCommunicator(BackendCommunicator *comm) {
-    mCommunicator = comm;
 }
 
 void JobManager::Halt() {
@@ -455,7 +449,7 @@ JobId JobManager::CreateJob(IterationSnapshot &snp, std::string &password) {
     Lock lock(mJobManagerGuard);
     JobId jobId = ++mJobIdCounter;
     snp.jobId = jobId;
-    
+
     if (snp.chemOperSelectors.empty()) {
         snp.chemOperSelectors.push_back(OP_ADD_ATOM);
         snp.chemOperSelectors.push_back(OP_ADD_BOND);
@@ -466,7 +460,7 @@ JobId JobManager::CreateJob(IterationSnapshot &snp, std::string &password) {
         snp.chemOperSelectors.push_back(OP_REMOVE_ATOM);
         snp.chemOperSelectors.push_back(OP_REMOVE_BOND);
     }
-    
+
     if (snp.IsValid() && snp.IsActivityMorphingOn()) {
         snp.PrepareActivityData();
     }
@@ -859,16 +853,10 @@ bool JobManager::AddPruned(
 
 void JobManager::PublishJobs() {
     // Already locked by caller.
-    if (mCommunicator) {
-        mCommunicator->PublishJobs(mJobs);
-    }
 }
 
 void JobManager::PublishIteration(IterationSnapshot &snp) {
     // Already locked by caller.
-    if (mCommunicator) {
-        mCommunicator->PublishIteration(snp);
-    }
 }
 
 bool JobManager::VerifyPassword(JobId jobId, std::string &password) {

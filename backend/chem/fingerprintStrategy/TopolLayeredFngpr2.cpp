@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   TopolLayeredFngpr2.cpp
  * Author: Petyr
  *
@@ -35,6 +35,6 @@ TopolLayeredFngpr2::~TopolLayeredFngpr2()
 
 Fingerprint *TopolLayeredFngpr2::GetFingerprint(RDKit::ROMol *mol)
 {
-    return RDKit::LayeredFingerprintMol2(*mol, mLayerFlags, mMinPath, mMaxPath,
+    return RDKit::LayeredFingerprintMol(*mol, mLayerFlags, mMinPath, mMaxPath,
         mFpSize, mAtomCounts, mSetOnlyBits, mBranchedPaths);
 }

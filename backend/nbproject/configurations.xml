@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="f4" displayName="Commons" projectFiles="true">
       <logicalFolder name="include" displayName="CSVParser" projectFiles="true">
@@ -129,7 +129,6 @@
       <logicalFolder name="tests" displayName="tests" projectFiles="true">
         <itemPath>tests/MorphingTest.h</itemPath>
       </logicalFolder>
-      <itemPath>BackendCommunicator.h</itemPath>
       <itemPath>main.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="f2" displayName="Resources" projectFiles="true">
@@ -216,7 +215,6 @@
       <logicalFolder name="tests" displayName="tests" projectFiles="true">
         <itemPath>tests/MorphingTest.cpp</itemPath>
       </logicalFolder>
-      <itemPath>BackendCommunicator.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -245,7 +243,7 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <architecture>1</architecture>
+          <architecture>2</architecture>
           <incDir>
             <pElem>./.</pElem>
             <pElem>../common</pElem>
@@ -254,18 +252,14 @@
             <pElem>../dependencies/zlib</pElem>
             <pElem>../dependencies/rdkit/Code</pElem>
             <pElem>../dependencies/tbb/include</pElem>
+            <pElem>../common/CSV_parser/include/</pElem>
+            <pElem>../common/PaDEL_descriptor_calculator/include/</pElem>
           </incDir>
           <commandLine>-DNOT_NETBEANS -Wno-deprecated -Wno-write-strings -Wno-attributes -Wno-strict-aliasing -fpermissive</commandLine>
           <preprocessorList>
             <Elem>BOOST_ALL_NO_LIB</Elem>
             <Elem>BOOST_THREAD_USE_LIB</Elem>
             <Elem>NETBEANS_HACK</Elem>
-            <Elem>RCF_MULTI_THREADED</Elem>
-            <Elem>RCF_NO_AUTO_INIT_DEINIT</Elem>
-            <Elem>RCF_USE_BOOST_ASIO</Elem>
-            <Elem>RCF_USE_BOOST_SERIALIZATION</Elem>
-            <Elem>RCF_USE_BOOST_THREADS</Elem>
-            <Elem>RCF_USE_ZLIB</Elem>
             <Elem>TBB_USE_DEBUG=0</Elem>
             <Elem>WIN32_LEAN_AND_MEAN</Elem>
             <Elem>WINVER=0x0501</Elem>
@@ -275,53 +269,51 @@
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/molpher-srv</output>
           <linkerLibItems>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libDistGeomHelpers.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libMolAlign.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libAlignment.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libFragCatalog.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libMolCatalog.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libCatalogs.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libChemReactions.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libDepictor.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libDescriptors.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libDistGeometry.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libFileParsers.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libFingerprints.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libSubgraphs.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libForceFieldHelpers.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libChemTransforms.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libMolChemicalFeatures.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libSubstructMatch.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libSmilesParse.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libPartialCharges.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libShapeHelpers.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libMolTransforms.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libSLNParse.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libGraphMol.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libForceField.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libRDGeometryLib.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libDataStructs.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libOptimizer.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libEigenSolvers.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libChemicalFeatures.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libSimDivPickers.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libRDGeneral.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rdkit/lib/libhc.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/rcf/bin/libRcfLib.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_date_time-mgw46-mt-1_49.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_filesystem-mgw46-mt-1_49.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_program_options-mgw46-mt-1_49.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_regex-mgw46-mt-1_49.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_wserialization-mgw46-mt-1_49.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_serialization-mgw46-mt-1_49.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_signals-mgw46-mt-1_49.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_thread-mgw46-mt-1_49.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_system-mgw46-mt-1_49.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libDistGeomHelpers_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libMolAlign_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libAlignment_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libFragCatalog_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libMolCatalog_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libCatalogs_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libChemReactions_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libDepictor_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libDescriptors_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libDistGeometry_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libFileParsers_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libFingerprints_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libSubgraphs_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libForceFieldHelpers_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libChemTransforms_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libMolChemicalFeatures_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libSubstructMatch_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libSmilesParse_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libPartialCharges_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libShapeHelpers_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libMolTransforms_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libSLNParse_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libGraphMol_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libForceField_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libRDGeometryLib_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libDataStructs_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libOptimizer_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libEigenSolvers_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libChemicalFeatures_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libSimDivPickers_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libRDGeneral_static.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/rdkit/lib/libhc_static.a</linkerLibFileItem>
             <linkerLibFileItem>../dependencies/zlib/libz.a</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/tbb/build/windows_ia32_gcc_mingw_release/tbb.dll</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/tbb/build/windows_ia32_gcc_mingw_release/tbbmalloc_proxy.dll</linkerLibFileItem>
-            <linkerLibFileItem>../dependencies/tbb/build/windows_ia32_gcc_mingw_release/tbbmalloc.dll</linkerLibFileItem>
-            <linkerOptionItem>-lws2_32 -lmswsock -lcrypt32</linkerOptionItem>
+            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_system-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_date_time-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_filesystem-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_program_options-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_regex-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_wserialization-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_serialization-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_signals-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/boost/stage/lib/libboost_thread-mgw61-mt-1_61.a</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/tbb/build/windows_ia64_gcc_mingw6.1.0_release/tbb.dll</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/tbb/build/windows_ia64_gcc_mingw6.1.0_release/tbbmalloc.dll</linkerLibFileItem>
+            <linkerLibFileItem>../dependencies/tbb/build/windows_ia64_gcc_mingw6.1.0_release/tbbmalloc_proxy.dll</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -412,10 +404,6 @@
       <item path="../common/simcoeff_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/simcoeff_selectors.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="BackendCommunicator.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="BackendCommunicator.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="auxiliary/SynchRand.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1008,10 +996,6 @@
       </item>
       <item path="../common/simcoeff_selectors.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="BackendCommunicator.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="BackendCommunicator.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="auxiliary/SynchRand.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="auxiliary/SynchRand.h" ex="false" tool="3" flavor2="0">
@@ -1593,10 +1577,6 @@
       </item>
       <item path="../common/simcoeff_selectors.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="BackendCommunicator.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="BackendCommunicator.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="auxiliary/SynchRand.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="auxiliary/SynchRand.h" ex="false" tool="3" flavor2="0">
@@ -2177,10 +2157,6 @@
       <item path="../common/simcoeff_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/simcoeff_selectors.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="BackendCommunicator.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="BackendCommunicator.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="auxiliary/SynchRand.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   PathFinderActivity.h
  * Author: Krwemil
  *
@@ -165,8 +165,8 @@ mSurvivors(survivors){
 }
 
 void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_t> &r) const {
-    for (size_t idx = r.begin(); idx != r.end(); ++idx) {             
-        
+    for (size_t idx = r.begin(); idx != r.end(); ++idx) {
+
 //        double acceptProbability = 1.0;
 //        bool isTarget = !mCtx.ScaffoldMode() ?
 //                (mMorphs[idx].smile.compare(mCtx.target.smile) == 0) :
@@ -180,7 +180,7 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
 //        bool mightSurvive =
 //                SynchRand::GetRandomNumber(0, 99) < (int) (acceptProbability * 100);
 //        if (mightSurvive) {
-        
+
         if (true) {
             bool isDead = false;
             bool badWeight = false;
@@ -192,10 +192,10 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
 
             // Tests are ordered according to their cost.
             // Added test for SAScore
-            
-            isDead = (badWeight || badSascore || alreadyExists || 
+
+            isDead = (badWeight || badSascore || alreadyExists ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
-            
+
             if (!isDead) {
                 badWeight =
                         (mMorphs[idx].molecularWeight <
@@ -207,7 +207,7 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                 }
             }
 
-            isDead = (badWeight || badSascore || alreadyExists || 
+            isDead = (badWeight || badSascore || alreadyExists ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
 
             if (!isDead) {
@@ -222,9 +222,9 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                 }
             }
 
-            isDead = (badWeight || badSascore || alreadyExists || 
+            isDead = (badWeight || badSascore || alreadyExists ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
-            
+
             if (!isDead) {
                 if (!mCtx.ScaffoldMode()) {
                     PathFinderContext::CandidateMap::const_accessor dummy;
@@ -243,9 +243,9 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                 }
             }
 
-            isDead = (badWeight || badSascore || alreadyExists || 
+            isDead = (badWeight || badSascore || alreadyExists ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
-            
+
             if (!isDead) {
                 PathFinderContext::CandidateMap::const_accessor ac;
                 if (mCtx.candidates.find(ac, mMorphs[idx].parentSmile)) {
@@ -257,10 +257,10 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                     assert(false);
                 }
             }
-            
-            isDead = (badWeight || badSascore || alreadyExists || 
+
+            isDead = (badWeight || badSascore || alreadyExists ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
-            
+
             if (!isDead) {
                 PathFinderContext::MorphDerivationMap::const_accessor ac;
                 if (mCtx.morphDerivations.find(ac, mMorphs[idx].smile)) {
@@ -269,21 +269,21 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                 }
             }
 
-            isDead = (badWeight || badSascore || alreadyExists || 
+            isDead = (badWeight || badSascore || alreadyExists ||
                     alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
-            
+
 //            if (!isDead) {
-//                isTooFarFromEtalon = mMorphs[idx].distToEtalon > mCtx.params.maxAcceptableEtalonDistance 
+//                isTooFarFromEtalon = mMorphs[idx].distToEtalon > mCtx.params.maxAcceptableEtalonDistance
 //                            || mMorphs[idx].distToEtalon == DBL_MAX;
 //            }
-//            
-//            isDead = (badWeight || badSascore || alreadyExists || 
+//
+//            isDead = (badWeight || badSascore || alreadyExists ||
 //                    alreadyTriedByParent || tooManyProducedMorphs || isTooFarFromEtalon);
-            
+
             mSurvivors[idx] = !isDead;
         }
     }
-    
+
 }
 
 PathFinderActivity::MOOPFilter::MOOPFilter(
@@ -314,7 +314,7 @@ void PathFinderActivity::MOOPFilter::operator()(const tbb::blocked_range<size_t>
                         double s = second.etalonDistances[desc_idx];
                         if (f >= s) {
                             bad_features_count++;
-                        } 
+                        }
                         if (f == s) {
                             equal_features_count++;
                         }
@@ -421,12 +421,12 @@ void PathFinderActivity::UpdateTree::operator()(
     PathFinderActivity::SmileSet::iterator itParent;
     for (itParent = modifiedParents.begin();
             itParent != modifiedParents.end(); itParent++) {
-        
+
         // Determine what child is the closest to the etalon.
         double minDistance = DBL_MAX;
         PathFinderContext::CandidateMap::accessor acParent;
         if (mCtx.candidates.find(acParent, itParent->first)) {
-            
+
             std::set<std::string>::iterator itChild;
             for (itChild = acParent->second.descendants.begin();
                     itChild != acParent->second.descendants.end();
@@ -480,7 +480,7 @@ void PathFinderActivity::PruneTree::operator()(
     PathFinderContext::CandidateMap::accessor ac;
     mCtx.candidates.find(ac, smile);
     assert(!ac.empty());
-    
+
     if (ac->second.decayed) {
         std::set<std::string>::const_iterator it;
         for (it = ac->second.descendants.begin();
@@ -489,7 +489,7 @@ void PathFinderActivity::PruneTree::operator()(
         }
         return;
     }
-    
+
     bool decayed = ac->second.itersFresh > mCtx.params.decayThreshold;
     if (decayed) {
         SynchCout("Decaying " + ac->second.id + "...");
@@ -501,7 +501,7 @@ void PathFinderActivity::PruneTree::operator()(
         }
         return;
     }
-    
+
     SmileSet::const_accessor dummy;
     bool deferred = mDeferred.find(dummy, smile);
     bool prune = (deferred ||
@@ -658,9 +658,9 @@ void acceptMorphs2(PathFinderActivity::MoleculeVector &morphs,
     tbb::parallel_scan(
             tbb::blocked_range<size_t>(0, morphs.size()),
             acceptMorphs, tbb::auto_partitioner());
-    SynchCout("Acceptance ratio (iteration #" 
-            + NumberToString(ctx.iterIdx) + "): " 
-            + NumberToString(acceptMorphs.mSurvivorCount) + "/" 
+    SynchCout("Acceptance ratio (iteration #"
+            + NumberToString(ctx.iterIdx) + "): "
+            + NumberToString(acceptMorphs.mSurvivorCount) + "/"
             + NumberToString(morphs.size()) + ".");
     return;
 }
@@ -703,18 +703,18 @@ std::pair<double, double> PathFinderActivity::SaveIterationData::getClosestTestA
             current_min_struct = struc_dist;
             testActiveStruct = &(testIt->second);
         }
-        
+
         MolpherMolecule& testMol = testIt->second;
         double activity_dist = inputMol.GetDistanceFrom(testMol, ctx.descWeights);
         if (activity_dist < current_min_activity) {
             current_min_activity = activity_dist;
             testActiveActivity = &(testIt->second);
         }
-        
+
         delete mol;
         delete test;
     }
-    return std::make_pair<double, double>(current_min_struct, current_min_activity);
+    return std::make_pair(current_min_struct, current_min_activity);
 }
 
 void PathFinderActivity::SaveIterationData::saveCSVData(
@@ -727,12 +727,12 @@ void PathFinderActivity::SaveIterationData::saveCSVData(
     std::vector<double> floatData;
     stringData.push_back("NA");
     floatData.push_back(NAN);
-    
+
     MolpherMolecule* closestTestActiveStruct = NULL;
     MolpherMolecule* closestTestActiveActivity = NULL;
     std::pair<double, double> distStructActivity;
     distStructActivity = getClosestTestActives(mol, probedMols, ctx, closestTestActiveStruct, closestTestActiveActivity);
-    
+
     // closest in strctural space
     if (closestTestActiveStruct) {
         floatData[0] = distStructActivity.first;
@@ -743,7 +743,7 @@ void PathFinderActivity::SaveIterationData::saveCSVData(
     }
     morphingData.addStringData("ClosestStructID", stringData);
     morphingData.addFloatData("ClosestStructDistance", floatData);
-    
+
     // closest in activity space
     if (closestTestActiveActivity) {
         floatData[0] = distStructActivity.second;
@@ -770,7 +770,7 @@ void PathFinderActivity::operator()() {
     std::vector<std::string> startMols;
     CSVparse::CSV morphingData;
     CSVparse::CSV testMolsData;
-    
+
     while (true) {
 
         if (!canContinueCurrentJob) {
@@ -782,7 +782,7 @@ void PathFinderActivity::operator()() {
                 if (mCtx.candidates.empty()) {
                     assert(mCtx.iterIdx == 0);
                     assert(mCtx.candidateScaffoldMolecules.empty());
-                    
+
                     if (mCtx.params.startMolMaxCount == 0) {
                         mCtx.params.startMolMaxCount = mCtx.sourceMols.size();
                     }
@@ -815,13 +815,13 @@ void PathFinderActivity::operator()() {
 
                                 SaveIterationData::saveCSVData(it->second, mCtx.testActives, mCtx, morphingData);
                             }
-                        
+
                             ++counter;
                             if (counter > mCtx.params.startMolMaxCount) {
                                 break;
                             }
                         }
-                        
+
                         // init initial data about test mols
                         for (PathFinderContext::CandidateMap::iterator it = mCtx.testActives.begin(); it != mCtx.testActives.end(); it++) {
                             std::vector<string> stringData;
@@ -834,10 +834,10 @@ void PathFinderActivity::operator()() {
                             testMolsData.addFloatData("EtalonDistance", floatData);
                             floatData[0] = -1;
                             testMolsData.addFloatData("IterIdx", floatData);
-                            
+
                             SaveIterationData::saveCSVData(it->second, mCtx.candidates, mCtx, testMolsData);
                         }
-                        
+
                     } else {
                         assert(mCtx.scaffoldSelector == SF_MOST_GENERAL);
 
@@ -903,7 +903,7 @@ void PathFinderActivity::operator()() {
 //                        findLeaves, tbb::auto_partitioner(), *mTbbCtx);
 //                stageStopwatch.ReportElapsedMiliseconds("FindLeaves", true);
 //            }
-            
+
             SynchCout("Starting with " + NumberToString(mCtx.candidates.size()) + " source molecules...");
             MoleculeVector currentBag;
             FindNextBag findBag(currentBag);
@@ -978,7 +978,7 @@ void PathFinderActivity::operator()() {
             if (!Cancelled()) {
                 stageStopwatch.ReportElapsedMiliseconds("GenerateMorphs", true);
             }
-            
+
 //            CompareMorphs compareMorphs;
 //            if (!Cancelled()) {
 //                /* FIXME
@@ -1024,11 +1024,11 @@ void PathFinderActivity::operator()() {
              convert node-specific part back to MoleculeVector
              */
 
-            
-            
-            
-            
-            
+
+
+
+
+
             std::vector<bool> survivors;
             survivors.resize(morphs.size(), true);
             FilterMorphs filterMorphs(mCtx, morphs.size(), morphs, survivors);
@@ -1041,7 +1041,7 @@ void PathFinderActivity::operator()() {
                         filterMorphs, tbb::auto_partitioner(), *mTbbCtx);
                 stageStopwatch.ReportElapsedMiliseconds("FilterMorphs", true);
             }
-            
+
             // prepare directory for descriptor computation
             std::string output_dir(mJobManager->GetStorageDir());
             std::string storage_dir(GenerateDirname(output_dir, mCtx.jobId, mCtx.proteinTargetName + "_" + NumberToString(mCtx.iterIdx)));
@@ -1050,15 +1050,15 @@ void PathFinderActivity::operator()() {
             } catch (boost::filesystem::filesystem_error &exc) {
                 SynchCout(exc.what());
             }
-                
+
             // calculate descriptors
             // TODO: could be concurrent (use the tbb::concurrent_* structures in PathFinderContext) -> concurrent file IO needed too
             if (!Cancelled()) {
-                
+
                 unsigned int mols_per_step = mCtx.padelBatchSize;
                 unsigned int morph_count = morphs.size();
                 unsigned int steps = morph_count / mols_per_step + 1;
-                
+
                 for (unsigned int i = 0; i != steps; i++) {
 
                     std::string storage_path(GenerateDirname(output_dir, mCtx.jobId, mCtx.proteinTargetName + "_" + NumberToString(mCtx.iterIdx) + "/" + NumberToString(i)));
@@ -1068,7 +1068,7 @@ void PathFinderActivity::operator()() {
                         , mCtx.relevantDescriptorNames
                         , mThreadCnt
                         );
-                    
+
                     bool mol_added = false;
                     for (unsigned int idx = i * mols_per_step; idx != i * mols_per_step + mols_per_step; idx++) {
                         if (idx == morph_count) {
@@ -1082,19 +1082,19 @@ void PathFinderActivity::operator()() {
                             morph.descriptorsFilePath = calculator.getOutputFilePath();
                         }
                     }
-                    
+
                     // if there are no survivors, just continue
                     if (!mol_added) {
                         continue;
                     }
-                                        
+
                     try {
                         boost::filesystem::create_directories(storage_path);
                     } catch (boost::filesystem::filesystem_error &exc) {
                         SynchCout(exc.what());
                     }
-                    
-                    
+
+
 
                     // compute descriptors using PaDEL
                     calculator.computeDescriptors();
@@ -1111,13 +1111,13 @@ void PathFinderActivity::operator()() {
                             morph.ComputeEtalonDistances(mCtx.etalonValues, mCtx.descWeights);
                         }
                     }
-                }             
+                }
 
                 if (!Cancelled()) {
                     stageStopwatch.ReportElapsedMiliseconds("ComputeDescriptors", true);
                 }
             }
-                                    
+
             // MOOP
             std::vector<bool> next = survivors; // morphs scheduled for next MOOP run
             MOOPFilter MOOPfiltering(morphs, survivors, next);
@@ -1135,7 +1135,7 @@ void PathFinderActivity::operator()() {
                     if (next_c == 0) break;
                     tbb::parallel_for(
                         tbb::blocked_range<size_t>(0, morphs.size()),
-                        MOOPfiltering, tbb::auto_partitioner(), *mTbbCtx);              
+                        MOOPfiltering, tbb::auto_partitioner(), *mTbbCtx);
                     ++counter;
                 }
                 unsigned int next_c = 0;
@@ -1148,7 +1148,7 @@ void PathFinderActivity::operator()() {
                 SynchCout("Survivors overall: " + NumberToString(accepted_c));
                 stageStopwatch.ReportElapsedMiliseconds("MOOPfiltering", true);
             }
-            
+
             if (!Cancelled() && mCtx.saveDataAsCSVs) {
                 unsigned int idx = 0;
                 for (MoleculeVector::iterator morph_it = morphs.begin(); morph_it != morphs.end(); morph_it++) {
@@ -1252,7 +1252,7 @@ void PathFinderActivity::operator()() {
                 SmileVector pruningQueue;
                 for (std::vector<std::string>::iterator sourceIt = startMols.begin();
                         sourceIt != startMols.end(); sourceIt++) {
-                    pruningQueue.push_back(*sourceIt);   
+                    pruningQueue.push_back(*sourceIt);
                 }
                 tbb::parallel_do(
                             pruningQueue.begin(), pruningQueue.end(), pruneTree, *mTbbCtx);
@@ -1322,14 +1322,14 @@ void PathFinderActivity::operator()() {
 
                     SaveIterationData::saveCSVData(it->second, mCtx.candidates, mCtx, testMolsData);
                 }
-                
+
 //                std::string test_summary_path(output_dir + "/" + NumberToString(mCtx.jobId) + "_summary_test_mols.csv");
 //                ofstream overallTestData(test_summary_path.c_str());
                 std::string summary_path(storage_dir + "/summary_test_mols.csv");
                 ofstream overallTestData(summary_path.c_str());
                 testMolsData.write(overallTestData);
-                
-                // find and print the closest molecule 
+
+                // find and print the closest molecule
                 // write info about molecules in the current bag
                 double distance = DBL_MAX;
                 PathFinderContext::CandidateMap::iterator itCandidates;
@@ -1341,7 +1341,7 @@ void PathFinderActivity::operator()() {
                         distance = itCandidates->second.distToEtalon;
                         bestID = itCandidates->second.id;
                     }
-                    
+
                     std::vector<string> stringData;
                     std::vector<double> floatData;
                     stringData.push_back(itCandidates->second.id);
@@ -1359,7 +1359,7 @@ void PathFinderActivity::operator()() {
                         stringData[0] = "NA";
                     }
                     finalBag.addStringData("ParentID", stringData);
-                    
+
 //                    if (itCandidates->second.distToEtalon == 0) {
 //                        std::stringstream ss;
 //                        ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
@@ -1367,18 +1367,18 @@ void PathFinderActivity::operator()() {
 //                        SynchCout(ss.str());
 //                    }
                 }
-                
+
                 // write data about the molecules in the bag
                 std::string path(GenerateDirname(output_dir, mCtx.jobId) + "/final_bag.csv");
                 ofstream out(path.c_str());
-                finalBag.write(out);                               
-                
+                finalBag.write(out);
+
                 std::stringstream ss;
                 ss << mCtx.jobId << "/" << mCtx.iterIdx << ": "
                         << "The min. distance to etalon: " << distance
                         << " (" << bestID << ")";
                 SynchCout(ss.str());
-                
+
                 stageStopwatch.ReportElapsedMiliseconds("IterationSummary", true);
             }
 
@@ -1417,7 +1417,7 @@ void PathFinderActivity::operator()() {
 //                        for (MoleculeVector::iterator it = final_leaves.begin(); it != final_leaves.end(); it++) {
 //                            MolpherMolecule &leaf_mol = (*it);
 //                            std::string mol_name(leaf_mol.id);
-//                            std::string filename = GenerateFilename(output_dir, 
+//                            std::string filename = GenerateFilename(output_dir,
 //                                    mCtx.jobId, mol_name + ".path");
 //                            WriteMolpherPath(
 //                                    filename,

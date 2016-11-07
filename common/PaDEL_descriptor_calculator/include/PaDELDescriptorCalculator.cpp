@@ -18,7 +18,7 @@ void PaDELdesc::PaDELDescriptorCalculator::LoadAvailableDescriptors(const string
     const vector<string>& classes = available_descriptors.getStringData("Descriptor Java Class");
     const vector<string>& names = available_descriptors.getStringData("Descriptor");
     const vector<string>& types = available_descriptors.getStringData("Class");
-    
+
     string curent_class;
     vector<string>::size_type counter(0);
     for (vector<string>::const_iterator it = classes.begin(); it != classes.end(); it++) {
@@ -35,17 +35,17 @@ void PaDELdesc::PaDELDescriptorCalculator::LoadAvailableDescriptors(const string
         ++counter;
     }
         }
-    
+
 void PaDELdesc::PaDELDescriptorCalculator::SaveDescConfig() {
     using boost::property_tree::ptree;
 
     ptree rootNode;
-    
+
     ptree group2D;
     group2D.put("<xmlattr>.name", "2D");
     ptree group3D;
     group3D.put("<xmlattr>.name", "3D");
-    
+
     set<string> added_classes;
     for (vector<string>::iterator it = descriptors2compute.begin(); it != descriptors2compute.end(); it++ ) {
         if (descriptorClassType.find(*it) != descriptorClassType.end()) {
@@ -70,7 +70,7 @@ void PaDELdesc::PaDELDescriptorCalculator::SaveDescConfig() {
             assert(false);
         }
     }
-    
+
     rootNode.add_child("Group", group2D);
     rootNode.add_child("Group", group3D);
     configXML.add_child("Root", rootNode);
@@ -93,7 +93,7 @@ void PaDELdesc::PaDELDescriptorCalculator::computeDescriptors() {
     cout << call << endl;
     int ret = system(call.c_str());
     assert(ret == 0);
-    
+
     CSVparse::CSV descriptors(outputFilePath, ",", "");
     const vector<string> &names = descriptors.getStringData("Name");
     computedData.clear();
@@ -121,8 +121,8 @@ void PaDELdesc::PaDELDescriptorCalculator::saveSMILESFile() {
 }
 
 void PaDELdesc::PaDELDescriptorCalculator::saveDescConfigFile(const string &path) {
-    boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-    boost::property_tree::write_xml(path, configXML, std::locale(), settings);
+    boost::property_tree::write_xml(path, configXML, std::locale(),
+            boost::property_tree::xml_writer_make_settings<std::string>('\t', 1));
 }
 
 void PaDELdesc::PaDELDescriptorCalculator::saveDescConfigFile() {
@@ -146,7 +146,7 @@ PaDELdesc::PaDELDescriptorCalculator::PaDELDescriptorCalculator(
     , const vector<string> &descriptors
     , const unsigned int threads
     , const string &descriptorsCSV
-) : 
+) :
     PaDELPath(PaDELPath + "/")
     , workDirPath(workDirPath + "/")
     , threadsCnt(threads)

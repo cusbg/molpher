@@ -69,7 +69,7 @@ struct IterationSnapshot
     {
         // usage of BOOST_SERIALIZATION_NVP macro enable us to use xml serialisation
         ar & BOOST_SERIALIZATION_NVP(jobId);
-        ar & BOOST_SERIALIZATION_NVP(iterIdx); 
+        ar & BOOST_SERIALIZATION_NVP(iterIdx);
         ar & BOOST_SERIALIZATION_NVP(elapsedSeconds);
         ar & BOOST_SERIALIZATION_NVP(fingerprintSelector);
         ar & BOOST_SERIALIZATION_NVP(simCoeffSelector);
@@ -111,7 +111,7 @@ struct IterationSnapshot
 
         bool scaffoldsValid = !ScaffoldMode() ||
             (tempSource.IsValid() && !pathMolecules.empty());
-        
+
         if (params.activityMorphing) {
             bool activityMorphingValid = true;
             activityMorphingValid = params.startMolMaxCount >= 0;
@@ -123,23 +123,23 @@ struct IterationSnapshot
                 fs::path inactives_desc(inactivesDescriptorsFile);
                 fs::path weights(descriptorWeightsFile);
                 fs::path source_mols(sourceMolsDescriptorsFile);
-                
-                activityMorphingValid = fs::exists(actives) 
+
+                activityMorphingValid = fs::exists(actives)
                         && fs::exists(train_actives_descs)
                         && fs::exists(test_actives_descs)
                         && fs::exists(inactives_desc)
                         && fs::exists(source_mols)
                         && fs::exists(weights);
-                
+
                 if (etalonFile.size() != 0) {
                     fs::path et_file(etalonFile);
                     activityMorphingValid = fs::exists(et_file);
                 }
-                
+
             } else {
                 activityMorphingValid = false;
             }
-            
+
             return (!chemOperSelectors.empty()) &&
             params.IsValid() &&
             decoysValid &&
@@ -159,11 +159,11 @@ struct IterationSnapshot
     {
         return ((int)scaffoldSelector != SF_NONE);
     }
-    
+
     bool IsActivityMorphingOn() const {
         return params.activityMorphing && !activityMorphingInitialized;
     }
-  
+
     typedef std::map<std::string, MolpherMolecule> CandidateMap;
     typedef std::map<std::string, boost::uint32_t> MorphDerivationMap;
     typedef std::vector<std::string> PrunedMoleculeVector;
@@ -192,8 +192,8 @@ struct IterationSnapshot
         output.addFloatData("DistToEtalon", etal_dists);
         output.write(out_path);
     }
-       
-    void PrepareActivityData() {        
+
+    void PrepareActivityData() {
         // read the selected features
 //        CSVparse::CSV analysis_results_CSV(inputActivityDataDir + proteinTargetName + analysisResultsSuffix, ";", "NA", true, true);
 //        const std::vector<string> &desc_names = analysis_results_CSV.getHeader();
@@ -203,21 +203,21 @@ struct IterationSnapshot
 //                relevantDescriptorNames.push_back(*it);
 //            }
 //        }
-        
+
         CSVparse::CSV weights(descriptorWeightsFile, ",", "NA");
         const std::vector<string> &desc_names = weights.getHeader();
         for (std::vector<string>::const_iterator it = desc_names.begin(); it != desc_names.end(); it++) {
             relevantDescriptorNames.push_back(*it);
             descWeights.push_back(weights.getFloatData(*it)[0]);
         }
-        
+
         // load data about actives
         CSVparse::CSV actives_descs_CSV(activesDescriptorsFile, ",", "");
         activesIDs = actives_descs_CSV.getStringData("Name");
         for (std::vector<string>::const_iterator id = activesIDs.begin(); id != activesIDs.end(); id++) {
             activesIDsSet.insert(*id);
         }
-        
+
         // load data about source mols
         CSVparse::CSV sources_descs_CSV(sourceMolsDescriptorsFile, ",", "");
         sourceIDs = sources_descs_CSV.getStringData("Name");
@@ -227,7 +227,7 @@ struct IterationSnapshot
         }
         std::vector<std::vector<double> > source_mols;
         adp::readRelevantData(sources_descs_CSV, relevantDescriptorNames, source_mols);
-        
+
         // load data about test mols
         CSVparse::CSV tests_descs_CSV(testActivesDescriptorsFile, ",", "");
         testIDs = tests_descs_CSV.getStringData("Name");
@@ -236,10 +236,10 @@ struct IterationSnapshot
         }
         std::vector<std::vector<double> > test_mols;
         adp::readRelevantData(tests_descs_CSV, relevantDescriptorNames, test_mols);
-        
+
         // load data about decoys
         CSVparse::CSV decoys_descs_CSV(inactivesDescriptorsFile, ",", "");
-        
+
         // extract only the data for selected features
         std::vector<std::vector<double> > all_mols;
         std::vector<std::vector<double> > actives;
@@ -256,11 +256,11 @@ struct IterationSnapshot
             adp::readRelevantData(actives_descs_CSV, relevantDescriptorNames, actives);
             adp::readRelevantData(decoys_descs_CSV, relevantDescriptorNames, all_mols);
         }
-      
+
         // compute normalization (feature scaling) coefficients and normalize all data
         adp::normalizeData(all_mols, 0, 1, normalizationCoefficients, imputedValues);
         adp::normalizeData(actives, imputedValues, normalizationCoefficients);
-        
+
         if (etalonFile.size() != 0) {
             CSVparse::CSV etalon_csv(etalonFile, ",", "");
             assert(etalon_csv.getColumnCount() == normalizationCoefficients.size());
@@ -279,7 +279,7 @@ struct IterationSnapshot
             // use the scaled data to compute etalon values
             adp::computeEtalon(actives, etalonValues, params.etalonType);
         }
-        
+
         // read structures of active, test and source molecules
         CSVparse::CSV all_actives(allActivesSMILESFile, "\t", "", false, false);
         const std::vector<std::string> &ids = all_actives.getStringData(1);
@@ -293,13 +293,13 @@ struct IterationSnapshot
             actives_smiles.push_back(idSmileMap[activesIDs[idx]]);
         }
 //        adp::readPropFromSDF(inputActivityDataDir + activesSDFFile, "PUBCHEM_OPENEYE_CAN_SMILES", actives_smiles);
-        
+
         // create MolpherMolecule from each active
         std::vector<std::string>::size_type idx = 0;
         for (std::vector<std::string>::iterator it = actives_smiles.begin(); it != actives_smiles.end(); it++, idx++) {
             MolpherMolecule mm(*it, activesIDs[idx], actives[idx], activesDescriptorsFile, relevantDescriptorNames);
             mm.ComputeEtalonDistances(etalonValues, descWeights);
-            this->actives.insert(std::make_pair<std::string, MolpherMolecule>(*it, mm));
+            this->actives.insert(std::make_pair(*it, mm));
         }
 
         // create MolpherMolecule from sources and tests
@@ -309,29 +309,29 @@ struct IterationSnapshot
             if (testIDsSet.find(ids[idx]) != testIDsSet.end()) {
                 MolpherMolecule mm(idSmileMap[ids[idx]], ids[idx]);
                 mm.descriptorsFilePath = activesDescriptorsFile;
-                
+
                 mm.descriptorValues = test_mols[test_counter];
-                
+
                 mm.normalizeDescriptors(normalizationCoefficients, imputedValues);
                 mm.ComputeEtalonDistances(etalonValues, descWeights);
-                
-                testActives.insert(std::make_pair<std::string, MolpherMolecule>(mm.smile, mm));
+
+                testActives.insert(std::make_pair(mm.smile, mm));
                 test_counter++;
             }
             if (sourceIDsSet.find(ids[idx]) != sourceIDsSet.end()) {
                 MolpherMolecule mm(idSmileMap[ids[idx]], ids[idx]);
                 mm.descriptorsFilePath = sourceMolsDescriptorsFile;
-                
+
                 mm.descriptorValues = source_mols[source_counter];
-                
+
                 mm.normalizeDescriptors(normalizationCoefficients, imputedValues);
                 mm.ComputeEtalonDistances(etalonValues, descWeights);
-                
-                sourceMols.insert(std::make_pair<std::string, MolpherMolecule>(mm.smile, mm));
+
+                sourceMols.insert(std::make_pair(mm.smile, mm));
                 source_counter++;
             }
         }
-        
+
         assert(sourceMols.size() != 0);
 
         // save etalon distances for actives and decoys
@@ -341,9 +341,9 @@ struct IterationSnapshot
             saveEtalonDistancesCSV(sources_descs_CSV, inputActivityDataDir + proteinTargetName + "_source_mols_dists.csv");
             saveEtalonDistancesCSV(tests_descs_CSV, inputActivityDataDir + proteinTargetName + "_test_mols_dists.csv");
         }
-        
+
 //        exit(0);
-        
+
         activityMorphingInitialized = true;
     }
 
@@ -431,7 +431,7 @@ struct IterationSnapshot
     bool saveOnlyMorphData;
     bool activityMorphingInitialized;
     bool etalonIsScaled;
-    
+
     /**
      * activity data files information
      */

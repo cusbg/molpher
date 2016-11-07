@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   MolpherAtom.h
  * Author: Petyr
  *
@@ -17,18 +17,17 @@ typedef int AtomicNum;
  */
 struct MolpherAtom
 {
-public:    
+public:
     MolpherAtom(RDKit::Atom *atom) :
         atomicNum(atom->getAtomicNum()), formalCharge(atom->getFormalCharge()),
-        mass(atom->getMass())
-    { }
+        isotope(atom->getIsotope())  { }
 public:
-    
+
     AtomicNum atomicNum;
-    
+
     int formalCharge;
-    
-    double mass;
+
+    double isotope;
 };
 
 
