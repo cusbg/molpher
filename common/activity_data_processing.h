@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   activity_data_IO.h
  * Author: Krwemil
  *
@@ -8,7 +8,7 @@
 #ifndef ACTIVITY_DATA_IO_H
 #define	ACTIVITY_DATA_IO_H
 
-#include "CSV.h"
+#include "descriptor/CSV.h"
 
 // activity data manipulation and IO
 

@@ -66,7 +66,7 @@ struct MolpherMolecule
         posY(0)
     {
     }
-    
+
     MolpherMolecule(const std::string &smile, const std::string &id) :
         smile(smile),
         id(id),
@@ -84,7 +84,7 @@ struct MolpherMolecule
         posY(0)
     {
     }
-    
+
     MolpherMolecule(const std::string &smile,
         const std::string &id,
         const std::vector<double> &descriptors,
@@ -183,13 +183,13 @@ struct MolpherMolecule
     {
         return (!smile.empty());
     }
-    
-    void SaveDescriptors(std::map<std::string, double> &descriptors, std::vector<std::string> &names) {
+
+    void SaveDescriptors(const std::map<std::string, double> &descriptors, std::vector<std::string> &names) {
         for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++ ) {
             descriptorValues.push_back(descriptors[*it]);
         }
     }
-    
+
     void normalizeDescriptors(std::vector<std::pair<double, double> > &norm_coefs, std::vector<double> &imputed_values) {
         assert(descriptorValues.size() == norm_coefs.size());
         assert(descriptorValues.size() == imputed_values.size());
@@ -210,7 +210,7 @@ struct MolpherMolecule
             descriptorValues[idx] = val;
         }
     }
-    
+
 //    void ComputeEtalonDistances(std::vector<double> &etalon, double NA_penalty = 0, double max_NAN_perc = 0) {
 //        assert(descriptorValues.size() == etalon.size());
 //        double sum_dist_squared = 0;
@@ -246,7 +246,7 @@ struct MolpherMolecule
 //        assert(!((boost::math::isnan)(distToEtalon)));
 //        assert(descriptorValues.size() == etalonDistances.size());
 //    }
-    
+
     void ComputeEtalonDistances(std::vector<double> &etalon, std::vector<double> &weights) {
         assert(descriptorValues.size() == etalon.size());
         assert(descriptorValues.size() == weights.size());
@@ -275,7 +275,7 @@ struct MolpherMolecule
         assert(!((boost::math::isnan)(distToEtalon)));
         assert(descriptorValues.size() == etalonDistances.size());
     }
-    
+
     double GetDistanceFrom(MolpherMolecule& testMol, std::vector<double> weights) {
         assert(descriptorValues.size() == testMol.descriptorValues.size());
         assert(descriptorValues.size() == weights.size());
@@ -301,7 +301,13 @@ struct MolpherMolecule
     boost::uint32_t itersFresh;
     bool decayed;
     std::vector<double> etalonDistances;
+    /**
+     * Values of molecule descriptors.
+     */
     std::vector<double> descriptorValues;
+    /**
+     * Path to file, where descriptor for this molecule is stored.
+     */
     std::string descriptorsFilePath;
     std::string id;
 

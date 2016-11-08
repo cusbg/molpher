@@ -2,12 +2,6 @@
 <configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="f4" displayName="Commons" projectFiles="true">
-      <logicalFolder name="include" displayName="CSVParser" projectFiles="true">
-        <itemPath>../common/CSV_parser/include/CSV.cpp</itemPath>
-        <itemPath>../common/CSV_parser/include/CSV.h</itemPath>
-        <itemPath>../common/CSV_parser/include/DataConverter.cpp</itemPath>
-        <itemPath>../common/CSV_parser/include/DataConverter.h</itemPath>
-      </logicalFolder>
       <logicalFolder name="f1" displayName="Header Files" projectFiles="true">
         <itemPath>../common/IterationSnapshot.h</itemPath>
         <itemPath>../common/JobGroup.h</itemPath>
@@ -26,12 +20,6 @@
         <itemPath>../common/iteration_serializer.hpp</itemPath>
         <itemPath>../common/scaffold_selectors.hpp</itemPath>
         <itemPath>../common/simcoeff_selectors.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="include"
-                     displayName="PaDEL_descriptor_calculator"
-                     projectFiles="true">
-        <itemPath>../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp</itemPath>
-        <itemPath>../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="Source Files" projectFiles="true">
         <itemPath>../common/activity_data_processing.cpp</itemPath>
@@ -123,6 +111,12 @@
         <itemPath>core/PathFinderActivity.h</itemPath>
         <itemPath>core/PathFinderContext.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="f1" displayName="descriptor" projectFiles="true">
+        <itemPath>descriptor/CSV.h</itemPath>
+        <itemPath>descriptor/DataConverter.h</itemPath>
+        <itemPath>descriptor/DescriptorSource.hpp</itemPath>
+        <itemPath>descriptor/PaDELDescriptorCalculator.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="extensions" displayName="extensions" projectFiles="true">
         <itemPath>extensions/SAScore.h</itemPath>
       </logicalFolder>
@@ -209,6 +203,12 @@
         <itemPath>core/PathFinderActivity.cpp</itemPath>
         <itemPath>core/PathFinderContext.cpp</itemPath>
       </logicalFolder>
+      <logicalFolder name="f1" displayName="descriptor" projectFiles="true">
+        <itemPath>descriptor/CSV.cpp</itemPath>
+        <itemPath>descriptor/DataConverter.cpp</itemPath>
+        <itemPath>descriptor/DescriptorSource.cpp</itemPath>
+        <itemPath>descriptor/PaDELDescriptorCalculator.cpp</itemPath>
+      </logicalFolder>
       <logicalFolder name="extensions" displayName="extensions" projectFiles="true">
         <itemPath>extensions/SAScore.cpp</itemPath>
       </logicalFolder>
@@ -244,6 +244,7 @@
       <compileType>
         <ccTool>
           <architecture>2</architecture>
+          <standard>8</standard>
           <incDir>
             <pElem>./.</pElem>
             <pElem>../common</pElem>
@@ -252,8 +253,6 @@
             <pElem>../dependencies/zlib</pElem>
             <pElem>../dependencies/rdkit/Code</pElem>
             <pElem>../dependencies/tbb/include</pElem>
-            <pElem>../common/CSV_parser/include/</pElem>
-            <pElem>../common/PaDEL_descriptor_calculator/include/</pElem>
           </incDir>
           <commandLine>-DNOT_NETBEANS -Wno-deprecated -Wno-write-strings -Wno-attributes -Wno-strict-aliasing -fpermissive</commandLine>
           <preprocessorList>
@@ -317,23 +316,6 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="../common/CSV_parser/include/CSV.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/CSV.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/DataConverter.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/DataConverter.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
@@ -347,16 +329,6 @@
       <item path="../common/NeighborhoodTask.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
       </item>
       <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
       </item>
@@ -791,6 +763,28 @@
       <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/CSV.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/CSV.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/DataConverter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/DataConverter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/DescriptorSource.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/DescriptorSource.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/PaDELDescriptorCalculator.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="descriptor/PaDELDescriptorCalculator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="extensions/SAScore.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -908,23 +902,6 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="../common/CSV_parser/include/CSV.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/CSV.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/DataConverter.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/DataConverter.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
@@ -938,16 +915,6 @@
       <item path="../common/NeighborhoodTask.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
       </item>
       <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
       </item>
@@ -1382,6 +1349,28 @@
       <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/CSV.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/CSV.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/DataConverter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/DataConverter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/DescriptorSource.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/DescriptorSource.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/PaDELDescriptorCalculator.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="descriptor/PaDELDescriptorCalculator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="extensions/SAScore.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1489,23 +1478,6 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="../common/CSV_parser/include/CSV.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/CSV.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/DataConverter.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/DataConverter.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
@@ -1519,16 +1491,6 @@
       <item path="../common/NeighborhoodTask.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
       </item>
       <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
       </item>
@@ -1963,6 +1925,28 @@
       <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/CSV.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/CSV.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/DataConverter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/DataConverter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/DescriptorSource.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/DescriptorSource.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/PaDELDescriptorCalculator.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="descriptor/PaDELDescriptorCalculator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="extensions/SAScore.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -2070,23 +2054,6 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="../common/CSV_parser/include/CSV.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/CSV.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/DataConverter.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/CSV_parser/include/DataConverter.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
@@ -2100,16 +2067,6 @@
       <item path="../common/NeighborhoodTask.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
       </item>
       <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
       </item>
@@ -2544,6 +2501,28 @@
       <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/CSV.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/CSV.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/DataConverter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/DataConverter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/DescriptorSource.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="descriptor/DescriptorSource.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/PaDELDescriptorCalculator.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="descriptor/PaDELDescriptorCalculator.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="extensions/SAScore.cpp" ex="false" tool="1" flavor2="0">
       </item>

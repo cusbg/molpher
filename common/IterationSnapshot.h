@@ -41,8 +41,8 @@ namespace fs = boost::filesystem;
 #include "MolpherParam.h"
 #include "MolpherMolecule.h"
 #include "activity_data_processing.h"
-#include "CSV.h"
-#include "CSV_parser/include/DataConverter.h"
+#include "descriptor/CSV.h"
+#include "descriptor/DataConverter.h"
 
 struct IterationSnapshot
 {

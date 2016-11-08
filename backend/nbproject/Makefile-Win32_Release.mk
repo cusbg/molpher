@@ -35,9 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/115be946/CSV.o \
-	${OBJECTDIR}/_ext/115be946/DataConverter.o \
-	${OBJECTDIR}/_ext/ab5249b1/PaDELDescriptorCalculator.o \
 	${OBJECTDIR}/_ext/b4460d1a/activity_data_processing.o \
 	${OBJECTDIR}/_ext/b4460d1a/chemoper_selectors.o \
 	${OBJECTDIR}/_ext/b4460d1a/dimred_selectors.o \
@@ -94,6 +91,10 @@ OBJECTFILES= \
 	${OBJECTDIR}/core/PathFinder.o \
 	${OBJECTDIR}/core/PathFinderActivity.o \
 	${OBJECTDIR}/core/PathFinderContext.o \
+	${OBJECTDIR}/descriptor/CSV.o \
+	${OBJECTDIR}/descriptor/DataConverter.o \
+	${OBJECTDIR}/descriptor/DescriptorSource.o \
+	${OBJECTDIR}/descriptor/PaDELDescriptorCalculator.o \
 	${OBJECTDIR}/extensions/SAScore.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/tests/MorphingTest.o
@@ -214,21 +215,6 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/molpher-srv.exe: ../dependencies/tbb/
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/molpher-srv.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/molpher-srv ${OBJECTFILES} ${LDLIBSOPTIONS} -s
-
-${OBJECTDIR}/_ext/115be946/CSV.o: ../common/CSV_parser/include/CSV.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/115be946
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/115be946/CSV.o ../common/CSV_parser/include/CSV.cpp
-
-${OBJECTDIR}/_ext/115be946/DataConverter.o: ../common/CSV_parser/include/DataConverter.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/115be946
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/115be946/DataConverter.o ../common/CSV_parser/include/DataConverter.cpp
-
-${OBJECTDIR}/_ext/ab5249b1/PaDELDescriptorCalculator.o: ../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/ab5249b1
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/ab5249b1/PaDELDescriptorCalculator.o ../common/PaDEL_descriptor_calculator/include/PaDELDescriptorCalculator.cpp
 
 ${OBJECTDIR}/_ext/b4460d1a/activity_data_processing.o: ../common/activity_data_processing.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/b4460d1a
@@ -509,6 +495,26 @@ ${OBJECTDIR}/core/PathFinderContext.o: core/PathFinderContext.cpp
 	${MKDIR} -p ${OBJECTDIR}/core
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/PathFinderContext.o core/PathFinderContext.cpp
+
+${OBJECTDIR}/descriptor/CSV.o: descriptor/CSV.cpp 
+	${MKDIR} -p ${OBJECTDIR}/descriptor
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/descriptor/CSV.o descriptor/CSV.cpp
+
+${OBJECTDIR}/descriptor/DataConverter.o: descriptor/DataConverter.cpp 
+	${MKDIR} -p ${OBJECTDIR}/descriptor
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/descriptor/DataConverter.o descriptor/DataConverter.cpp
+
+${OBJECTDIR}/descriptor/DescriptorSource.o: descriptor/DescriptorSource.cpp 
+	${MKDIR} -p ${OBJECTDIR}/descriptor
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/descriptor/DescriptorSource.o descriptor/DescriptorSource.cpp
+
+${OBJECTDIR}/descriptor/PaDELDescriptorCalculator.o: descriptor/PaDELDescriptorCalculator.cpp 
+	${MKDIR} -p ${OBJECTDIR}/descriptor
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/descriptor/PaDELDescriptorCalculator.o descriptor/PaDELDescriptorCalculator.cpp
 
 ${OBJECTDIR}/extensions/SAScore.o: extensions/SAScore.cpp 
 	${MKDIR} -p ${OBJECTDIR}/extensions

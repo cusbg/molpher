@@ -35,9 +35,9 @@
 #include "../chem/SimCoefCalculator.hpp"
 #include "JobManager.h"
 #include "PathFinderActivity.h"
-#include "PaDELDescriptorCalculator.h"
 #include "chem/morphing/ReturnResults.hpp"
-#include "DataConverter.h"
+
+#include "descriptor/DescriptorSource.hpp"
 
 PathFinderActivity::PathFinderActivity(
         tbb::task_group_context *tbbCtx, JobManager *jobManager, int threadCnt
@@ -981,12 +981,12 @@ void PathFinderActivity::operator()() {
                 for (unsigned int i = 0; i != steps; i++) {
 
                     std::string storage_path(GenerateDirname(output_dir, mCtx.jobId, mCtx.proteinTargetName + "_" + NumberToString(mCtx.iterIdx) + "/" + NumberToString(i)));
-                    PaDELdesc::PaDELDescriptorCalculator calculator(
-                        "../dependencies/padel/"
-                        , storage_path
-                        , mCtx.relevantDescriptorNames
-                        , mThreadCnt
-                        );
+
+                    std::shared_ptr<DescriptorSource> calculator;
+                    calculator = DescriptorSource::createPaDEL(
+                            "../dependencies/padel/", storage_path
+                            , mCtx.relevantDescriptorNames, mThreadCnt,
+                            "/descriptors.csv");
 
                     bool mol_added = false;
                     for (unsigned int idx = i * mols_per_step; idx != i * mols_per_step + mols_per_step; idx++) {
@@ -997,8 +997,7 @@ void PathFinderActivity::operator()() {
                         morph.id = "MORPH_" + NumberToString(mCtx.iterIdx) + "_" + NumberToString(idx + 1);
                         if (survivors[idx]) {
                             mol_added = true;
-                            calculator.addMol(morph.id, morph.smile);
-                            morph.descriptorsFilePath = calculator.getOutputFilePath();
+                            calculator->add(morph);
                         }
                     }
 
@@ -1013,10 +1012,8 @@ void PathFinderActivity::operator()() {
                         SynchCout(exc.what());
                     }
 
-
-
                     // compute descriptors using PaDEL
-                    calculator.computeDescriptors();
+                    calculator->compute();
 
                     // load and normalize the data + compute etalon distances
                     for (unsigned int idx = i * mols_per_step; (idx != i * mols_per_step + mols_per_step) ; idx++) {
@@ -1025,7 +1022,7 @@ void PathFinderActivity::operator()() {
                         }
                         if (survivors[idx]) {
                             MolpherMolecule &morph = morphs[idx];
-                            morph.SaveDescriptors(calculator.getDescValues(morph.id), mCtx.relevantDescriptorNames);
+                            morph.SaveDescriptors(calculator->get(morph), mCtx.relevantDescriptorNames);
                             morph.normalizeDescriptors(mCtx.normalizationCoefficients, mCtx.imputedValues);
                             morph.ComputeEtalonDistances(mCtx.etalonValues, mCtx.descWeights);
                         }
@@ -1194,6 +1191,7 @@ void PathFinderActivity::operator()() {
                         stringData[0] = "NA";
                     }
                     finalBag.addStringData("ParentID", stringData);
+                }
 
                 // write data about the molecules in the bag
                 std::string path(GenerateDirname(output_dir, mCtx.jobId) + "/final_bag.csv");

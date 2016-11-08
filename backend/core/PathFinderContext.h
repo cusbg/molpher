@@ -42,7 +42,7 @@ struct PathFinderContext
     static void ContextToLightSnapshot(const PathFinderContext &ctx, IterationSnapshot &snp);
 
     bool ScaffoldMode() const;
-    
+
     JobId jobId;
     unsigned int iterIdx;
     unsigned int elapsedSeconds;
@@ -64,7 +64,7 @@ struct PathFinderContext
     typedef tbb::concurrent_hash_map<std::string, std::string> ScaffoldSmileMap;
 
     CandidateMap candidates;
-    
+
     /**
      * activity data information and types
      */
@@ -83,31 +83,31 @@ struct PathFinderContext
     ConcStringVector activesIDs;
     ConcDoubleVector etalonValues;
     ConcDoublePairVector normalizationCoefficients;
+    /**
+     * Names of descriptors to use.
+     */
     ConcStringVector relevantDescriptorNames;
-//    ConcBoolVector relevantDescriptorIndices;
     bool activityMorphingInitialized;
-    
+
     unsigned int padelBatchSize;
-    
+
     /**
      * activity data files information
      */
     std::string inputActivityDataDir;
     std::string activesSDFFile;
-//    std::string inactivesSDFFile;
     std::string proteinTargetName;
     std::string activesDescriptorsFile;
-//    std::string inactivesDescriptorsFile;
     std::string descriptorDataFileSuffix;
     std::string analysisResultsSuffix;
     bool saveDataAsCSVs;
     bool saveOnlyMorphData;
     std::vector<double> descWeights;
     std::vector<double> imputedValues;
-    
+
     MorphDerivationMap morphDerivations;
     PrunedMoleculeVector prunedDuringThisIter;
-    
+
     MolpherMolecule tempSource;
     ScaffoldSelector scaffoldSelector;
     std::vector<MolpherMolecule> pathMolecules;

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   PaDELdesc.h
  * Author: martin
  *
@@ -19,6 +19,18 @@ using namespace std;
 
 namespace PaDELdesc {
 
+    /**
+     * Usage:
+     *
+     * For each iteration:
+     * ctor
+     * addMol(morph.id, morph.smile);
+     * morph.descriptorsFilePath =getOutputFilePath
+     * computeDescriptors
+     *
+     * calculator.getDescValues(morph.id) -> return descriptors
+     *
+     */
     class PaDELDescriptorCalculator {
         private:
             string PaDELPath;
@@ -33,13 +45,13 @@ namespace PaDELdesc {
             map<string, string> mols;
             vector<string> molNames;
             unsigned int threadsCnt;
-            
+
             typedef map<string, map<string, double> > DataMap;
             DataMap computedData;
-            
+
             void LoadAvailableDescriptors(const string &CSV_desc_list_path);
             void SaveDescConfig();
-            
+
         public:
             PaDELDescriptorCalculator(
                     const string &PaDELPath
@@ -55,7 +67,7 @@ namespace PaDELdesc {
             void addMol(const string &id, const string &smiles);
             void computeDescriptors();
             map<string, double>& getDescValues(const string &mol_id);
-            
+
             string getOutputFilePath();
     };
 }
