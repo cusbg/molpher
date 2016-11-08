@@ -54,7 +54,7 @@ void Run(int argc, char *argv[])
         ("legal", "Show legal information")
         ("storage-path,S", boost::program_options::value<std::string>(), "Storage path for results")
         ("job-list,L", boost::program_options::value<std::string>(), "Path to the job list file")
-        ("interactive,I", boost::program_options::value<bool>(), "Enable/disable interactive mode")
+        ("activity,A", boost::program_options::value<bool>(), "Enable/disable activity searching.")
         ("threads,T", boost::program_options::value<int>(), "Limit number of worker threads")
         ("job-file,J", boost::program_options::value<std::string>(), "Path to the job file.")
             ;
@@ -135,23 +135,34 @@ void Run(int argc, char *argv[])
 
     if (interactiveSession) {
         std::cout << "Interactive mode is no longer supported." << std::endl;
-    } else {
-        tbb::task_group_context pathFinderTbbCtx;
-        JobManager jobManager(
-            &pathFinderTbbCtx, storagePath, jobListFile, interactiveSession);
-        if (!jobFile.empty()) {
-            jobManager.AddJobFromFile(jobFile);
-        }
+        return;
+    }
 
-        // PathFinder pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);
+    tbb::task_group_context pathFinderTbbCtx;
+    JobManager jobManager(
+        &pathFinderTbbCtx, storagePath, jobListFile, interactiveSession);
+    if (!jobFile.empty()) {
+        jobManager.AddJobFromFile(jobFile);
+    }
+
+    SAScore::loadData();
+
+    if (varMap.count("activity") && varMap["activity"].as<bool>()) {
         PathFinderActivity pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);
         std::thread pathFinderThread(std::tr1::ref(pathFinder));
-        SynchCout(std::string("Backend initialized.\nWorking..."));
+        SynchCout(std::string("Backend initialized (activity based).\nWorking..."));
         pathFinderThread.join();
-        SynchCout(std::string("Halting..."));
-        jobManager.Halt();
-        std::cout << "Backend terminated." << std::endl;
+    } else {
+        PathFinder pathFinder(&pathFinderTbbCtx, &jobManager, threadCnt);
+        std::thread pathFinderThread(std::tr1::ref(pathFinder));
+        SynchCout(std::string("Backend initialized (similarity based).\nWorking..."));
+        pathFinderThread.join();
     }
+    SynchCout(std::string("Halting..."));
+    jobManager.Halt();
+    std::cout << "Backend terminated." << std::endl;
+
+    SAScore::destroyInstance();
 }
 
 int main(int argc, char *argv[])
@@ -175,11 +186,7 @@ int main(int argc, char *argv[])
     std::cout << "          (c) 2013 Petr Skoda" << std::endl;
     std::cout << "          (c) 2014 Marek Mikes" << std::endl;
 
-    SAScore::loadData(); // load data for prediction of synthetic feasibility
-
     Run(argc, argv);
-
-    SAScore::destroyInstance(); // should free data, maybe not necessary
 
     return 0;
 }
