@@ -895,15 +895,6 @@ void PathFinderActivity::operator()() {
             AccumulateTime molpherStopwatch(mCtx);
             AccumulateTime stageStopwatch(mCtx);
 
-//            MoleculeVector leaves;
-//            FindLeaves findLeaves(leaves);
-//            if (!Cancelled()) {
-//                tbb::parallel_for(
-//                        PathFinderContext::CandidateMap::range_type(mCtx.candidates),
-//                        findLeaves, tbb::auto_partitioner(), *mTbbCtx);
-//                stageStopwatch.ReportElapsedMiliseconds("FindLeaves", true);
-//            }
-
             SynchCout("Starting with " + NumberToString(mCtx.candidates.size()) + " source molecules...");
             MoleculeVector currentBag;
             FindNextBag findBag(currentBag);
@@ -913,21 +904,6 @@ void PathFinderActivity::operator()() {
                         findBag, tbb::auto_partitioner(), *mTbbCtx);
                 stageStopwatch.ReportElapsedMiliseconds("FindNextBag", true);
             }
-
-            /* TODO MPI
-             MASTER
-             prepare light snapshot (PathFinderContext::ContextToLightSnapshot)
-             broadcast light snapshot
-             convert leaves to std::vector
-             scatter leaves over cluster
-             convert node-specific part back to MoleculeVector
-
-             SLAVE
-             broadcast light snapshot
-             convert light snapshot into context (PathFinderContext::SnapshotToContext)
-             scatter leaves over cluster
-             convert node-specific part back to MoleculeVector
-             */
 
             MoleculeVector morphs;
             CollectMorphs collectMorphs(morphs);
@@ -939,20 +915,13 @@ void PathFinderActivity::operator()() {
             for (MoleculeVector::iterator it = currentBag.begin(); it != currentBag.end(); it++) {
                 MolpherMolecule &candidate = (*it);
                 unsigned int morphAttempts = mCtx.params.cntMorphs;
-//                if (candidate.distToTarget < mCtx.params.distToTargetDepthSwitch) {
-//                    morphAttempts = mCtx.params.cntMorphsInDepth;
-//                }
-
                 if (!Cancelled()) {
                     morphs.reserve(morphs.size() + morphAttempts);
 
                     GenerateMorphs(
                             candidate,
                             morphAttempts,
-//                            mCtx.fingerprintSelector,
-//                            mCtx.simCoeffSelector,
                             chemOperSelectors,
-//                            mCtx.target,
                             mCtx.decoys,
                             *mTbbCtx,
                             &collectMorphs,
@@ -978,56 +947,6 @@ void PathFinderActivity::operator()() {
             if (!Cancelled()) {
                 stageStopwatch.ReportElapsedMiliseconds("GenerateMorphs", true);
             }
-
-//            CompareMorphs compareMorphs;
-//            if (!Cancelled()) {
-//                /* FIXME
-//                 Current TBB version does not support parallel_sort cancellation.
-//                 If it will be improved in the future, pass task_group_context
-//                 argument similarly as in parallel_for. */
-//                tbb::parallel_sort(
-//                        morphs.begin(), morphs.end(), compareMorphs);
-//                stageStopwatch.ReportElapsedMiliseconds("SortMorphs", true);
-//            }
-
-            /* TODO MPI
-             MASTER
-             gather snapshots from slaves
-             update mCtx.morphDerivations according to gathered snapshots (consider using TBB for this)
-             convert morphs to std::vector
-             gather other morphs from slaves
-               - each vector is pre-sorted and without duplicates
-             integrate all morph vectors into final vector (consider using TBB for this)
-               - check for cross-vector duplicates
-               - merge sort
-
-             SLAVE
-             convert context to full snapshot (PathFinderContext::ContextToSnapshot)
-             gather snapshot to master
-             convert morphs to std::vector
-             gather morphs back to master
-             */
-
-            /* TODO MPI
-             MASTER
-             prepare full snapshot (PathFinderContext::ContextToSnapshot)
-             broadcast snapshot
-             broadcast morph vector complete size
-             scatter morph vector over cluster
-             convert node-specific part back to MoleculeVector
-
-             SLAVE
-             broadcast snapshot
-             convert snapshot into context (PathFinderContext::SnapshotToContext)
-             broadcast morph vector complete size
-             scatter morph vector over cluster
-             convert node-specific part back to MoleculeVector
-             */
-
-
-
-
-
 
             std::vector<bool> survivors;
             survivors.resize(morphs.size(), true);
@@ -1180,8 +1099,6 @@ void PathFinderActivity::operator()() {
                     ++idx;
                 }
 
-//                std::string summary_path(output_dir + "/" + NumberToString(mCtx.jobId) + "_summary.csv");
-//                ofstream overallData(summary_path.c_str());
                 std::string summary_path(storage_dir + "/summary.csv");
                 ofstream overallData(summary_path.c_str());
                 morphingData.write(overallData);
@@ -1210,45 +1127,9 @@ void PathFinderActivity::operator()() {
                 stageStopwatch.ReportElapsedMiliseconds("UpdateTree", true);
             }
 
-//            if (!Cancelled()) {
-//                if (!mCtx.ScaffoldMode()) {
-//                    PathFinderContext::CandidateMap::const_accessor acTarget;
-//                    mCtx.candidates.find(acTarget, mCtx.target.smile);
-//                    pathFound = !acTarget.empty();
-//                } else {
-//                    PathFinderContext::ScaffoldSmileMap::const_accessor acTarget;
-//                    mCtx.candidateScaffoldMolecules.find(acTarget, mCtx.target.scaffoldSmile);
-//                    pathFound = !acTarget.empty();
-//                }
-//                if (pathFound) {
-//                    std::stringstream ss;
-//                    ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": ";
-//                    !mCtx.ScaffoldMode() ?
-//                            ss << "- - - Path has been found - - -" :
-//                            ss << "- - - Subpath has been found - - -";
-//                    SynchCout(ss.str());
-//                }
-//            }
-
             SmileSet deferredSmiles;
             PruneTree pruneTree(mCtx, deferredSmiles);
             if (!Cancelled()) {
-                // Prepare deferred visual pruning.
-//                std::vector<MolpherMolecule> deferredMols;
-//                mJobManager->GetPruned(deferredMols);
-//                std::vector<MolpherMolecule>::iterator it;
-//                for (it = deferredMols.begin(); it != deferredMols.end(); it++) {
-//                    SmileSet::const_accessor dummy;
-//                    if (it->smile == mCtx.source.smile ||
-//                            (mCtx.ScaffoldMode() && it->smile == mCtx.tempSource.smile)) {
-//                        continue;
-//                    }
-//                    deferredSmiles.insert(dummy, it->smile);
-//                }
-//                deferredMols.clear();
-
-//                pruningQueue.push_back(!mCtx.ScaffoldMode() ?
-//                        mCtx.source.smile : mCtx.tempSource.smile);
                 SmileVector pruningQueue;
                 for (std::vector<std::string>::iterator sourceIt = startMols.begin();
                         sourceIt != startMols.end(); sourceIt++) {
@@ -1261,50 +1142,6 @@ void PathFinderActivity::operator()() {
                             mCtx.candidates.size() == mCtx.candidateScaffoldMolecules.size());
                 stageStopwatch.ReportElapsedMiliseconds("PruneTree", true);
             }
-
-            // calculation of dimension reduction
-//            if (!Cancelled() && mCtx.params.useVisualisation) {
-//                DimensionReducer::MolPtrVector molsToReduce;
-//                int numberOfMolsToReduce = 0;
-//                if (!mCtx.ScaffoldMode()) {
-//                    numberOfMolsToReduce = mCtx.candidates.size() +
-//                            mCtx.decoys.size() + 2;
-//                } else {
-//                    numberOfMolsToReduce = mCtx.candidates.size() +
-//                            mCtx.decoys.size() + mCtx.pathMolecules.size() + 3;
-//                }
-//                molsToReduce.reserve(numberOfMolsToReduce);
-//                // add all candidate
-//                PathFinderContext::CandidateMap::iterator itCandidates;
-//                for (itCandidates = mCtx.candidates.begin();
-//                        itCandidates != mCtx.candidates.end(); itCandidates++) {
-//                    molsToReduce.push_back(&itCandidates->second);
-//                }
-//                // add all decoys
-//                std::vector<MolpherMolecule>::iterator itDecoys;
-//                for (itDecoys = mCtx.decoys.begin();
-//                        itDecoys != mCtx.decoys.end(); itDecoys++) {
-//                    molsToReduce.push_back(&(*itDecoys));
-//                }
-//                molsToReduce.push_back(&mCtx.source);
-//                molsToReduce.push_back(&mCtx.target);
-//                if (mCtx.ScaffoldMode()) {
-//                    std::vector<MolpherMolecule>::iterator itPathMols;
-//                    for (itPathMols = mCtx.pathMolecules.begin();
-//                            itPathMols != mCtx.pathMolecules.end(); itPathMols++) {
-//                        molsToReduce.push_back(&(*itPathMols));
-//                    }
-//                    molsToReduce.push_back(&mCtx.tempSource);
-//                }
-//                // reduce ..
-//                DimensionReducer *reducer =
-//                        ReducerFactory::Create(mCtx.dimRedSelector);
-//                reducer->Reduce(molsToReduce,
-//                        mCtx.fingerprintSelector, mCtx.simCoeffSelector, *mTbbCtx);
-//                ReducerFactory::Recycle(reducer);
-//
-//                stageStopwatch.ReportElapsedMiliseconds("DimensionReduction", true);
-//            }
 
             if (!Cancelled() && !mCtx.saveOnlyMorphData) {
                 // save data about the test mols
@@ -1323,8 +1160,6 @@ void PathFinderActivity::operator()() {
                     SaveIterationData::saveCSVData(it->second, mCtx.candidates, mCtx, testMolsData);
                 }
 
-//                std::string test_summary_path(output_dir + "/" + NumberToString(mCtx.jobId) + "_summary_test_mols.csv");
-//                ofstream overallTestData(test_summary_path.c_str());
                 std::string summary_path(storage_dir + "/summary_test_mols.csv");
                 ofstream overallTestData(summary_path.c_str());
                 testMolsData.write(overallTestData);
@@ -1359,14 +1194,6 @@ void PathFinderActivity::operator()() {
                         stringData[0] = "NA";
                     }
                     finalBag.addStringData("ParentID", stringData);
-
-//                    if (itCandidates->second.distToEtalon == 0) {
-//                        std::stringstream ss;
-//                        ss << mCtx.jobId << "/" << mCtx.iterIdx + 1 << ": "
-//                                << "Zero distance: " << itCandidates->second.smile;
-//                        SynchCout(ss.str());
-//                    }
-                }
 
                 // write data about the molecules in the bag
                 std::string path(GenerateDirname(output_dir, mCtx.jobId) + "/final_bag.csv");
@@ -1406,26 +1233,6 @@ void PathFinderActivity::operator()() {
                     if (!canContinueCurrentJob) {
                         IterationSnapshot snp;
                         PathFinderContext::ContextToSnapshot(mCtx, snp);
-//                        MoleculeVector final_leaves;
-//                        FindLeaves findFinalLeaves(final_leaves);
-//                        if (!Cancelled()) {
-//                            tbb::parallel_for(
-//                                    PathFinderContext::CandidateMap::range_type(mCtx.candidates),
-//                                    findFinalLeaves, tbb::auto_partitioner(), *mTbbCtx);
-//                            stageStopwatch.ReportElapsedMiliseconds("FindFinalLeaves", true);
-//                        }
-//                        for (MoleculeVector::iterator it = final_leaves.begin(); it != final_leaves.end(); it++) {
-//                            MolpherMolecule &leaf_mol = (*it);
-//                            std::string mol_name(leaf_mol.id);
-//                            std::string filename = GenerateFilename(output_dir,
-//                                    mCtx.jobId, mol_name + ".path");
-//                            WriteMolpherPath(
-//                                    filename,
-//                                    leaf_mol.smile,
-//                                    snp.candidates,
-//                                    mCtx.pathMolecules
-//                                );
-//                        }
                     }
                 }
             }
