@@ -723,7 +723,7 @@ void PathFinderActivity::SaveIterationData::saveCSVData(
     , PathFinderContext& ctx
     , CSVparse::CSV& morphingData
 ) {
-    std::vector<string> stringData;
+    std::vector<std::string> stringData;
     std::vector<double> floatData;
     stringData.push_back("NA");
     floatData.push_back(NAN);
@@ -798,7 +798,7 @@ void PathFinderActivity::operator()() {
 
                             //initialize data collection
                             if (mCtx.saveDataAsCSVs) {
-                                std::vector<string> stringData;
+                                std::vector<std::string> stringData;
                                 std::vector<double> floatData;
                                 stringData.push_back(it->second.id);
                                 floatData.push_back(it->second.distToEtalon);
@@ -824,7 +824,7 @@ void PathFinderActivity::operator()() {
 
                         // init initial data about test mols
                         for (PathFinderContext::CandidateMap::iterator it = mCtx.testActives.begin(); it != mCtx.testActives.end(); it++) {
-                            std::vector<string> stringData;
+                            std::vector<std::string> stringData;
                             std::vector<double> floatData;
                             stringData.push_back(it->second.id);
                             floatData.push_back(it->second.distToEtalon);
@@ -1071,7 +1071,7 @@ void PathFinderActivity::operator()() {
                     if (survivors[idx]) {
                         MolpherMolecule &morph = (*morph_it);
                         PathFinderContext::CandidateMap::accessor ac;
-                        std::vector<string> stringData;
+                        std::vector<std::string> stringData;
                         std::vector<double> floatData;
                         stringData.push_back(morph.id);
                         floatData.push_back(morph.distToEtalon);
@@ -1097,7 +1097,7 @@ void PathFinderActivity::operator()() {
                 }
 
                 std::string summary_path(storage_dir + "/summary.csv");
-                ofstream overallData(summary_path.c_str());
+                std::ofstream overallData(summary_path.c_str());
                 morphingData.write(overallData);
 
                 stageStopwatch.ReportElapsedMiliseconds("MorphingSummary", true);
@@ -1143,7 +1143,7 @@ void PathFinderActivity::operator()() {
             if (!Cancelled() && !mCtx.saveOnlyMorphData) {
                 // save data about the test mols
                 for (PathFinderContext::CandidateMap::iterator it = mCtx.testActives.begin(); it != mCtx.testActives.end(); it++) {
-                    std::vector<string> stringData;
+                    std::vector<std::string> stringData;
                     std::vector<double> floatData;
                     stringData.push_back(it->second.id);
                     floatData.push_back(it->second.distToEtalon);
@@ -1158,7 +1158,7 @@ void PathFinderActivity::operator()() {
                 }
 
                 std::string summary_path(storage_dir + "/summary_test_mols.csv");
-                ofstream overallTestData(summary_path.c_str());
+                std::ofstream overallTestData(summary_path.c_str());
                 testMolsData.write(overallTestData);
 
                 // find and print the closest molecule
@@ -1174,7 +1174,7 @@ void PathFinderActivity::operator()() {
                         bestID = itCandidates->second.id;
                     }
 
-                    std::vector<string> stringData;
+                    std::vector<std::string> stringData;
                     std::vector<double> floatData;
                     stringData.push_back(itCandidates->second.id);
                     floatData.push_back(itCandidates->second.distToEtalon);
@@ -1195,7 +1195,7 @@ void PathFinderActivity::operator()() {
 
                 // write data about the molecules in the bag
                 std::string path(GenerateDirname(output_dir, mCtx.jobId) + "/final_bag.csv");
-                ofstream out(path.c_str());
+                std::ofstream out(path.c_str());
                 finalBag.write(out);
 
                 std::stringstream ss;

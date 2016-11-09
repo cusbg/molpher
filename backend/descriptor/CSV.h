@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   CSV.h
  * Author: martin
  *
@@ -13,8 +13,6 @@
 #include <map>
 #include <vector>
 
-using namespace std;
-
 namespace CSVparse {
 
     enum DataType {
@@ -24,9 +22,9 @@ namespace CSVparse {
 
     class CSV {
     private:
-        string filename;
-        string separator;
-        string emptyValue;
+        std::string filename;
+        std::string separator;
+        std::string emptyValue;
         char stringSeparator;
         char decimalChar;
         bool headerOn;
@@ -34,55 +32,55 @@ namespace CSVparse {
         unsigned int rowCount;
         unsigned int columnCount;
 
-        vector<string> header;
-        vector<string> rowNames;
-        map<unsigned int, DataType> columnIdxDataType;
-        map<string, unsigned int> columnNameColumnIdx;
-        map<string, unsigned int> rowNameRowIdx;
+        std::vector<std::string> header;
+        std::vector<std::string> rowNames;
+        std::map<unsigned int, DataType> columnIdxDataType;
+        std::map<std::string, unsigned int> columnNameColumnIdx;
+        std::map<std::string, unsigned int> rowNameRowIdx;
 
-        map<unsigned int, vector<double> > floatData;
-        map<unsigned int, vector<string> > stringData;
+        std::map<unsigned int, std::vector<double> > floatData;
+        std::map<unsigned int, std::vector<std::string> > stringData;
 
-        void saveToken(string &token, unsigned int columnIdx, DataType type);
+        void saveToken(std::string &token, unsigned int columnIdx, DataType type);
         void generateRows(unsigned int count);
 
     public:
 
-        CSV(string filename = ""
-                , string sep = ";"
-                , string emptyValue = "NA"
+        CSV(std::string filename = ""
+                , std::string sep = ";"
+                , std::string emptyValue = "NA"
                 , bool header = true
                 , bool rowNames = false
                 , char stringSeparator = '"'
                 , char decimalChar = '.'
                 );
-        
+
         void loadData();
-        void loadData(const string &filename);
-        void write(ostream &stream);
-        void write(const string &filename);
-        void writeRow(ostream &stream, unsigned int number);
-        void writeHeader(ostream &stream);
+        void loadData(const std::string &filename);
+        void write(std::ostream &stream);
+        void write(const std::string &filename);
+        void writeRow(std::ostream &stream, unsigned int number);
+        void writeHeader(std::ostream &stream);
         unsigned int getRowCount();
         unsigned int getColumnCount();
-        vector<string> getColumnNames();
-        vector<string> getRowNames();
-        unsigned int getColumnIdx(const string &colName);
-        unsigned int getRowIdx(const string &rowName);
-        const map<unsigned int, DataType>& getTypeMap();
-        const vector<string>& getHeader();
-        
+        std::vector<std::string> getColumnNames();
+        std::vector<std::string> getRowNames();
+        unsigned int getColumnIdx(const std::string &colName);
+        unsigned int getRowIdx(const std::string &rowName);
+        const std::map<unsigned int, DataType>& getTypeMap();
+        const std::vector<std::string>& getHeader();
+
         // these methods should be generic, maybe next time :)
-        const vector<double>& getFloatData(unsigned int columnIdx);
-        const vector<string>& getStringData(unsigned int columnIdx);
-        const vector<double>& getFloatData(const string &colName);
-        const vector<string>& getStringData(const string &colName);
-        void addFloatData(const string &colName, const vector<double> &data);
-        void addStringData(const string &colName, const vector<string> &data);
-        
-        string getEmptyValue();
-        
-        void setFilename(const string &filename);
+        const std::vector<double>& getFloatData(unsigned int columnIdx);
+        const std::vector<std::string>& getStringData(unsigned int columnIdx);
+        const std::vector<double>& getFloatData(const std::string &colName);
+        const std::vector<std::string>& getStringData(const std::string &colName);
+        void addFloatData(const std::string &colName, const std::vector<double> &data);
+        void addStringData(const std::string &colName, const std::vector<std::string> &data);
+
+        std::string getEmptyValue();
+
+        void setFilename(const std::string &filename);
     };
 
 

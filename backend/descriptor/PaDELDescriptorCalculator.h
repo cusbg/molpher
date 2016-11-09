@@ -15,60 +15,45 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
-using namespace std;
-
 namespace PaDELdesc {
-
-    /**
-     * Usage:
-     *
-     * For each iteration:
-     * ctor
-     * addMol(morph.id, morph.smile);
-     * morph.descriptorsFilePath =getOutputFilePath
-     * computeDescriptors
-     *
-     * calculator.getDescValues(morph.id) -> return descriptors
-     *
-     */
     class PaDELDescriptorCalculator {
         private:
-            string PaDELPath;
-            string workDirPath;
-            string configXMLPath;
-            string availableDescsCSVPath;
-            string SMILESFilePath;
-            string outputFilePath;
-            map<string, pair<string,string> > descriptorClassType;
-            vector<string> descriptors2compute;
+            std::string PaDELPath;
+            std::string workDirPath;
+            std::string configXMLPath;
+            std::string availableDescsCSVPath;
+            std::string SMILESFilePath;
+            std::string outputFilePath;
+            std::map<std::string, std::pair<std::string,std::string> > descriptorClassType;
+            std::vector<std::string> descriptors2compute;
             boost::property_tree::ptree configXML;
-            map<string, string> mols;
-            vector<string> molNames;
+            std::map<std::string, std::string> mols;
+            std::vector<std::string> molNames;
             unsigned int threadsCnt;
 
-            typedef map<string, map<string, double> > DataMap;
+            typedef std::map<std::string, std::map<std::string, double> > DataMap;
             DataMap computedData;
 
-            void LoadAvailableDescriptors(const string &CSV_desc_list_path);
+            void LoadAvailableDescriptors(const std::string &CSV_desc_list_path);
             void SaveDescConfig();
 
         public:
             PaDELDescriptorCalculator(
-                    const string &PaDELPath
-                    , const string &workDirPath
-                    , const vector<string> &descriptor
+                    const std::string &PaDELPath
+                    , const std::string &workDirPath
+                    , const std::vector<std::string> &descriptor
                     , const unsigned int threads = 2
-                    , const string &descriptorsCSV = "/descriptors.csv"
+                    , const std::string &descriptorsCSV = "/descriptors.csv"
             );
-            void saveDescConfigFile(const string &path);
+            void saveDescConfigFile(const std::string &path);
             void saveDescConfigFile();
-            void saveSMILES(const string &path);
+            void saveSMILES(const std::string &path);
             void saveSMILESFile();
-            void addMol(const string &id, const string &smiles);
+            void addMol(const std::string &id, const std::string &smiles);
             void computeDescriptors();
-            map<string, double>& getDescValues(const string &mol_id);
+            std::map<std::string, double>& getDescValues(const std::string &mol_id);
 
-            string getOutputFilePath();
+            std::string getOutputFilePath();
     };
 }
 

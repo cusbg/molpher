@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   DataConverter.h
  * Author: martin
  *
@@ -11,23 +11,21 @@
 #include <string>
 #include <sstream>
 
-#include <algorithm> 
-#include <functional> 
+#include <algorithm>
+#include <functional>
 #include <cctype>
 #include <locale>
-
-using namespace std;
 
 namespace CSVparse {
 
     struct DataConverter {
-        static int ValToInt(const string &value);
-        static double ValToDouble(const string &value);
-        static bool IsNumeric(const string &value, const char decimal_char = '.', const char stringSep = '"');
+        static int ValToInt(const std::string &value);
+        static double ValToDouble(const std::string &value);
+        static bool IsNumeric(const std::string &value, const char decimal_char = '.', const char stringSep = '"');
 
         template<typename Number>
-        static string ValToString(Number num) {
-            stringstream s;
+        static std::string ValToString(Number num) {
+            std::stringstream s;
             s << num;
             return s.str();
         }

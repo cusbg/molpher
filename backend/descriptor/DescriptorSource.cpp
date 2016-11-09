@@ -13,9 +13,9 @@ DescriptorSource::~DescriptorSource()
 class PaDELDescriptorSource : DescriptorSource
 {
 public:
-    PaDELDescriptorSource(const string &PaDELPath
-            , const string &workDirPath, const vector<string> &descriptor
-            , const unsigned int threads, const string &descriptorsCSV
+    PaDELDescriptorSource(const std::string &PaDELPath
+            , const std::string &workDirPath, const std::vector<std::string> &descriptor
+            , const unsigned int threads, const std::string &descriptorsCSV
             );
 public:
     virtual void add(MolpherMolecule& morph);
@@ -25,9 +25,9 @@ private:
     PaDELdesc::PaDELDescriptorCalculator calculator;
 };
 
-PaDELDescriptorSource::PaDELDescriptorSource(const string &PaDELPath
-        , const string &workDirPath, const vector<string> &descriptor
-        , const unsigned int threads, const string &descriptorsCSV)
+PaDELDescriptorSource::PaDELDescriptorSource(const std::string &PaDELPath
+        , const std::string &workDirPath, const std::vector<std::string> &descriptor
+        , const unsigned int threads, const std::string &descriptorsCSV)
 : calculator(PaDELdesc::PaDELDescriptorCalculator(PaDELPath, workDirPath,
 descriptor, threads, descriptorsCSV))
 {

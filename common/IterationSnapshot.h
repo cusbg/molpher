@@ -205,8 +205,8 @@ struct IterationSnapshot
 //        }
 
         CSVparse::CSV weights(descriptorWeightsFile, ",", "NA");
-        const std::vector<string> &desc_names = weights.getHeader();
-        for (std::vector<string>::const_iterator it = desc_names.begin(); it != desc_names.end(); it++) {
+        const std::vector<std::string> &desc_names = weights.getHeader();
+        for (std::vector<std::string>::const_iterator it = desc_names.begin(); it != desc_names.end(); it++) {
             relevantDescriptorNames.push_back(*it);
             descWeights.push_back(weights.getFloatData(*it)[0]);
         }
@@ -214,7 +214,7 @@ struct IterationSnapshot
         // load data about actives
         CSVparse::CSV actives_descs_CSV(activesDescriptorsFile, ",", "");
         activesIDs = actives_descs_CSV.getStringData("Name");
-        for (std::vector<string>::const_iterator id = activesIDs.begin(); id != activesIDs.end(); id++) {
+        for (std::vector<std::string>::const_iterator id = activesIDs.begin(); id != activesIDs.end(); id++) {
             activesIDsSet.insert(*id);
         }
 
@@ -222,7 +222,7 @@ struct IterationSnapshot
         CSVparse::CSV sources_descs_CSV(sourceMolsDescriptorsFile, ",", "");
         sourceIDs = sources_descs_CSV.getStringData("Name");
         assert(sourceIDs.size() != 0);
-        for (std::vector<string>::const_iterator id = sourceIDs.begin(); id != sourceIDs.end(); id++) {
+        for (std::vector<std::string>::const_iterator id = sourceIDs.begin(); id != sourceIDs.end(); id++) {
             sourceIDsSet.insert(*id);
         }
         std::vector<std::vector<double> > source_mols;
@@ -231,7 +231,7 @@ struct IterationSnapshot
         // load data about test mols
         CSVparse::CSV tests_descs_CSV(testActivesDescriptorsFile, ",", "");
         testIDs = tests_descs_CSV.getStringData("Name");
-        for (std::vector<string>::const_iterator id = testIDs.begin(); id != testIDs.end(); id++) {
+        for (std::vector<std::string>::const_iterator id = testIDs.begin(); id != testIDs.end(); id++) {
             testIDsSet.insert(*id);
         }
         std::vector<std::vector<double> > test_mols;
