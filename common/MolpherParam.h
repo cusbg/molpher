@@ -31,12 +31,12 @@ struct MolpherParam
     MolpherParam() :
         cntCandidatesToKeep(40),        // accept
         cntCandidatesToKeepMax(150),    // acceptMax
-        cntMorphs(90),                  // farProduce 
+        cntMorphs(90),                  // farProduce
         cntMorphsInDepth(200),          // closepPoduce
         distToTargetDepthSwitch(0.1),   // farCloseThreashold
         cntMaxMorphs(5000),             // maxMorhpsTotal
         itThreshold(6),                 // nonProducingSurvive
-        decayThreshold(12),              
+        decayThreshold(12),
         cntIterations(500),             // maxIter
         timeMaxSeconds(21600000),       // maxTime
         minAcceptableMolecularWeight(0.0),
@@ -48,11 +48,10 @@ struct MolpherParam
         activityMorphing(false),
         startMolMaxCount(0),
         maxAcceptableEtalonDistance(DBL_MAX),
-        maxMOOPruns(10),
-        etalonType("mean")
+        maxMOOPruns(10)
     {
     }
-       
+
     friend class boost::serialization::access;
     template<typename Archive>
     void serialize(Archive &ar, const unsigned int version)
@@ -72,14 +71,8 @@ struct MolpherParam
         ar & BOOST_SERIALIZATION_NVP(useSyntetizedFeasibility);
         ar & BOOST_SERIALIZATION_NVP(activityMorphing);
         ar & BOOST_SERIALIZATION_NVP(maxAcceptableEtalonDistance);
-        
-        //if (version > 0) {
-            ar & BOOST_SERIALIZATION_NVP(useSubstructureRestriction);
-            ar & BOOST_SERIALIZATION_NVP(decoyRange);
-        //}
-            
-        // ignored:
-        //    useVisualisation
+        ar & BOOST_SERIALIZATION_NVP(useSubstructureRestriction);
+        ar & BOOST_SERIALIZATION_NVP(decoyRange);
     }
 
     bool IsValid()
@@ -109,57 +102,57 @@ struct MolpherParam
 	double distToTargetDepthSwitch;
     boost::uint32_t cntMaxMorphs;
 	boost::uint32_t itThreshold;
-        boost::uint32_t decayThreshold;
+    boost::uint32_t decayThreshold;
     boost::uint32_t cntIterations;
 	boost::uint32_t timeMaxSeconds;
-    
+
     // newly added parameters to improve Molpher behaviour
     double minAcceptableMolecularWeight;
     double maxAcceptableMolecularWeight;
-    
+
     /**
      * Filter molecules based on syntetized feasibility?
      */
     bool useSyntetizedFeasibility;
-    
+
     /**
      * Use substructure filter? Added in version 1.
      */
     bool useSubstructureRestriction;
-    
+
     /**
-     * Decoy range. Ie. how close muse candidate be to the 
+     * Decoy range. Ie. how close muse candidate be to the
      * decoy to get over it. Must be from interval (1,0).
      */
     double decoyRange;
-    
+
     /**
      * If false no visualisation is computed.
      */
     bool useVisualisation;
-    
+
     /**
      * Use the PathFinderActivity class
      */
     bool activityMorphing;
-    
+
     /**
-     * While morphing with activity information, this is the maximum number of active 
-     * molecules to use for morphing initilization. 
+     * While morphing with activity information, this is the maximum number of active
+     * molecules to use for morphing initilization.
      * Value of 0 means use all active molecules.
      */
     boost::uint32_t startMolMaxCount;
-    
+
     double maxAcceptableEtalonDistance;
+
     boost::uint32_t maxMOOPruns;
-    std::string etalonType;
 };
 
 // add information about version to archive
 //BOOST_CLASS_IMPLEMENTATION(MolpherParam, object_class_info)
 // turn off versioning
 BOOST_CLASS_IMPLEMENTATION(MolpherParam, object_serializable)
-// turn off tracking        
+// turn off tracking
 BOOST_CLASS_TRACKING(MolpherParam, track_never)
 //  set version
 //BOOST_CLASS_VERSION(MolpherParam, 1)

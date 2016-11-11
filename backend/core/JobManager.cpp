@@ -135,8 +135,9 @@ bool JobManager::GetJob(PathFinderContext &ctx) {
     }
 
     // This job might not run before, therefore save the initial snapshot.
-    WriteSnapshotToFile(
-            GenerateFilename(mStorageDir, snp.jobId, snp.iterIdx), snp);
+    WriteSnapshotToFile(GenerateSnaphostFilenameWithoutExtension(
+            mStorageDir, snp.jobId, snp.iterIdx), snp);
+
     PublishIteration(snp);
 
     return true;
@@ -175,7 +176,8 @@ bool JobManager::CommitIteration(PathFinderContext &ctx, bool canContinue, bool 
                 for (unsigned int i = 1; i <= snp.iterIdx; ++i) {
                     IterationSnapshot historicSnp;
                     bool loaded = ReadSnapshotFromFile(
-                            GenerateFilename(mStorageDir, snp.jobId, i), historicSnp);
+                            GenerateSnaphostFilenameWithoutExtension(
+                            mStorageDir, snp.jobId, i), historicSnp);
                     if (loaded) {
                         GatherMolphMols(historicSnp.candidates, gathered);
                     }
@@ -186,9 +188,6 @@ bool JobManager::CommitIteration(PathFinderContext &ctx, bool canContinue, bool 
             } else {
                 // there was found (NOT last) path during scaffold hopping.
                 // So the scaffold level was not the most specific.
-
-                ctx.morphDerivations.clear();
-
                 std::vector<MolpherMolecule> exploredPathMolecules;
                 PathFinderContext::ScaffoldSmileMap::accessor acScaff;
                 ctx.candidateScaffoldMolecules.find(acScaff, ctx.target.scaffoldSmile);
@@ -327,8 +326,8 @@ bool JobManager::CommitIteration(PathFinderContext &ctx, bool canContinue, bool 
         }
 
         // Save the snapshot to storage dir
-        WriteSnapshotToFile(
-                GenerateFilename(mStorageDir, snp.jobId, snp.iterIdx), snp);
+        WriteSnapshotToFile(GenerateSnaphostFilenameWithoutExtension(
+                mStorageDir, snp.jobId, snp.iterIdx), snp);
 
         // update the old snapshot in job map
         JobGroup::JobMap::iterator it = mJobs.mJobMap.find(jobId);
@@ -459,10 +458,6 @@ JobId JobManager::CreateJob(IterationSnapshot &snp, std::string &password) {
         snp.chemOperSelectors.push_back(OP_MUTATE_ATOM);
         snp.chemOperSelectors.push_back(OP_REMOVE_ATOM);
         snp.chemOperSelectors.push_back(OP_REMOVE_BOND);
-    }
-
-    if (snp.IsValid() && snp.IsActivityMorphingOn()) {
-        snp.PrepareActivityData();
     }
 
     if (snp.IsValid()) { // Prevents backend crash (should be ensured by frontend).
@@ -604,8 +599,8 @@ bool JobManager::ValidateJobPassword(JobId jobId, std::string &password) {
 bool JobManager::GetJobHistory(JobId jobId, IterIdx iterIdx, IterationSnapshot &snp) {
     Lock lock(mJobManagerGuard);
 
-    return ReadSnapshotFromFile(
-            GenerateFilename(mStorageDir, jobId, iterIdx), snp);
+    return ReadSnapshotFromFile(GenerateSnaphostFilenameWithoutExtension(
+            mStorageDir, jobId, iterIdx), snp);
 }
 
 bool JobManager::SetFingerprintSelector(

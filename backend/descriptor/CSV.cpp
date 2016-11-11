@@ -5,6 +5,7 @@
 #include <fstream>
 #include <stdexcept>
 #include "math.h"
+#include "inout.h"
 #include <assert.h>
 
 using namespace std;
@@ -13,6 +14,7 @@ typedef CSVparse::DataConverter DConv;
 
 void CSVparse::CSV::saveToken(string &token, unsigned int columnIdx, CSVparse::DataType type) {
     if (type == CSVparse::FLOAT_TYPE) {
+        assert(floatData.count(columnIdx) > 0);
         assert(columnIdxDataType[columnIdx] == CSVparse::FLOAT_TYPE);
         if (token.compare(emptyValue) == 0) {
             floatData[columnIdx].push_back(NAN);
@@ -20,6 +22,7 @@ void CSVparse::CSV::saveToken(string &token, unsigned int columnIdx, CSVparse::D
             floatData[columnIdx].push_back(DConv::ValToDouble(token));
         }
     } else {
+        assert(stringData.count(columnIdx) > 0);
         assert(columnIdxDataType[columnIdx] == CSVparse::STRING_TYPE);
         DConv::trim(token, stringSeparator);
         stringData[columnIdx].push_back(token);
@@ -29,131 +32,127 @@ void CSVparse::CSV::saveToken(string &token, unsigned int columnIdx, CSVparse::D
 void CSVparse::CSV::loadData() {
     // TODO: ignore separator, if it is enclosed within stringSeparator
     ifstream infile(filename.c_str());
-    if (infile.is_open()) {      
-        std::string s;
-        bool header_read = false;
-        bool first_pass = true;
-        unsigned int row_counter = 0;
-        map<unsigned int, vector<string> > postponed;
-        while (std::getline(infile, s)) {
-            s.append(separator);
-            string token;
-            string::size_type pos = 0;
-            unsigned int columnIdx = 0;
-            bool first_value = true;
-            while ((pos = s.find(separator)) != string::npos) {
-                token = s.substr(0, pos);
-                DConv::trim(token);
-                if (headerOn && !header_read || (first_pass && !(first_value && rowNamesOn))) {
-                    columnCount = columnIdx + 1;
-                }
-                if (headerOn && !header_read) {
-                    DConv::trim(token, stringSeparator);
-                    this->header.push_back(token);
-                    this->columnNameColumnIdx[token] = columnIdx;
-                } else if (first_value && rowNamesOn) {
-                    DConv::trim(token, stringSeparator);
-                    rowNames.push_back(token);
-                    if (headerOn) {
-                        rowNameRowIdx[token] = row_counter - 1;
-                    } else {
-                        rowNameRowIdx[token] = row_counter;
-                    }
-                } else if (postponed.find(columnIdx) == postponed.end()
-                        && columnIdxDataType.find(columnIdx) == columnIdxDataType.end()) {
-                    if (token.compare(emptyValue) == 0) {
-                        postponed[columnIdx] = vector<string>();
-                        postponed[columnIdx].push_back(token);
-                    } else if (DConv::IsNumeric(token, decimalChar, stringSeparator)) {
-                        columnIdxDataType[columnIdx] = CSVparse::FLOAT_TYPE;
-                        floatData[columnIdx] = vector<double>();
-                        saveToken(token, columnIdx, CSVparse::FLOAT_TYPE);
-                    } else {
-                        columnIdxDataType[columnIdx] = CSVparse::STRING_TYPE;
-                        stringData[columnIdx] = vector<string>();
-                        saveToken(token, columnIdx, CSVparse::STRING_TYPE);
-                    }
-                } else if (postponed.find(columnIdx) != postponed.end()) {
-                    if (token.compare(emptyValue) == 0) {
-                        postponed[columnIdx].push_back(token);
-                    } else if (DConv::IsNumeric(token, decimalChar, stringSeparator)) {
-                        columnIdxDataType[columnIdx] = CSVparse::FLOAT_TYPE;
-                        floatData[columnIdx] = vector<double>();
-                        vector<string>::iterator it;
-                        for (it = postponed[columnIdx].begin(); it != postponed[columnIdx].end(); it++) {
-                            saveToken(*it, columnIdx, CSVparse::FLOAT_TYPE);
-                        }
-                        saveToken(token, columnIdx, CSVparse::FLOAT_TYPE);
-                        postponed.erase(columnIdx);
-                    } else {
-                        columnIdxDataType[columnIdx] = CSVparse::STRING_TYPE;
-                        stringData[columnIdx] = vector<string>();
-                        vector<string>::iterator it;
-                        for (it = postponed[columnIdx].begin(); it != postponed[columnIdx].end(); it++) {
-                            saveToken(*it, columnIdx, CSVparse::STRING_TYPE);
-                        }
-                        saveToken(token, columnIdx, CSVparse::STRING_TYPE);
-                        postponed.erase(columnIdx);
-                    }
-                } else if (token.compare(emptyValue) != 0) {
-                    saveToken(token, columnIdx, columnIdxDataType[columnIdx]);
-                } else if (token.compare(emptyValue) == 0) {
-                    saveToken(token, columnIdx, columnIdxDataType[columnIdx]);
+    SynchCout("Reading file: " + filename);
+    std::string s;
+    bool header_read = false;
+    bool first_pass = true;
+    unsigned int row_counter = 0;
+    map<unsigned int, vector<string> > postponed;
+    while (std::getline(infile, s)) {
+        s.append(separator);
+        string token;
+        string::size_type pos = 0;
+        unsigned int columnIdx = 0;
+        bool first_value = true;
+        while ((pos = s.find(separator)) != string::npos) {
+            token = s.substr(0, pos);
+            DConv::trim(token);
+            if (headerOn && !header_read || (first_pass && !(first_value && rowNamesOn))) {
+                columnCount = columnIdx + 1;
+            }
+            if (headerOn && !header_read) {
+                DConv::trim(token, stringSeparator);
+                this->header.push_back(token);
+                this->columnNameColumnIdx[token] = columnIdx;
+            } else if (first_value && rowNamesOn) {
+                DConv::trim(token, stringSeparator);
+                rowNames.push_back(token);
+                if (headerOn) {
+                    rowNameRowIdx[token] = row_counter - 1;
                 } else {
-                    assert(false);
+                    rowNameRowIdx[token] = row_counter;
                 }
-                
-                s.erase(0, pos + separator.length());
-                if (headerOn && !header_read || !(first_value && rowNamesOn)) {
-                    ++columnIdx;
+            } else if (postponed.find(columnIdx) == postponed.end()
+                    && columnIdxDataType.find(columnIdx) == columnIdxDataType.end()) {
+                if (token.compare(emptyValue) == 0) {
+                    postponed[columnIdx] = vector<string>();
+                    postponed[columnIdx].push_back(token);
+                } else if (DConv::IsNumeric(token, decimalChar, stringSeparator)) {
+                    columnIdxDataType[columnIdx] = CSVparse::FLOAT_TYPE;
+                    floatData[columnIdx] = vector<double>();
+                    saveToken(token, columnIdx, CSVparse::FLOAT_TYPE);
+                } else {
+                    columnIdxDataType[columnIdx] = CSVparse::STRING_TYPE;
+                    stringData[columnIdx] = vector<string>();
+                    saveToken(token, columnIdx, CSVparse::STRING_TYPE);
                 }
-                first_value = false;
+            } else if (postponed.find(columnIdx) != postponed.end()) {
+                if (token.compare(emptyValue) == 0) {
+                    postponed[columnIdx].push_back(token);
+                } else if (DConv::IsNumeric(token, decimalChar, stringSeparator)) {
+                    columnIdxDataType[columnIdx] = CSVparse::FLOAT_TYPE;
+                    floatData[columnIdx] = vector<double>();
+                    vector<string>::iterator it;
+                    for (it = postponed[columnIdx].begin(); it != postponed[columnIdx].end(); it++) {
+                        saveToken(*it, columnIdx, CSVparse::FLOAT_TYPE);
+                    }
+                    saveToken(token, columnIdx, CSVparse::FLOAT_TYPE);
+                    postponed.erase(columnIdx);
+                } else {
+                    columnIdxDataType[columnIdx] = CSVparse::STRING_TYPE;
+                    stringData[columnIdx] = vector<string>();
+                    vector<string>::iterator it;
+                    for (it = postponed[columnIdx].begin(); it != postponed[columnIdx].end(); it++) {
+                        saveToken(*it, columnIdx, CSVparse::STRING_TYPE);
+                    }
+                    saveToken(token, columnIdx, CSVparse::STRING_TYPE);
+                    postponed.erase(columnIdx);
+                }
+            } else if (token.compare(emptyValue) != 0) {
+                saveToken(token, columnIdx, columnIdxDataType[columnIdx]);
+            } else if (token.compare(emptyValue) == 0) {
+                saveToken(token, columnIdx, columnIdxDataType[columnIdx]);
+            } else {
+                assert(false);
             }
-            header_read = true;
-            first_pass = false;
-            ++row_counter;
-        }
-        
-        // set rowCount and create custom header, if it is not read
-        if (headerOn) {
-            rowCount = row_counter - 1;
-        } else {
-            rowCount = row_counter;
-            for (unsigned int i = 0; i != columnCount; i++) {
-                string name = DConv::ValToString(i + 1);
-                header.push_back(name);
-                columnNameColumnIdx[name] = i;
+            s.erase(0, pos + separator.length());
+            if (headerOn && !header_read || !(first_value && rowNamesOn)) {
+                ++columnIdx;
             }
+            first_value = false;
         }
-        
-        if (!rowNamesOn) {
-            for (unsigned int i = 0; i != rowCount; i++) {
-                string name = DConv::ValToString(i + 1);
-                rowNames.push_back(name);
-                rowNameRowIdx[name] = i;
-            }
-        }
-        
-        // if all values in a column are empty, save NAN instead
-        map<unsigned int, vector<string> >::iterator it;
-        for (it = postponed.begin(); it != postponed.end(); it++) {
-            assert(columnIdxDataType.find(it->first) == columnIdxDataType.end());
-            columnIdxDataType[it->first] = CSVparse::FLOAT_TYPE;
-            floatData[it->first] = vector<double>();
-            vector<string>::iterator it2;
-            for (it2 = it->second.begin() ; it2 != it->second.end(); it2++) {
-                saveToken(*it2, it->first, CSVparse::FLOAT_TYPE);
-            }
-        }
-        assert(header.size() == columnCount);
-        assert(rowCount == rowNames.size());
-        if (rowCount > 0) {
-            assert(columnCount == (stringData.size() + floatData.size()));
-            assert(columnIdxDataType.size() == columnCount);
-            assert(columnNameColumnIdx.size() == columnCount);
-        }
+        header_read = true;
+        first_pass = false;
+        ++row_counter;
+    }
+
+    // set rowCount and create custom header, if it is not read
+    if (headerOn) {
+        rowCount = row_counter - 1;
     } else {
-        throw runtime_error("Error opening file: " + filename);
+        rowCount = row_counter;
+        for (unsigned int i = 0; i != columnCount; i++) {
+            string name = DConv::ValToString(i + 1);
+            header.push_back(name);
+            columnNameColumnIdx[name] = i;
+        }
+    }
+
+    if (!rowNamesOn) {
+        for (unsigned int i = 0; i != rowCount; i++) {
+            string name = DConv::ValToString(i + 1);
+            rowNames.push_back(name);
+            rowNameRowIdx[name] = i;
+        }
+    }
+
+    // if all values in a column are empty, save NAN instead
+    map<unsigned int, vector<string> >::iterator it;
+    for (it = postponed.begin(); it != postponed.end(); it++) {
+        assert(columnIdxDataType.find(it->first) == columnIdxDataType.end());
+        columnIdxDataType[it->first] = CSVparse::FLOAT_TYPE;
+        floatData[it->first] = vector<double>();
+        vector<string>::iterator it2;
+        for (it2 = it->second.begin() ; it2 != it->second.end(); it2++) {
+            saveToken(*it2, it->first, CSVparse::FLOAT_TYPE);
+        }
+    }
+    assert(header.size() == columnCount);
+    assert(rowCount == rowNames.size());
+    if (rowCount > 0) {
+        assert(columnCount == (stringData.size() + floatData.size()));
+        assert(columnIdxDataType.size() == columnCount);
+        assert(columnNameColumnIdx.size() == columnCount);
     }
 }
 
@@ -374,5 +373,5 @@ void CSVparse::CSV::addStringData(const string &colName, const vector<string> &d
     } else {
         assert(false);
     }
-    
+
 }

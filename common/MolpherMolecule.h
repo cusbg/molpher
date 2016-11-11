@@ -67,24 +67,6 @@ struct MolpherMolecule
     {
     }
 
-    MolpherMolecule(const std::string &smile, const std::string &id) :
-        smile(smile),
-        id(id),
-        parentChemOper(0),
-        scaffoldLevelCreation(0),
-        distToTarget(DBL_MAX),
-        distToEtalon(DBL_MAX),
-        distToClosestDecoy(0),
-        molecularWeight(0.0),
-        sascore(0.0),
-        itersWithoutDistImprovement(0),
-        itersFresh(0),
-        decayed(false),
-        posX(0),
-        posY(0)
-    {
-    }
-
     MolpherMolecule(const std::string &smile,
         const std::string &id,
         const std::vector<double> &descriptors,
@@ -158,25 +140,25 @@ struct MolpherMolecule
     void serialize(Archive &ar, const unsigned int version)
     {
         // usage of BOOST_SERIALIZATION_NVP enable us to use xml serialisation
-        ar & BOOST_SERIALIZATION_NVP(smile) &
-            BOOST_SERIALIZATION_NVP(formula) &
-            BOOST_SERIALIZATION_NVP(parentChemOper) &
-            BOOST_SERIALIZATION_NVP(parentSmile) &
-            BOOST_SERIALIZATION_NVP(descendants) &
-            BOOST_SERIALIZATION_NVP(historicDescendants) &
-            BOOST_SERIALIZATION_NVP(scaffoldSmile) &
-            BOOST_SERIALIZATION_NVP(scaffoldLevelCreation) &
-            BOOST_SERIALIZATION_NVP(distToTarget) &
-            BOOST_SERIALIZATION_NVP(distToEtalon) &
-            BOOST_SERIALIZATION_NVP(distToClosestDecoy) &
-            BOOST_SERIALIZATION_NVP(molecularWeight) &
-            BOOST_SERIALIZATION_NVP(itersWithoutDistImprovement) &
-            BOOST_SERIALIZATION_NVP(posX) &
-            BOOST_SERIALIZATION_NVP(etalonDistances) &
-            BOOST_SERIALIZATION_NVP(descriptorValues) &
-            BOOST_SERIALIZATION_NVP(descriptorsFilePath) &
-            BOOST_SERIALIZATION_NVP(id) &
-            BOOST_SERIALIZATION_NVP(posY);
+        ar & BOOST_SERIALIZATION_NVP(smile);
+        ar & BOOST_SERIALIZATION_NVP(formula);
+        ar & BOOST_SERIALIZATION_NVP(parentChemOper);
+        ar & BOOST_SERIALIZATION_NVP(parentSmile);
+        ar & BOOST_SERIALIZATION_NVP(descendants);
+        ar & BOOST_SERIALIZATION_NVP(historicDescendants);
+        ar & BOOST_SERIALIZATION_NVP(scaffoldSmile);
+        ar & BOOST_SERIALIZATION_NVP(scaffoldLevelCreation);
+        ar & BOOST_SERIALIZATION_NVP(distToTarget);
+        ar & BOOST_SERIALIZATION_NVP(distToEtalon);
+        ar & BOOST_SERIALIZATION_NVP(distToClosestDecoy);
+        ar & BOOST_SERIALIZATION_NVP(molecularWeight);
+        ar & BOOST_SERIALIZATION_NVP(itersWithoutDistImprovement);
+        ar & BOOST_SERIALIZATION_NVP(posX);
+        ar & BOOST_SERIALIZATION_NVP(etalonDistances);
+        ar & BOOST_SERIALIZATION_NVP(descriptorValues);
+        ar & BOOST_SERIALIZATION_NVP(descriptorsFilePath);
+        ar & BOOST_SERIALIZATION_NVP(id);
+        ar & BOOST_SERIALIZATION_NVP(posY);
     }
 
     bool IsValid()
@@ -186,7 +168,7 @@ struct MolpherMolecule
 
     void SaveDescriptors(const std::map<std::string, double> &descriptors, std::vector<std::string> &names) {
         for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++ ) {
-            descriptorValues.push_back(descriptors[*it]);
+            descriptorValues.push_back(descriptors.at(*it));
         }
     }
 
@@ -210,42 +192,6 @@ struct MolpherMolecule
             descriptorValues[idx] = val;
         }
     }
-
-//    void ComputeEtalonDistances(std::vector<double> &etalon, double NA_penalty = 0, double max_NAN_perc = 0) {
-//        assert(descriptorValues.size() == etalon.size());
-//        double sum_dist_squared = 0;
-//        std::vector<double>::iterator it;
-//        unsigned int idx = 0;
-//        unsigned int NAN_count = 0;
-//        for (it = etalon.begin(); it != etalon.end(); it++, idx++) {
-//            double morph_value = descriptorValues[idx];
-//            if (((boost::math::isnan)(morph_value))) {
-//                etalonDistances.push_back(NA_penalty);
-//                sum_dist_squared += std::pow(NA_penalty, 2);
-//                ++NAN_count;
-//            } else {
-//                double etalon_value = *it;
-//                double squared_distance = 0;
-//                if (!((boost::math::isnan)(etalon_value))) {
-//                    squared_distance = std::pow(etalon_value - morph_value, 2);
-//                    assert(!((boost::math::isnan)(squared_distance)));
-//                    etalonDistances.push_back(std::sqrt(squared_distance));
-//                } else {
-//                    assert(false);
-//                }
-//                sum_dist_squared += squared_distance;
-//            }
-//
-//        }
-//        double NAN_percentage = NAN_count / (double) etalon.size();
-//        if (NAN_percentage <= max_NAN_perc) {
-//            distToEtalon = std::sqrt(sum_dist_squared);
-//        } else {
-//            distToEtalon = DBL_MAX;
-//        }
-//        assert(!((boost::math::isnan)(distToEtalon)));
-//        assert(descriptorValues.size() == etalonDistances.size());
-//    }
 
     void ComputeEtalonDistances(std::vector<double> &etalon, std::vector<double> &weights) {
         assert(descriptorValues.size() == etalon.size());
@@ -287,28 +233,44 @@ struct MolpherMolecule
     }
 
     std::string smile;
+
     std::string formula;
+
     boost::int32_t parentChemOper;
+
     std::string parentSmile;
+
     std::set<std::string> descendants;
+
     std::set<std::string> historicDescendants;
 
     std::string scaffoldSmile;
+
     boost::int32_t scaffoldLevelCreation;
 
     double distToTarget;
+
     double distToEtalon;
+
     boost::uint32_t itersFresh;
+
     bool decayed;
+
+    /**
+     * Distance to etalon in respective dimensions.
+     */
     std::vector<double> etalonDistances;
+
     /**
      * Values of molecule descriptors.
      */
     std::vector<double> descriptorValues;
+
     /**
      * Path to file, where descriptor for this molecule is stored.
      */
     std::string descriptorsFilePath;
+
     std::string id;
 
     /**
@@ -316,6 +278,7 @@ struct MolpherMolecule
      * there is decoy that we should visit.
      */
     double distToClosestDecoy;
+
     double molecularWeight;
 
     /**
@@ -326,7 +289,14 @@ struct MolpherMolecule
 
     boost::uint32_t itersWithoutDistImprovement;
 
+    /**
+     * Position for 2D visualisation.
+     */
     double posX;
+
+    /**
+     * Position for 2D visualisation.
+     */
     double posY;
 
     /**

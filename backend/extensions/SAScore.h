@@ -28,16 +28,15 @@ public:
     virtual ~SAScore();
     double getScore(RDKit::ROMol &mol);
     static void loadData();
-
 private:
-
     SAScore();
     // Don't forget to declare these two. You want to make sure they
     // are unaccessable otherwise you may accidently get copies of
     // your singleton appearing.
     SAScore(const SAScore& orig);  // don't implement
     void operator=(SAScore const&);  // don't implement
+private:
     std::map<unsigned int, double> data;
-
+    bool loaded;
     static SAScore * instance;
 };

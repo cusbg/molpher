@@ -34,84 +34,82 @@
 #include "MolpherMolecule.h"
 #include "IterationSnapshot.h"
 
+/**
+ * For information of meaning of properties refer to IterationSnapshot.
+ */
 struct PathFinderContext
 {
-    static void ContextToSnapshot(const PathFinderContext &ctx, IterationSnapshot &snp);
-    static void SnapshotToContext(const IterationSnapshot &snp, PathFinderContext &ctx);
-
-    static void ContextToLightSnapshot(const PathFinderContext &ctx, IterationSnapshot &snp);
-
-    bool ScaffoldMode() const;
-
-    JobId jobId;
-    unsigned int iterIdx;
-    unsigned int elapsedSeconds;
-
-    FingerprintSelector fingerprintSelector;
-    SimCoeffSelector simCoeffSelector;
-    DimRedSelector dimRedSelector;
-    std::vector<ChemOperSelector> chemOperSelectors;
-
-    MolpherParam params;
-
-    MolpherMolecule source;
-    MolpherMolecule target;
-    std::vector<MolpherMolecule> decoys;
-
     typedef tbb::concurrent_hash_map<std::string, MolpherMolecule> CandidateMap;
     typedef tbb::concurrent_hash_map<std::string, unsigned int> MorphDerivationMap;
     typedef tbb::concurrent_vector<std::string> PrunedMoleculeVector;
     typedef tbb::concurrent_hash_map<std::string, std::string> ScaffoldSmileMap;
 
+    typedef std::vector<std::string> ConcStringVector;
+    typedef std::vector<double> ConcDoubleVector;
+    typedef std::vector<std::pair<double, double> > ConcDoublePairVector;
+    typedef std::vector<bool> ConcBoolVector;
+    typedef std::vector<std::vector<double> > ConcDoubleMatrix;
+
+    static void ContextToSnapshot(const PathFinderContext &ctx, IterationSnapshot &snp);
+    static void SnapshotToContext(const IterationSnapshot &snp, PathFinderContext &ctx);
+    static void ContextToLightSnapshot(const PathFinderContext &ctx, IterationSnapshot &snp);
+
+    bool ScaffoldMode() const;
+
+    JobId jobId;
+
+    unsigned int iterIdx;
+
+    unsigned int elapsedSeconds;
+
+    FingerprintSelector fingerprintSelector;
+
+    SimCoeffSelector simCoeffSelector;
+
+    DimRedSelector dimRedSelector;
+
+    std::vector<ChemOperSelector> chemOperSelectors;
+
+    MolpherParam params;
+
+    MolpherMolecule source;
+
+    MolpherMolecule target;
+
+    std::vector<MolpherMolecule> decoys;
+
     CandidateMap candidates;
 
-    /**
-     * activity data information and types
-     */
-    typedef std::vector<std::string> ConcStringVector;
-    //typedef tbb::concurrent_vector<double> ConcDoubleVector;
-    typedef std::vector<double> ConcDoubleVector;
-    //typedef tbb::concurrent_vector<std::pair<double, double> > ConcDoublePairVector;
-    typedef std::vector<std::pair<double, double> > ConcDoublePairVector;
-    //typedef tbb::concurrent_vector<bool> ConcBoolVector;
-    typedef std::vector<bool> ConcBoolVector;
-    //typedef tbb::concurrent_vector<std::vector<double> > ConcDoubleMatrix;
-    typedef std::vector<std::vector<double> > ConcDoubleMatrix;
-    CandidateMap actives;
     CandidateMap sourceMols;
-    CandidateMap testActives;
-    ConcStringVector activesIDs;
+
     ConcDoubleVector etalonValues;
+
     ConcDoublePairVector normalizationCoefficients;
-    /**
-     * Names of descriptors to use.
-     */
+
     ConcStringVector relevantDescriptorNames;
+
     bool activityMorphingInitialized;
 
     unsigned int padelBatchSize;
 
-    /**
-     * activity data files information
-     */
-    std::string inputActivityDataDir;
-    std::string activesSDFFile;
-    std::string proteinTargetName;
-    std::string activesDescriptorsFile;
-    std::string descriptorDataFileSuffix;
-    std::string analysisResultsSuffix;
-    bool saveDataAsCSVs;
-    bool saveOnlyMorphData;
+    std::string padelPath;
+
     std::vector<double> descWeights;
+
     std::vector<double> imputedValues;
 
     MorphDerivationMap morphDerivations;
+
     PrunedMoleculeVector prunedDuringThisIter;
 
     MolpherMolecule tempSource;
+
     ScaffoldSelector scaffoldSelector;
+
     std::vector<MolpherMolecule> pathMolecules;
+
     ScaffoldSmileMap pathScaffoldMolecules;
+
     ScaffoldSmileMap candidateScaffoldMolecules;
 
     MolpherMolecule substructure;

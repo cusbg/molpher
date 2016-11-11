@@ -23,8 +23,9 @@ void PathFinderContext::ContextToSnapshot(
     snp.jobId = ctx.jobId;
     snp.iterIdx = ctx.iterIdx;
     snp.elapsedSeconds = ctx.elapsedSeconds;
-    
+
     snp.padelBatchSize = ctx.padelBatchSize;
+    snp.padelPath = ctx.padelPath;
 
     snp.fingerprintSelector = ctx.fingerprintSelector;
     snp.simCoeffSelector = ctx.simCoeffSelector;
@@ -47,7 +48,7 @@ void PathFinderContext::ContextToSnapshot(
             it != ctx.candidates.end(); it++) {
         snp.candidates.insert(*it);
     }
-    
+
     snp.sourceMols.clear();
     for (CandidateMap::const_iterator it = ctx.sourceMols.begin();
             it != ctx.sourceMols.end(); it++) {
@@ -65,60 +66,28 @@ void PathFinderContext::ContextToSnapshot(
             it != ctx.prunedDuringThisIter.end(); it++) {
         snp.prunedDuringThisIter.push_back(*it);
     }
-    
-    snp.actives.clear();
-    for (PathFinderContext::CandidateMap::const_iterator it = ctx.actives.begin();
-            it != ctx.actives.end(); it++) {
-        snp.actives.insert(*it);
-    }
-    
-    snp.testActives.clear();
-    for (PathFinderContext::CandidateMap::const_iterator it = ctx.testActives.begin();
-            it != ctx.testActives.end(); it++) {
-        snp.testActives.insert(*it);
-    }
-    
-    snp.activesIDs.clear();
-    snp.activesIDs.reserve(ctx.activesIDs.size());
-    for (PathFinderContext::ConcStringVector::const_iterator it = ctx.activesIDs.begin();
-            it != ctx.activesIDs.end(); it++) {
-        snp.activesIDs.push_back(*it);
-    }
-    
+
     snp.etalonValues.clear();
     snp.etalonValues.reserve(ctx.etalonValues.size());
     for (PathFinderContext::ConcDoubleVector::const_iterator it = ctx.etalonValues.begin();
             it != ctx.etalonValues.end(); it++) {
         snp.etalonValues.push_back(*it);
     }
-    
+
     snp.normalizationCoefficients.clear();
     snp.normalizationCoefficients.reserve(ctx.normalizationCoefficients.size());
     for (PathFinderContext::ConcDoublePairVector::const_iterator it = ctx.normalizationCoefficients.begin();
             it != ctx.normalizationCoefficients.end(); it++) {
         snp.normalizationCoefficients.push_back(*it);
     }
-    
+
     snp.relevantDescriptorNames.clear();
     snp.relevantDescriptorNames.reserve(ctx.relevantDescriptorNames.size());
     for (PathFinderContext::ConcStringVector::const_iterator it = ctx.relevantDescriptorNames.begin();
             it != ctx.relevantDescriptorNames.end(); it++) {
         snp.relevantDescriptorNames.push_back(*it);
     }
-    
-//    snp.relevantDescriptorIndices.clear();
-//    snp.relevantDescriptorIndices.reserve(ctx.relevantDescriptorIndices.size());
-//    for (PathFinderContext::ConcBoolVector::const_iterator it = ctx.relevantDescriptorIndices.begin();
-//            it != ctx.relevantDescriptorIndices.end(); it++) {
-//        snp.relevantDescriptorIndices.push_back(*it);
-//    }
-    
-    snp.activityMorphingInitialized = ctx.activityMorphingInitialized;
-    snp.inputActivityDataDir = ctx.inputActivityDataDir;
-    snp.proteinTargetName = ctx.proteinTargetName;
-    snp.activesDescriptorsFile = ctx.activesDescriptorsFile;
-    snp.saveDataAsCSVs = ctx.saveDataAsCSVs;
-    snp.saveOnlyMorphData = ctx.saveOnlyMorphData;
+
     snp.descWeights = ctx.descWeights;
     snp.imputedValues = ctx.imputedValues;
 
@@ -145,8 +114,9 @@ void PathFinderContext::SnapshotToContext(
     ctx.jobId = snp.jobId;
     ctx.iterIdx = snp.iterIdx;
     ctx.elapsedSeconds = snp.elapsedSeconds;
-    
+
     ctx.padelBatchSize = snp.padelBatchSize;
+    ctx.padelPath = snp.padelPath;
 
     ctx.fingerprintSelector = (FingerprintSelector) snp.fingerprintSelector;
     ctx.simCoeffSelector = (SimCoeffSelector) snp.simCoeffSelector;
@@ -169,7 +139,7 @@ void PathFinderContext::SnapshotToContext(
             it != snp.candidates.end(); it++) {
         ctx.candidates.insert(*it);
     }
-    
+
     ctx.sourceMols.clear();
     for (IterationSnapshot::CandidateMap::const_iterator it = snp.sourceMols.begin();
             it != snp.sourceMols.end(); it++) {
@@ -188,63 +158,31 @@ void PathFinderContext::SnapshotToContext(
             it != snp.prunedDuringThisIter.end(); it++) {
         ctx.prunedDuringThisIter.push_back(*it);
     }
-    
-    ctx.actives.clear();
-    for (IterationSnapshot::CandidateMap::const_iterator it = snp.actives.begin();
-            it != snp.actives.end(); it++) {
-        ctx.actives.insert(*it);
-    }
-    
-    ctx.testActives.clear();
-    for (IterationSnapshot::CandidateMap::const_iterator it = snp.testActives.begin();
-            it != snp.testActives.end(); it++) {
-        ctx.testActives.insert(*it);
-    }
-    
-    ctx.activesIDs.clear();
-    ctx.activesIDs.reserve(snp.activesIDs.size());
-    for (std::vector<std::string>::const_iterator it = snp.activesIDs.begin();
-            it != snp.activesIDs.end(); it++) {
-        ctx.activesIDs.push_back(*it);
-    }
-    
+
     ctx.etalonValues.clear();
     ctx.etalonValues.reserve(snp.etalonValues.size());
     for (std::vector<double>::const_iterator it = snp.etalonValues.begin();
             it != snp.etalonValues.end(); it++) {
         ctx.etalonValues.push_back(*it);
     }
-    
+
     ctx.normalizationCoefficients.clear();
     ctx.normalizationCoefficients.reserve(snp.normalizationCoefficients.size());
     for (std::vector<std::pair<double, double> >::const_iterator it = snp.normalizationCoefficients.begin();
             it != snp.normalizationCoefficients.end(); it++) {
         ctx.normalizationCoefficients.push_back(*it);
     }
-    
+
     ctx.relevantDescriptorNames.clear();
     ctx.relevantDescriptorNames.reserve(snp.relevantDescriptorNames.size());
     for (std::vector<std::string>::const_iterator it = snp.relevantDescriptorNames.begin();
             it != snp.relevantDescriptorNames.end(); it++) {
         ctx.relevantDescriptorNames.push_back(*it);
     }
-    
-//    ctx.relevantDescriptorIndices.clear();
-//    ctx.relevantDescriptorIndices.reserve(snp.relevantDescriptorIndices.size());
-//    for (std::vector<bool>::const_iterator it = snp.relevantDescriptorIndices.begin();
-//            it != snp.relevantDescriptorIndices.end(); it++) {
-//        ctx.relevantDescriptorIndices.push_back(*it);
-//    }
-    
-    ctx.activityMorphingInitialized = snp.activityMorphingInitialized;
-    ctx.inputActivityDataDir = snp.inputActivityDataDir;
-    ctx.proteinTargetName = snp.proteinTargetName;
-    ctx.activesDescriptorsFile = snp.activesDescriptorsFile;
-    ctx.saveDataAsCSVs = snp.saveDataAsCSVs;
-    ctx.saveOnlyMorphData = snp.saveOnlyMorphData;
+
     ctx.descWeights = snp.descWeights;
     ctx.imputedValues = snp.imputedValues;
-    
+
     ctx.tempSource = snp.tempSource;
     ctx.scaffoldSelector = (ScaffoldSelector) snp.scaffoldSelector;
     ctx.pathMolecules = snp.pathMolecules;

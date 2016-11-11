@@ -30,9 +30,7 @@
 
 void SynchCout(const std::string &s);
 
-IterationSnapshot Materialize(IterationSnapshotProxy &proxy);
-
-std::string GenerateFilename(std::string &base,
+std::string GenerateSnaphostFilenameWithoutExtension(std::string &base,
     JobId jobId, unsigned int iterIdx);
 std::string GenerateSmilesFilename(
         std::string &base, unsigned int iterIdx);

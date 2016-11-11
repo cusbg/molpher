@@ -13,6 +13,13 @@
 #include <map>
 #include <vector>
 
+/**
+ * This reader does not properly read CSV as it detects separator
+ * inside the escaped values as separators.
+ *
+ * So for example when used with descriptors.csv (from PaDEL) we
+ * have to remove all ";" from values.
+ */
 namespace CSVparse {
 
     enum DataType {

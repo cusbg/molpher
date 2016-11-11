@@ -2,6 +2,9 @@
 #include "CSV.h"
 #include "DataConverter.h"
 
+#include <iostream>
+#include <assert.h>
+
 using namespace std;
 
 int CSVparse::DataConverter::ValToInt(const string &value) {
@@ -60,6 +63,11 @@ std::string & CSVparse::DataConverter::trim(std::string &s, char removed_char) {
         string::size_type start = s.find(removed_char);
         string::size_type end = s.rfind(removed_char);
         if (start != s.npos && end != s.npos) {
+            if (start == end) {
+                // The removed_char is only once in the given string.
+                std::cout << start << " " << end << " : " << s << std::endl;
+                assert(false);
+            }
             s.erase(start, 1);
             s.erase(end - 1, 1);
         }

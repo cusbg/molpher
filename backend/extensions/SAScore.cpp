@@ -51,6 +51,7 @@ void SAScore::loadData() {
 
     myfile.close();
     std::cout << "done" << std::endl;
+    inst->loaded = true;
     return;
 }
 
@@ -75,6 +76,9 @@ SAScore::SAScore()
  */
 double SAScore::getScore(RDKit::ROMol& mol)
 {
+    if (!loaded) {
+        return 0;
+    }
     RDKit::SparseIntVect< boost::uint32_t >::StorageType::const_iterator iter;
     RDKit::SparseIntVect< boost::uint32_t > * fp = RDKit::MorganFingerprints::getFingerprint(mol, 2, 0, 0, false, true, false, 0);
     iter=fp->getNonzeroElements().begin();

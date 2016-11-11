@@ -91,6 +91,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/core/PathFinder.o \
 	${OBJECTDIR}/core/PathFinderActivity.o \
 	${OBJECTDIR}/core/PathFinderContext.o \
+	${OBJECTDIR}/descriptor/BioChemLibDescriptors.o \
 	${OBJECTDIR}/descriptor/CSV.o \
 	${OBJECTDIR}/descriptor/DataConverter.o \
 	${OBJECTDIR}/descriptor/DescriptorSource.o \
@@ -495,6 +496,11 @@ ${OBJECTDIR}/core/PathFinderContext.o: core/PathFinderContext.cpp
 	${MKDIR} -p ${OBJECTDIR}/core
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/PathFinderContext.o core/PathFinderContext.cpp
+
+${OBJECTDIR}/descriptor/BioChemLibDescriptors.o: descriptor/BioChemLibDescriptors.cpp 
+	${MKDIR} -p ${OBJECTDIR}/descriptor
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -s -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DQTMOC_HACK -DRCF_MULTI_THREADED -DRCF_NO_AUTO_INIT_DEINIT -DRCF_USE_BOOST_ASIO -DRCF_USE_BOOST_SERIALIZATION -DRCF_USE_BOOST_THREADS -DRCF_USE_ZLIB -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/descriptor/BioChemLibDescriptors.o descriptor/BioChemLibDescriptors.cpp
 
 ${OBJECTDIR}/descriptor/CSV.o: descriptor/CSV.cpp 
 	${MKDIR} -p ${OBJECTDIR}/descriptor

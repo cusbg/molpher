@@ -112,12 +112,13 @@
         <itemPath>core/PathFinderContext.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="descriptor" projectFiles="true">
+        <itemPath>descriptor/BioChemLibDescriptors.hpp</itemPath>
         <itemPath>descriptor/CSV.h</itemPath>
         <itemPath>descriptor/DataConverter.h</itemPath>
         <itemPath>descriptor/DescriptorSource.hpp</itemPath>
-        <itemPath>descriptor/PaDELDescriptorCalculator.h</itemPath>
       </logicalFolder>
       <logicalFolder name="extensions" displayName="extensions" projectFiles="true">
+        <itemPath>descriptor/PaDELDescriptorCalculator.h</itemPath>
         <itemPath>extensions/SAScore.h</itemPath>
       </logicalFolder>
       <logicalFolder name="tests" displayName="tests" projectFiles="true">
@@ -204,6 +205,7 @@
         <itemPath>core/PathFinderContext.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="descriptor" projectFiles="true">
+        <itemPath>descriptor/BioChemLibDescriptors.cpp</itemPath>
         <itemPath>descriptor/CSV.cpp</itemPath>
         <itemPath>descriptor/DataConverter.cpp</itemPath>
         <itemPath>descriptor/DescriptorSource.cpp</itemPath>
@@ -254,7 +256,7 @@
             <pElem>../dependencies/rdkit/Code</pElem>
             <pElem>../dependencies/tbb/include</pElem>
           </incDir>
-          <commandLine>-DNOT_NETBEANS -Wno-deprecated -Wno-write-strings -Wno-attributes -Wno-strict-aliasing -fpermissive</commandLine>
+          <commandLine>-DNOT_NETBEANS -Wno-deprecated -Wno-write-strings -Wno-attributes -Wno-strict-aliasing -fpermissive -g</commandLine>
           <preprocessorList>
             <Elem>BOOST_ALL_NO_LIB</Elem>
             <Elem>BOOST_THREAD_USE_LIB</Elem>
@@ -763,6 +765,16 @@
       <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/BioChemLibDescriptors.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="descriptor/BioChemLibDescriptors.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="descriptor/CSV.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1350,6 +1362,16 @@
       </item>
       <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="descriptor/BioChemLibDescriptors.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="descriptor/BioChemLibDescriptors.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="descriptor/CSV.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="descriptor/CSV.h" ex="false" tool="3" flavor2="0">
@@ -1926,6 +1948,16 @@
       </item>
       <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="descriptor/BioChemLibDescriptors.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="descriptor/BioChemLibDescriptors.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="descriptor/CSV.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="descriptor/CSV.h" ex="false" tool="3" flavor2="0">
@@ -2501,6 +2533,16 @@
       <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="descriptor/BioChemLibDescriptors.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="descriptor/BioChemLibDescriptors.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="descriptor/CSV.cpp" ex="false" tool="1" flavor2="0">
       </item>

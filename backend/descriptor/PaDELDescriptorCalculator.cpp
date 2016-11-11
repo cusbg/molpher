@@ -1,19 +1,20 @@
-
-#include "PaDELDescriptorCalculator.h"
-#include "CSV.h"
-#include "DataConverter.h"
-
 #include <iostream>
 #include <fstream>
 #include <assert.h>
 #include <set>
 #include <cstdlib>
 
+#include "inout.h"
+#include "PaDELDescriptorCalculator.h"
+#include "CSV.h"
+#include "DataConverter.h"
+
 using namespace std;
 
 // private methods
 
-void PaDELdesc::PaDELDescriptorCalculator::LoadAvailableDescriptors(const string &CSV_desc_list_path) {
+void PaDELdesc::PaDELDescriptorCalculator::LoadAvailableDescriptors(const string &CSV_desc_list_path)
+{
     CSVparse::CSV available_descriptors(CSV_desc_list_path, ";", "");
     const vector<string>& classes = available_descriptors.getStringData("Descriptor Java Class");
     const vector<string>& names = available_descriptors.getStringData("Descriptor");
@@ -34,9 +35,10 @@ void PaDELdesc::PaDELDescriptorCalculator::LoadAvailableDescriptors(const string
         descriptorClassType[name].second = type;
         ++counter;
     }
-        }
+}
 
-void PaDELdesc::PaDELDescriptorCalculator::SaveDescConfig() {
+void PaDELdesc::PaDELDescriptorCalculator::SaveDescConfig()
+{
     using boost::property_tree::ptree;
 
     ptree rootNode;
@@ -47,7 +49,7 @@ void PaDELdesc::PaDELDescriptorCalculator::SaveDescConfig() {
     group3D.put("<xmlattr>.name", "3D");
 
     set<string> added_classes;
-    for (vector<string>::iterator it = descriptors2compute.begin(); it != descriptors2compute.end(); it++ ) {
+    for (vector<string>::iterator it = descriptors2compute.begin(); it != descriptors2compute.end(); it++) {
         if (descriptorClassType.find(*it) != descriptorClassType.end()) {
             string classname(descriptorClassType[*it].first);
             if (added_classes.find(classname) != added_classes.end()) {
@@ -66,7 +68,7 @@ void PaDELdesc::PaDELDescriptorCalculator::SaveDescConfig() {
                 assert(false);
             }
         } else {
-            cout << "Could not locate key: " << *it << endl;
+            SynchCout("Could not locate key: " + *it);
             assert(false);
         }
     }
@@ -78,22 +80,27 @@ void PaDELdesc::PaDELDescriptorCalculator::SaveDescConfig() {
 
 // public methods
 
-void PaDELdesc::PaDELDescriptorCalculator::addMol(const string &id, const string &smiles) {
+void PaDELdesc::PaDELDescriptorCalculator::addMol(const string &id, const string &smiles)
+{
     mols[id] = smiles;
     molNames.push_back(id);
 }
 
-void PaDELdesc::PaDELDescriptorCalculator::computeDescriptors() {
+void PaDELdesc::PaDELDescriptorCalculator::computeDescriptors()
+{
     SaveDescConfig();
     saveDescConfigFile();
     saveSMILESFile();
-    string command( "java -jar \"" + PaDELPath + "PaDEL-Descriptor.jar\" ");
-    string options("-dir \"" + SMILESFilePath + "\" -convert3d -descriptortypes \"" + configXMLPath + "\" -file \"" + outputFilePath + "\" -retainorder -log -2d -3d -maxruntime 10000 -threads " + CSVparse::DataConverter::ValToString(threadsCnt));
+    string command("java -jar \"" + PaDELPath + "PaDEL-Descriptor.jar\" ");
+    string options("-dir \"" + SMILESFilePath + "\" -convert3d -descriptortypes \"" +
+            configXMLPath + "\" -file \"" + outputFilePath +
+            "\" -retainorder -log -2d -3d -maxruntime 10000 -threads " +
+            CSVparse::DataConverter::ValToString(threadsCnt));
     string call(command + options);
-    cout << call << endl;
+    SynchCout("Executing command ... \n\t " + command + options);
     int ret = system(call.c_str());
     assert(ret == 0);
-
+    SynchCout("Executing command ... done ");
     CSVparse::CSV descriptors(outputFilePath, ",", "");
     const vector<string> &names = descriptors.getStringData("Name");
     computedData.clear();
@@ -108,7 +115,8 @@ void PaDELdesc::PaDELDescriptorCalculator::computeDescriptors() {
     }
 }
 
-void PaDELdesc::PaDELDescriptorCalculator::saveSMILES(const string &path) {
+void PaDELdesc::PaDELDescriptorCalculator::saveSMILES(const string &path)
+{
     ofstream smiles_file(path.c_str());
     for (vector<string>::iterator mol_name = molNames.begin(); mol_name != molNames.end(); mol_name++) {
         smiles_file << mols[*mol_name] << "\t" << *mol_name << endl;
@@ -116,45 +124,50 @@ void PaDELdesc::PaDELDescriptorCalculator::saveSMILES(const string &path) {
     smiles_file.close();
 }
 
-void PaDELdesc::PaDELDescriptorCalculator::saveSMILESFile() {
+void PaDELdesc::PaDELDescriptorCalculator::saveSMILESFile()
+{
     saveSMILES(SMILESFilePath);
 }
 
-void PaDELdesc::PaDELDescriptorCalculator::saveDescConfigFile(const string &path) {
+void PaDELdesc::PaDELDescriptorCalculator::saveDescConfigFile(const string &path)
+{
     boost::property_tree::write_xml(path, configXML, std::locale(),
             boost::property_tree::xml_writer_make_settings<std::string>('\t', 1));
 }
 
-void PaDELdesc::PaDELDescriptorCalculator::saveDescConfigFile() {
+void PaDELdesc::PaDELDescriptorCalculator::saveDescConfigFile()
+{
     saveDescConfigFile(configXMLPath);
 }
 
-map<string, double>& PaDELdesc::PaDELDescriptorCalculator::getDescValues(const string &mol_id) {
+map<string, double>& PaDELdesc::PaDELDescriptorCalculator::getDescValues(const string &mol_id)
+{
     assert(computedData.find(mol_id) != computedData.end());
     return computedData[mol_id];
 }
 
-string PaDELdesc::PaDELDescriptorCalculator::getOutputFilePath() {
+string PaDELdesc::PaDELDescriptorCalculator::getOutputFilePath()
+{
     return outputFilePath;
 }
 
 // constructors
 
 PaDELdesc::PaDELDescriptorCalculator::PaDELDescriptorCalculator(
-    const string &PaDELPath
-    , const string &workDirPath
-    , const vector<string> &descriptors
-    , const unsigned int threads
-    , const string &descriptorsCSV
-) :
-    PaDELPath(PaDELPath + "/")
-    , workDirPath(workDirPath + "/")
-    , threadsCnt(threads)
-    , configXMLPath(workDirPath + "/descriptors.xml")
-    , availableDescsCSVPath(PaDELPath + descriptorsCSV)
-    , SMILESFilePath(workDirPath + "/mols.smi")
-    , outputFilePath(workDirPath + "/results.csv")
-    , descriptors2compute(descriptors)
+        const string &PaDELPath
+        , const string &workDirPath
+        , const vector<string> &descriptors
+        , const unsigned int threads
+        , const string &descriptorsCSV
+        ) :
+PaDELPath(PaDELPath + "/")
+, workDirPath(workDirPath + "/")
+, threadsCnt(threads)
+, configXMLPath(workDirPath + "/descriptors.xml")
+, availableDescsCSVPath(PaDELPath + descriptorsCSV)
+, SMILESFilePath(workDirPath + "/mols.smi")
+, outputFilePath(workDirPath + "/results.csv")
+, descriptors2compute(descriptors)
 {
     LoadAvailableDescriptors(availableDescsCSVPath);
 }

@@ -48,17 +48,11 @@ void SynchCout(const std::string &s) {
     std::cout << s << std::endl;
 }
 
-IterationSnapshot Materialize(IterationSnapshotProxy &proxy) {
-    IterationSnapshot snp;
-    ReadSnapshotFromFile(
-        GenerateFilename(proxy.storage, proxy.jobId, proxy.iterIdx), snp);
-    return snp;
-}
-
-std::string GenerateFilename(
+std::string GenerateSnaphostFilenameWithoutExtension(
         std::string &base, JobId jobId, unsigned int iterIdx) {
     std::stringstream filename;
-    filename << base << "/" << jobId << "/" << iterIdx << ".snp";
+    filename << base << "/" << jobId << "/" << std::setfill('0')
+            << std::setw(3) << iterIdx;
     return filename.str();
 }
 
@@ -70,7 +64,7 @@ std::string GenerateSmilesFilename(
 }
 
 std::string GenerateFilename(
-        std::string &base, JobId jobId, std::string name) {
+    std::string &base, JobId jobId, std::string name) {
     std::stringstream filename;
     filename << base << "/" << jobId << "/" << name;
     return filename.str();
@@ -150,7 +144,7 @@ void WriteMolpherPath(const std::string &file, const std::string &targetSmile,
 
         if (!smiles.empty()) {
             assert(!scaffs.empty());
-            outStream << smiles.back() 
+            outStream << smiles.back()
                     << ";" << "Dist to etalon: " << mols.back()->distToEtalon
                     << ";" << "SAScore: " << mols.back()->sascore
                     << ";" << ScaffoldLongDesc(scaffs.back()) << std::endl;
@@ -170,7 +164,8 @@ void WriteMolpherPath(const std::string &file, const std::string &targetSmile,
 }
 
 void WriteSnapshotToFile(const std::string &file, const IterationSnapshot &snp) {
-    (molpher::iteration::IterationSerializer()).save(file, snp);
+    (molpher::iteration::IterationSerializer()).save(file + ".snp", snp);
+    (molpher::iteration::IterationSerializer()).save(file + ".json", snp);
 }
 
 bool ReadSnapshotFromFile(const std::string &file, IterationSnapshot &snp) {
