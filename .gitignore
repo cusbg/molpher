@@ -1,5 +1,15 @@
+# Directories with generated content.
 build/
 dist/
 dependencies/*
-!dependencies/*.sh
 Results/
+
+# Exception for build files
+!dependencies/*.sh
+
+# Idea IDE
+.idea
+
+# Executables and libs
+*.exe
+*.dll
