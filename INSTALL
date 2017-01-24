@@ -1,0 +1,40 @@
+# Installation
+
+## Windows 64 bit with CygWin
+
+Cygwin:
+    unzip
+    make
+    ! cmake - does not contains generators for windows, and Mingw-64 need paths in windows style
+
+7z for Windows to extract MinGw-64:
+    http://sourceforge.net/projects/sevenzip/files/latest/download
+    or we can use p7zip from CygWin (p7zip -d mingiw-archive)
+
+CMake Portable:
+    https://cmake.org/files/v3.4/cmake-3.4.0-rc1-win32-x86.zip
+
+MinGw-64:
+    http://downloads.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/6.1.0/threads-posix/seh/x86_64-6.1.0-release-posix-seh-rt_v5-rev0.7z
+    
+Compilation:
+    Update paths in dependency build script and use it to build dependencies.
+
+Setup NetBeans:
+    C++ / Build Tools
+        Add - path to MinGw/6.1.0/bin
+        
+        
+Netbeans use path like /C/.. path to make.exe so we need to create a link from root.
+    ln -s /cygdrive/C /C
+
+Libraries required:
+    libgcc_s_seh-1.dll
+    libstdc++-6.dll
+    libwinpthread-1.dll
+    tbb_debug.dll
+    tbbmalloc_debug.dll
+    tbbmalloc_proxy_debug.dll
+    
+Preparation of Cygwin:
+    Fill in paths in the build script.
