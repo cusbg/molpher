@@ -18,7 +18,11 @@
 
 #pragma once
 
-#include "MolpherMolecule.h"
+#include <map>
+#include <vector>
+#include <memory>
+
+struct MolpherMolecule;
 
 class DescriptorSource
 {
@@ -59,4 +63,16 @@ public:
             , const std::vector<std::string> &descriptor
             , const unsigned int threads
             , const std::string &descriptorsCSV);
+    /**
+     * Return a shared pointer to descriptor script source object.
+     *
+     * @param scriptPath
+     * @param workDirPath
+     * @param descriptor
+     * @return
+     */
+    static std::shared_ptr<DescriptorSource> createScript(
+            const std::string& scriptPath, const std::string &workDirPath,
+            const std::vector<std::string> &descriptor
+            );
 };

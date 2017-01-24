@@ -32,9 +32,7 @@
 
 #include "fingerprint_selectors.h"
 #include "simcoeff_selectors.h"
-#include "dimred_selectors.h"
 #include "chemoper_selectors.h"
-#include "scaffold_selectors.hpp"
 
 #include "MolpherParam.h"
 #include "MolpherMolecule.h"
@@ -42,99 +40,60 @@
 #include "descriptor/CSV.h"
 #include "descriptor/DataConverter.h"
 
+void SynchCout(const std::string &s);
+
 struct IterationSnapshot
 {
+    typedef std::map<std::string, MolpherMolecule> CandidateMap;
 
-    IterationSnapshot() : jobId(0), iterIdx(0), elapsedSeconds(0),
-    padelBatchSize(1000)
-    {
-        fingerprintSelector = DEFAULT_FP;
-        simCoeffSelector = DEFAULT_SC;
-        dimRedSelector = DEFAULT_DR;
-        scaffoldSelector = SF_NONE;
-    }
+    typedef std::map<std::string, boost::uint32_t> MorphDerivationMap;
+
+    typedef std::vector<std::string> PrunedMoleculeVector;
+
+    typedef std::map<std::string, std::string> ScaffoldSmileMap;
 
     friend class boost::serialization::access;
 
-    template<typename Archive>
-    void serialize(Archive &ar, const unsigned int version)
+    IterationSnapshot() : jobId(""), iterIdx(0), elapsedSeconds(0)
     {
-        // BOOST_SERIALIZATION_NVP macro enable us to use xml serialisation
+    }
+
+    template<typename Archive> void serialize(
+            Archive &ar, const unsigned int version)
+    {
         ar & BOOST_SERIALIZATION_NVP(jobId);
         ar & BOOST_SERIALIZATION_NVP(iterIdx);
         ar & BOOST_SERIALIZATION_NVP(elapsedSeconds);
-        ar & BOOST_SERIALIZATION_NVP(fingerprintSelector);
-        ar & BOOST_SERIALIZATION_NVP(simCoeffSelector);
-        ar & BOOST_SERIALIZATION_NVP(dimRedSelector);
-        ar & BOOST_SERIALIZATION_NVP(chemOperSelectors);
-        ar & BOOST_SERIALIZATION_NVP(params);
-        ar & BOOST_SERIALIZATION_NVP(source);
-        ar & BOOST_SERIALIZATION_NVP(target);
-        ar & BOOST_SERIALIZATION_NVP(decoys);
         ar & BOOST_SERIALIZATION_NVP(candidates);
+        ar & BOOST_SERIALIZATION_NVP(sourceMols);
+        ar & BOOST_SERIALIZATION_NVP(morphDerivations);
         ar & BOOST_SERIALIZATION_NVP(prunedDuringThisIter);
-        ar & BOOST_SERIALIZATION_NVP(tempSource);
-        ar & BOOST_SERIALIZATION_NVP(scaffoldSelector);
-        ar & BOOST_SERIALIZATION_NVP(pathMolecules);
-        ar & BOOST_SERIALIZATION_NVP(pathScaffoldMolecules);
-        ar & BOOST_SERIALIZATION_NVP(candidateScaffoldMolecules);
-        ar & BOOST_SERIALIZATION_NVP(relevantDescriptorNames);
-        ar & BOOST_SERIALIZATION_NVP(etalonValues);
-        ar & BOOST_SERIALIZATION_NVP(padelPath);
+        ar & BOOST_SERIALIZATION_NVP(params);
+        ar & BOOST_SERIALIZATION_NVP(storagePath);
     }
 
-    bool IsValid()
+    bool isValid()
     {
-        bool decoysValid = true;
-        for (auto it = decoys.begin(); it != decoys.end(); ++it) {
-            if (!it->IsValid()) {
-                decoysValid = false;
-                break;
-            }
+        if (!params.isValid()) {
+            SynchCout("\tInvalid parameters.");
+            return false;
         }
-        if (ScaffoldMode()) {
-            if (!tempSource.IsValid() && pathMolecules.empty()) {
+        for (auto it = sourceMols.begin(); it != sourceMols.end(); ++it) {
+            if (!it->second.IsValid()) {
+                SynchCout("\tInvalid source molecule.");
                 return false;
             }
         }
-        if (params.activityMorphing) {
-            bool activityMorphingValid = params.startMolMaxCount >= 0 &&
-                    etalonValues.size() == relevantDescriptorNames.size() &&
-                    etalonValues.size() == descWeights.size();
-            return (!chemOperSelectors.empty()) &&
-                    params.IsValid() &&
-                    decoysValid &&
-                    activityMorphingValid;
-        } else {
-            if (source.smile == "") {
-                return false;
-            }
-        }
-        return (!chemOperSelectors.empty()) &&
-                params.IsValid() &&
-                source.IsValid() &&
-                target.IsValid() &&
-                (source.smile != target.smile) &&
-                decoysValid;
+        return true;
     }
-
-    bool ScaffoldMode() const
-    {
-        return ((int) scaffoldSelector != SF_NONE);
-    }
-
-    typedef std::map<std::string, MolpherMolecule> CandidateMap;
-    typedef std::map<std::string, boost::uint32_t> MorphDerivationMap;
-    typedef std::vector<std::string> PrunedMoleculeVector;
-    typedef std::map<std::string, std::string> ScaffoldSmileMap;
 
     /**
-     * Job id.
+     * User given job ID.
      */
-    boost::uint32_t jobId;
+    std::string jobId;
 
     /**
-     * Iteration id.
+     * Iteration number.
      */
     boost::uint32_t iterIdx;
 
@@ -144,100 +103,18 @@ struct IterationSnapshot
     boost::uint32_t elapsedSeconds;
 
     /**
-     * Fingerprint used in algorithm.
-     * @see FingerprintSelector
-     */
-    boost::int32_t fingerprintSelector;
-
-    /**
-     * Similarity coef used in algorithm.
-     * @see SimCoeffSelector
-     */
-    boost::int32_t simCoeffSelector;
-
-    /**
-     * Id of used location computing algorithm.
-     * @see DimRedSelector
-     */
-    boost::int32_t dimRedSelector;
-
-    /**
-     * Vector or used morphing operators.
-     */
-    std::vector<boost::int32_t> chemOperSelectors;
-
-    /**
-     * Parameters for morphing algorithm.
-     */
-    MolpherParam params;
-
-    /**
-     * Source molecule.
-     */
-    MolpherMolecule source;
-
-    /**
-     * Target molecule.
-     */
-    MolpherMolecule target;
-
-    /**
-     * Decoys used during exploration of chemical space.
-     */
-    std::vector<MolpherMolecule> decoys;
-
-    /**
      * Candidate molecules ie. molecule storage.
      */
     CandidateMap candidates;
 
     /**
-     * Used for MOO, represent the etalon.
-     */
-    std::vector<double> etalonValues;
-
-    /**
-     * Used for MOO, represent names of used descriptors.
-     * Must have same size as etalonValues.
-     */
-    std::vector<std::string> relevantDescriptorNames;
-
-    /**
-     * Used for MOO, values to impute if the descriptor computation fail.
-     */
-    std::vector<double> imputedValues;
-
-    /**
-     * Weight of descriptors, must have same size as etalonValues.
-     */
-    std::vector<double> descWeights;
-
-    /**
-     * Used for MOO with PaDEL.
-     */
-    unsigned int padelBatchSize;
-
-    /**
-     * Introduced by MOO, as a source for candidate molecules in a first
-     * iteration.
+     * List of starting molecules.
      */
     CandidateMap sourceMols;
 
     /**
-     * Path to PaDEL.
-     */
-    std::string padelPath;
-
-    /**
-     * Values used to normalise computed descriptors. Used by MOO.
      *
-     * The first value represent a scale, the second value
-     * represent a shift. The application is: value * scale + shift .
-     *
-     * Values are computed based on the input data.
      */
-    std::vector<std::pair<double, double> > normalizationCoefficients;
-
     MorphDerivationMap morphDerivations;
 
     /**
@@ -247,37 +124,16 @@ struct IterationSnapshot
     PrunedMoleculeVector prunedDuringThisIter;
 
     /**
-     * Used for scaffold hopping.
+     * Parameters for exploration.
      */
-    MolpherMolecule tempSource;
+    MolpherParam params;
 
     /**
-     * Used for scaffold hopping.
+     * Storage path for the result.
      */
-    boost::int32_t scaffoldSelector;
+    std::string storagePath;
 
-    /**
-     * Used for scaffold hopping.
-     */
-    std::vector<MolpherMolecule> pathMolecules;
-
-    /**
-     * Used for scaffold hopping.
-     */
-    ScaffoldSmileMap pathScaffoldMolecules;
-
-    /**
-     * Used for scaffold hopping.
-     */
-    ScaffoldSmileMap candidateScaffoldMolecules;
 };
 
-// add information about version to archive
-//BOOST_CLASS_IMPLEMENTATION(IterationSnapshot, object_class_info)
-// turn off versioning
-
 BOOST_CLASS_IMPLEMENTATION(IterationSnapshot, object_serializable)
-// turn off tracking
 BOOST_CLASS_TRACKING(IterationSnapshot, track_never)
-// specify version
-//BOOST_CLASS_VERSION(IterationSnapshot, 1)

@@ -1,9 +1,11 @@
-/* 
+/*
  * File:   PathFinderActivity.h
  * Author: Krwemil
  *
  * Created on 11. říjen 2014, 15:13
  */
+
+#ifdef NOT_DEF
 
 #pragma once
 
@@ -22,11 +24,8 @@
 #include "MolpherParam.h"
 #include "MolpherMolecule.h"
 #include "IterationSnapshot.h"
-#include "PathFinderContext.h"
 
-#ifndef PATHFINDER_REPORTING
-#define PATHFINDER_REPORTING 1
-#endif
+
 
 class JobManager;
 
@@ -55,7 +54,7 @@ public:
     private:
         MoleculeVector &mLeaves;
     };
-    
+
     class FindNextBag
     {
     public:
@@ -94,7 +93,7 @@ public:
         FilterMorphs(PathFinderContext &ctx, size_t globalMorphCount,
             MoleculeVector &morphs, std::vector<bool> &survivors);
         void operator()(const tbb::blocked_range<size_t> &r) const;
-        
+
     private:
         PathFinderContext &mCtx;
         size_t mGlobalMorphCount;
@@ -102,14 +101,14 @@ public:
         MoleculeVector &mMorphs;
         std::vector<bool> &mSurvivors;
     };
-    
+
     class MOOPFilter
     {
     public:
         MOOPFilter(MoleculeVector &morphs, std::vector<bool> &survivors
                 , std::vector<bool> &next);
         void operator()(const tbb::blocked_range<size_t> &r) const;
-        
+
     private:
         size_t mMorphCount;
         MoleculeVector &mMorphs;
@@ -128,12 +127,12 @@ public:
         void reverse_join(AcceptMorphs &toJoin);
         void assign(AcceptMorphs &toAssign);
         unsigned int mSurvivorCount;
-        
+
     private:
         MoleculeVector &mMorphs;
         std::vector<bool> &mSurvivors;
         PathFinderContext &mCtx;
-        SmileSet &mModifiedParents;        
+        SmileSet &mModifiedParents;
     };
 
     class UpdateTree
@@ -176,7 +175,7 @@ public:
     };
 
     bool Cancelled();
-    
+
     class SaveIterationData
     {
     public:
@@ -192,7 +191,7 @@ public:
             , PathFinderContext& ctx
             , CSVparse::CSV& morphingData);
     };
-    
+
 private:
     tbb::task_group_context *mTbbCtx;
     JobManager *mJobManager;
@@ -201,3 +200,4 @@ private:
     PathFinderContext mCtx;
 };
 
+#endif

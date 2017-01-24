@@ -4,31 +4,23 @@
     <logicalFolder name="f4" displayName="Commons" projectFiles="true">
       <logicalFolder name="f1" displayName="Header Files" projectFiles="true">
         <itemPath>../common/IterationSnapshot.h</itemPath>
-        <itemPath>../common/JobGroup.h</itemPath>
         <itemPath>../common/MolpherAtom.h</itemPath>
         <itemPath>../common/MolpherMolecule.h</itemPath>
         <itemPath>../common/MolpherParam.h</itemPath>
-        <itemPath>../common/NeighborhoodTask.h</itemPath>
-        <itemPath>../common/NetbeansHack.h</itemPath>
-        <itemPath>../common/Version.hpp</itemPath>
         <itemPath>../common/activity_data_processing.h</itemPath>
         <itemPath>../common/chemoper_selectors.h</itemPath>
-        <itemPath>../common/dimred_selectors.h</itemPath>
         <itemPath>../common/fingerprint_selectors.h</itemPath>
         <itemPath>../common/global_types.h</itemPath>
         <itemPath>../common/inout.h</itemPath>
         <itemPath>../common/iteration_serializer.hpp</itemPath>
-        <itemPath>../common/scaffold_selectors.hpp</itemPath>
         <itemPath>../common/simcoeff_selectors.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="Source Files" projectFiles="true">
         <itemPath>../common/activity_data_processing.cpp</itemPath>
         <itemPath>../common/chemoper_selectors.cpp</itemPath>
-        <itemPath>../common/dimred_selectors.cpp</itemPath>
         <itemPath>../common/fingerprint_selectors.cpp</itemPath>
         <itemPath>../common/inout.cpp</itemPath>
         <itemPath>../common/iteration_serializer.cpp</itemPath>
-        <itemPath>../common/scaffold_selectors.cpp</itemPath>
         <itemPath>../common/simcoeff_selectors.cpp</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -43,14 +35,12 @@
           <itemPath>chem/fingerprintStrategy/AtomPairsFngpr.hpp</itemPath>
           <itemPath>chem/fingerprintStrategy/FingerprintStrategy.h</itemPath>
           <itemPath>chem/fingerprintStrategy/MorganFngpr.hpp</itemPath>
-          <itemPath>chem/fingerprintStrategy/TopolLayeredFngpr1.hpp</itemPath>
-          <itemPath>chem/fingerprintStrategy/TopolLayeredFngpr2.hpp</itemPath>
-          <itemPath>chem/fingerprintStrategy/TopolSingleFngpr.hpp</itemPath>
           <itemPath>chem/fingerprintStrategy/TopolTorsFngpr.hpp</itemPath>
         </logicalFolder>
         <logicalFolder name="morphing" displayName="morphing" projectFiles="true">
           <itemPath>chem/morphing/CalculateDistances.hpp</itemPath>
           <itemPath>chem/morphing/CalculateMorphs.hpp</itemPath>
+          <itemPath>chem/morphing/FilterScript.hpp</itemPath>
           <itemPath>chem/morphing/Morphing.hpp</itemPath>
           <itemPath>chem/morphing/MorphingData.h</itemPath>
           <itemPath>chem/morphing/MorphingFtors.hpp</itemPath>
@@ -69,47 +59,18 @@
           <itemPath>chem/morphingStrategy/OpRemoveAtom.hpp</itemPath>
           <itemPath>chem/morphingStrategy/OpRemoveBond.hpp</itemPath>
         </logicalFolder>
-        <logicalFolder name="f1" displayName="scaffold" projectFiles="true">
-          <itemPath>chem/scaffold/Murcko2Scaffold.hpp</itemPath>
-          <itemPath>chem/scaffold/Oprea1Scaffold.hpp</itemPath>
-          <itemPath>chem/scaffold/OriginalMoleculeScaffold.hpp</itemPath>
-          <itemPath>chem/scaffold/RingsWithLinkers1Scaffold.hpp</itemPath>
-          <itemPath>chem/scaffold/Scaffold.hpp</itemPath>
-          <itemPath>chem/scaffold/ScaffoldDatabase.hpp</itemPath>
-        </logicalFolder>
         <logicalFolder name="simCoefStrategy"
                        displayName="simCoefStrategy"
                        projectFiles="true">
-          <itemPath>chem/simCoefStrategy/AllBitSimCoef.hpp</itemPath>
-          <itemPath>chem/simCoefStrategy/AsymmetricSimCoef.hpp</itemPath>
-          <itemPath>chem/simCoefStrategy/BraunBlanquetSimCoef.hpp</itemPath>
-          <itemPath>chem/simCoefStrategy/CosineSimCoef.hpp</itemPath>
-          <itemPath>chem/simCoefStrategy/DiceSimCoef.hpp</itemPath>
-          <itemPath>chem/simCoefStrategy/KulczynskiSimCoef.hpp</itemPath>
-          <itemPath>chem/simCoefStrategy/McConnaugheySimCoef.hpp</itemPath>
-          <itemPath>chem/simCoefStrategy/OnBitSimCoef.hpp</itemPath>
-          <itemPath>chem/simCoefStrategy/RusselSimCoef.hpp</itemPath>
           <itemPath>chem/simCoefStrategy/SimCoefStrategy.h</itemPath>
-          <itemPath>chem/simCoefStrategy/SokalSimCoef.hpp</itemPath>
           <itemPath>chem/simCoefStrategy/TanimotoSimCoef.hpp</itemPath>
-          <itemPath>chem/simCoefStrategy/TverskySimCoef.hpp</itemPath>
         </logicalFolder>
         <itemPath>chem/ChemicalAuxiliary.h</itemPath>
         <itemPath>chem/SimCoefCalculator.hpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="coord" displayName="coord" projectFiles="true">
-        <itemPath>coord/DimensionReducer.h</itemPath>
-        <itemPath>coord/KamadaKawaiReducer.h</itemPath>
-        <itemPath>coord/PcaReducer.h</itemPath>
-        <itemPath>coord/ReducerFactory.h</itemPath>
-      </logicalFolder>
       <logicalFolder name="core" displayName="core" projectFiles="true">
-        <itemPath>core/JobManager.h</itemPath>
-        <itemPath>core/NeighborhoodGenerator.h</itemPath>
-        <itemPath>core/NeighborhoodTaskQueue.h</itemPath>
         <itemPath>core/PathFinder.h</itemPath>
         <itemPath>core/PathFinderActivity.h</itemPath>
-        <itemPath>core/PathFinderContext.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="descriptor" projectFiles="true">
         <itemPath>descriptor/BioChemLibDescriptors.hpp</itemPath>
@@ -119,17 +80,10 @@
       </logicalFolder>
       <logicalFolder name="extensions" displayName="extensions" projectFiles="true">
         <itemPath>descriptor/PaDELDescriptorCalculator.h</itemPath>
-        <itemPath>extensions/SAScore.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="tests" displayName="tests" projectFiles="true">
-        <itemPath>tests/MorphingTest.h</itemPath>
       </logicalFolder>
       <itemPath>main.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="f2" displayName="Resources" projectFiles="true">
-      <logicalFolder name="f1" displayName="comm" projectFiles="true">
-        <itemPath>../common/molpher_interface.idl</itemPath>
-      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="f3" displayName="Source Files" projectFiles="true">
       <logicalFolder name="auxiliary" displayName="auxiliary" projectFiles="true">
@@ -142,12 +96,11 @@
           <itemPath>chem/fingerprintStrategy/AtomPairsFngpr.cpp</itemPath>
           <itemPath>chem/fingerprintStrategy/FingerprintStrategy.cpp</itemPath>
           <itemPath>chem/fingerprintStrategy/MorganFngpr.cpp</itemPath>
-          <itemPath>chem/fingerprintStrategy/TopolLayeredFngpr1.cpp</itemPath>
-          <itemPath>chem/fingerprintStrategy/TopolLayeredFngpr2.cpp</itemPath>
-          <itemPath>chem/fingerprintStrategy/TopolSingleFngpr.cpp</itemPath>
           <itemPath>chem/fingerprintStrategy/TopolTorsFngpr.cpp</itemPath>
         </logicalFolder>
         <logicalFolder name="morphing" displayName="morphing" projectFiles="true">
+          <itemPath>chem/morphing/CalculateDistances.cpp</itemPath>
+          <itemPath>chem/morphing/FilterScript.cpp</itemPath>
           <itemPath>chem/morphing/Morphing.cpp</itemPath>
           <itemPath>chem/morphing/MorphingData.cpp</itemPath>
           <itemPath>chem/morphing/MorphingFtors.cpp</itemPath>
@@ -164,45 +117,31 @@
           <itemPath>chem/morphingStrategy/OpRemoveAtom.cpp</itemPath>
           <itemPath>chem/morphingStrategy/OpRemoveBond.cpp</itemPath>
         </logicalFolder>
-        <logicalFolder name="f1" displayName="scaffold" projectFiles="true">
-          <itemPath>chem/scaffold/Murcko2Scaffold.cpp</itemPath>
-          <itemPath>chem/scaffold/Oprea1Scaffold.cpp</itemPath>
-          <itemPath>chem/scaffold/OriginalMoleculeScaffold.cpp</itemPath>
-          <itemPath>chem/scaffold/RingsWithLinkers1Scaffold.cpp</itemPath>
-          <itemPath>chem/scaffold/Scaffold.cpp</itemPath>
-          <itemPath>chem/scaffold/ScaffoldDatabase.cpp</itemPath>
-        </logicalFolder>
         <logicalFolder name="simCoefStrategy"
                        displayName="simCoefStrategy"
                        projectFiles="true">
-          <itemPath>chem/simCoefStrategy/AllBitSimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/AsymmetricSimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/BraunBlanquetSimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/CosineSimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/DiceSimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/KulczynskiSimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/McConnaugheySimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/OnBitSimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/RusselSimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/SokalSimCoef.cpp</itemPath>
           <itemPath>chem/simCoefStrategy/TanimotoSimCoef.cpp</itemPath>
-          <itemPath>chem/simCoefStrategy/TverskySimCoef.cpp</itemPath>
         </logicalFolder>
         <itemPath>chem/ChemicalAuxiliary.cpp</itemPath>
         <itemPath>chem/SimCoefCalculator.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="coord" displayName="coord" projectFiles="true">
-        <itemPath>coord/KamadaKawaiReducer.cpp</itemPath>
-        <itemPath>coord/PcaReducer.cpp</itemPath>
-        <itemPath>coord/ReducerFactory.cpp</itemPath>
-      </logicalFolder>
       <logicalFolder name="core" displayName="core" projectFiles="true">
-        <itemPath>core/JobManager.cpp</itemPath>
-        <itemPath>core/NeighborhoodGenerator.cpp</itemPath>
-        <itemPath>core/NeighborhoodTaskQueue.cpp</itemPath>
+        <itemPath>core/AcceptMorphs.cpp</itemPath>
+        <itemPath>core/AcceptMorphs.hpp</itemPath>
+        <itemPath>core/CollectMorphs.cpp</itemPath>
+        <itemPath>core/CollectMorphs.hpp</itemPath>
+        <itemPath>core/CompareMorphs.cpp</itemPath>
+        <itemPath>core/CompareMorphs.hpp</itemPath>
+        <itemPath>core/FilterMorphs.cpp</itemPath>
+        <itemPath>core/FilterMorphs.hpp</itemPath>
+        <itemPath>core/FindLeaves.cpp</itemPath>
+        <itemPath>core/FindLeaves.hpp</itemPath>
         <itemPath>core/PathFinder.cpp</itemPath>
         <itemPath>core/PathFinderActivity.cpp</itemPath>
-        <itemPath>core/PathFinderContext.cpp</itemPath>
+        <itemPath>core/PruneTree.cpp</itemPath>
+        <itemPath>core/PruneTree.hpp</itemPath>
+        <itemPath>core/UpdateTree.cpp</itemPath>
+        <itemPath>core/UpdateTree.hpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="descriptor" projectFiles="true">
         <itemPath>descriptor/BioChemLibDescriptors.cpp</itemPath>
@@ -211,13 +150,13 @@
         <itemPath>descriptor/DescriptorSource.cpp</itemPath>
         <itemPath>descriptor/PaDELDescriptorCalculator.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="extensions" displayName="extensions" projectFiles="true">
-        <itemPath>extensions/SAScore.cpp</itemPath>
-      </logicalFolder>
-      <logicalFolder name="tests" displayName="tests" projectFiles="true">
-        <itemPath>tests/MorphingTest.cpp</itemPath>
-      </logicalFolder>
+      <itemPath>csv.cpp</itemPath>
+      <itemPath>csv.hpp</itemPath>
       <itemPath>main.cpp</itemPath>
+      <itemPath>molpher_molecule.cpp</itemPath>
+      <itemPath>molpher_molecule.hpp</itemPath>
+      <itemPath>script_execution.cpp</itemPath>
+      <itemPath>script_execution.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -320,19 +259,11 @@
       </compileType>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="../common/MolpherAtom.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/MolpherMolecule.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/MolpherParam.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/NeighborhoodTask.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/activity_data_processing.cpp"
             ex="false"
@@ -347,10 +278,6 @@
       <item path="../common/chemoper_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/chemoper_selectors.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/dimred_selectors.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../common/dimred_selectors.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/fingerprint_selectors.cpp"
             ex="false"
@@ -368,12 +295,6 @@
       <item path="../common/iteration_serializer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/iteration_serializer.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/molpher_interface.idl" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/scaffold_selectors.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../common/scaffold_selectors.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/simcoeff_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -421,36 +342,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr1.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr1.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr2.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr2.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolSingleFngpr.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolSingleFngpr.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="chem/fingerprintStrategy/TopolTorsFngpr.cpp"
             ex="false"
             tool="1"
@@ -461,12 +352,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="chem/morphing/CalculateDistances.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="chem/morphing/CalculateDistances.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
       <item path="chem/morphing/CalculateMorphs.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/morphing/FilterScript.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/morphing/FilterScript.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="chem/morphing/Morphing.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -567,143 +467,7 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/scaffold/Murcko2Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Murcko2Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Oprea1Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Oprea1Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/OriginalMoleculeScaffold.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/OriginalMoleculeScaffold.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/RingsWithLinkers1Scaffold.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/RingsWithLinkers1Scaffold.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/ScaffoldDatabase.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/ScaffoldDatabase.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AllBitSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AllBitSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AsymmetricSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AsymmetricSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/BraunBlanquetSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/BraunBlanquetSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/CosineSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/CosineSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/DiceSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/DiceSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/KulczynskiSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/KulczynskiSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/McConnaugheySimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/McConnaugheySimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/OnBitSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/OnBitSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/RusselSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/RusselSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="chem/simCoefStrategy/SimCoefStrategy.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/SokalSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/SokalSimCoef.hpp"
             ex="false"
             tool="3"
             flavor2="0">
@@ -718,41 +482,25 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/simCoefStrategy/TverskySimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="core/AcceptMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="chem/simCoefStrategy/TverskySimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="core/AcceptMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/DimensionReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/CollectMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/KamadaKawaiReducer.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/CollectMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/KamadaKawaiReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/CompareMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/PcaReducer.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/CompareMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/PcaReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FilterMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/ReducerFactory.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/FilterMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/ReducerFactory.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FindLeaves.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="core/JobManager.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/JobManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodGenerator.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodGenerator.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodTaskQueue.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodTaskQueue.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FindLeaves.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="core/PathFinder.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -762,9 +510,17 @@
       </item>
       <item path="core/PathFinderActivity.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/PruneTree.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      <item path="core/PruneTree.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core/UpdateTree.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="core/UpdateTree.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="csv.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="csv.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="descriptor/BioChemLibDescriptors.cpp"
             ex="false"
@@ -798,17 +554,17 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="extensions/SAScore.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="extensions/SAScore.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="main.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="tests/MorphingTest.cpp" ex="false" tool="1" flavor2="0">
+      <item path="molpher_molecule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="tests/MorphingTest.h" ex="false" tool="3" flavor2="0">
+      <item path="molpher_molecule.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="script_execution.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="script_execution.hpp" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Win32_Release" type="1">
@@ -916,19 +672,11 @@
       </compileType>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="../common/MolpherAtom.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/MolpherMolecule.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/MolpherParam.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/NeighborhoodTask.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/activity_data_processing.cpp"
             ex="false"
@@ -943,10 +691,6 @@
       <item path="../common/chemoper_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/chemoper_selectors.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/dimred_selectors.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../common/dimred_selectors.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/fingerprint_selectors.cpp"
             ex="false"
@@ -964,12 +708,6 @@
       <item path="../common/iteration_serializer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/iteration_serializer.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/molpher_interface.idl" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/scaffold_selectors.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../common/scaffold_selectors.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/simcoeff_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1017,36 +755,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr1.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr1.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr2.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr2.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolSingleFngpr.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolSingleFngpr.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="chem/fingerprintStrategy/TopolTorsFngpr.cpp"
             ex="false"
             tool="1"
@@ -1057,12 +765,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="chem/morphing/CalculateDistances.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="chem/morphing/CalculateDistances.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
       <item path="chem/morphing/CalculateMorphs.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/morphing/FilterScript.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/morphing/FilterScript.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="chem/morphing/Morphing.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1163,143 +880,7 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/scaffold/Murcko2Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Murcko2Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Oprea1Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Oprea1Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/OriginalMoleculeScaffold.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/OriginalMoleculeScaffold.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/RingsWithLinkers1Scaffold.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/RingsWithLinkers1Scaffold.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/ScaffoldDatabase.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/ScaffoldDatabase.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AllBitSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AllBitSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AsymmetricSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AsymmetricSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/BraunBlanquetSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/BraunBlanquetSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/CosineSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/CosineSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/DiceSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/DiceSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/KulczynskiSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/KulczynskiSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/McConnaugheySimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/McConnaugheySimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/OnBitSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/OnBitSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/RusselSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/RusselSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="chem/simCoefStrategy/SimCoefStrategy.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/SokalSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/SokalSimCoef.hpp"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1314,41 +895,25 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/simCoefStrategy/TverskySimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="core/AcceptMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="chem/simCoefStrategy/TverskySimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="core/AcceptMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/DimensionReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/CollectMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/KamadaKawaiReducer.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/CollectMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/KamadaKawaiReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/CompareMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/PcaReducer.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/CompareMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/PcaReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FilterMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/ReducerFactory.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/FilterMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/ReducerFactory.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FindLeaves.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="core/JobManager.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/JobManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodGenerator.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodGenerator.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodTaskQueue.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodTaskQueue.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FindLeaves.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="core/PathFinder.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1358,9 +923,17 @@
       </item>
       <item path="core/PathFinderActivity.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/PruneTree.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      <item path="core/PruneTree.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core/UpdateTree.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="core/UpdateTree.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="csv.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="csv.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="descriptor/BioChemLibDescriptors.cpp"
             ex="false"
@@ -1394,17 +967,17 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="extensions/SAScore.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="extensions/SAScore.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="main.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="tests/MorphingTest.cpp" ex="false" tool="1" flavor2="0">
+      <item path="molpher_molecule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="tests/MorphingTest.h" ex="false" tool="3" flavor2="0">
+      <item path="molpher_molecule.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="script_execution.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="script_execution.hpp" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Linux64_Release" type="1">
@@ -1502,19 +1075,11 @@
       </compileType>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="../common/MolpherAtom.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/MolpherMolecule.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/MolpherParam.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/NeighborhoodTask.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/activity_data_processing.cpp"
             ex="false"
@@ -1529,10 +1094,6 @@
       <item path="../common/chemoper_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/chemoper_selectors.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/dimred_selectors.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../common/dimred_selectors.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/fingerprint_selectors.cpp"
             ex="false"
@@ -1550,12 +1111,6 @@
       <item path="../common/iteration_serializer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/iteration_serializer.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/molpher_interface.idl" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/scaffold_selectors.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../common/scaffold_selectors.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/simcoeff_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1603,36 +1158,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr1.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr1.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr2.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr2.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolSingleFngpr.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolSingleFngpr.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="chem/fingerprintStrategy/TopolTorsFngpr.cpp"
             ex="false"
             tool="1"
@@ -1643,12 +1168,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="chem/morphing/CalculateDistances.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="chem/morphing/CalculateDistances.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
       <item path="chem/morphing/CalculateMorphs.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/morphing/FilterScript.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/morphing/FilterScript.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="chem/morphing/Morphing.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1749,143 +1283,7 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/scaffold/Murcko2Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Murcko2Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Oprea1Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Oprea1Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/OriginalMoleculeScaffold.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/OriginalMoleculeScaffold.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/RingsWithLinkers1Scaffold.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/RingsWithLinkers1Scaffold.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/ScaffoldDatabase.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/ScaffoldDatabase.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AllBitSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AllBitSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AsymmetricSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AsymmetricSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/BraunBlanquetSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/BraunBlanquetSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/CosineSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/CosineSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/DiceSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/DiceSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/KulczynskiSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/KulczynskiSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/McConnaugheySimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/McConnaugheySimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/OnBitSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/OnBitSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/RusselSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/RusselSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="chem/simCoefStrategy/SimCoefStrategy.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/SokalSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/SokalSimCoef.hpp"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1900,41 +1298,25 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/simCoefStrategy/TverskySimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="core/AcceptMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="chem/simCoefStrategy/TverskySimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="core/AcceptMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/DimensionReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/CollectMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/KamadaKawaiReducer.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/CollectMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/KamadaKawaiReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/CompareMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/PcaReducer.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/CompareMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/PcaReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FilterMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/ReducerFactory.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/FilterMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/ReducerFactory.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FindLeaves.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="core/JobManager.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/JobManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodGenerator.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodGenerator.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodTaskQueue.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodTaskQueue.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FindLeaves.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="core/PathFinder.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1944,9 +1326,17 @@
       </item>
       <item path="core/PathFinderActivity.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/PruneTree.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      <item path="core/PruneTree.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core/UpdateTree.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="core/UpdateTree.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="csv.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="csv.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="descriptor/BioChemLibDescriptors.cpp"
             ex="false"
@@ -1980,17 +1370,17 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="extensions/SAScore.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="extensions/SAScore.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="main.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="tests/MorphingTest.cpp" ex="false" tool="1" flavor2="0">
+      <item path="molpher_molecule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="tests/MorphingTest.h" ex="false" tool="3" flavor2="0">
+      <item path="molpher_molecule.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="script_execution.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="script_execution.hpp" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Linux64_Release_META" type="1">
@@ -2088,19 +1478,11 @@
       </compileType>
       <item path="../common/IterationSnapshot.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../common/JobGroup.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="../common/MolpherAtom.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/MolpherMolecule.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/MolpherParam.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/NeighborhoodTask.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/NetbeansHack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/Version.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/activity_data_processing.cpp"
             ex="false"
@@ -2115,10 +1497,6 @@
       <item path="../common/chemoper_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/chemoper_selectors.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/dimred_selectors.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../common/dimred_selectors.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/fingerprint_selectors.cpp"
             ex="false"
@@ -2136,12 +1514,6 @@
       <item path="../common/iteration_serializer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../common/iteration_serializer.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/molpher_interface.idl" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../common/scaffold_selectors.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../common/scaffold_selectors.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../common/simcoeff_selectors.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -2189,36 +1561,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr1.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr1.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr2.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolLayeredFngpr2.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolSingleFngpr.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/fingerprintStrategy/TopolSingleFngpr.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="chem/fingerprintStrategy/TopolTorsFngpr.cpp"
             ex="false"
             tool="1"
@@ -2229,12 +1571,21 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="chem/morphing/CalculateDistances.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="chem/morphing/CalculateDistances.hpp"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
       <item path="chem/morphing/CalculateMorphs.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="chem/morphing/FilterScript.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="chem/morphing/FilterScript.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="chem/morphing/Morphing.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -2335,143 +1686,7 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/scaffold/Murcko2Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Murcko2Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Oprea1Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Oprea1Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/OriginalMoleculeScaffold.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/OriginalMoleculeScaffold.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/RingsWithLinkers1Scaffold.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/RingsWithLinkers1Scaffold.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/scaffold/Scaffold.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/Scaffold.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/scaffold/ScaffoldDatabase.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="chem/scaffold/ScaffoldDatabase.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AllBitSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AllBitSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AsymmetricSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/AsymmetricSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/BraunBlanquetSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/BraunBlanquetSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/CosineSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/CosineSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/DiceSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/DiceSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/KulczynskiSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/KulczynskiSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/McConnaugheySimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/McConnaugheySimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/OnBitSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/OnBitSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/RusselSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/RusselSimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="chem/simCoefStrategy/SimCoefStrategy.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/SokalSimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="chem/simCoefStrategy/SokalSimCoef.hpp"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2486,41 +1701,25 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="chem/simCoefStrategy/TverskySimCoef.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="core/AcceptMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="chem/simCoefStrategy/TverskySimCoef.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="core/AcceptMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/DimensionReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/CollectMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/KamadaKawaiReducer.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/CollectMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/KamadaKawaiReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/CompareMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/PcaReducer.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/CompareMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/PcaReducer.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FilterMorphs.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="coord/ReducerFactory.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/FilterMorphs.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="coord/ReducerFactory.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FindLeaves.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="core/JobManager.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/JobManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodGenerator.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodGenerator.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodTaskQueue.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="core/NeighborhoodTaskQueue.h" ex="false" tool="3" flavor2="0">
+      <item path="core/FindLeaves.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="core/PathFinder.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -2530,9 +1729,17 @@
       </item>
       <item path="core/PathFinderActivity.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="core/PathFinderContext.cpp" ex="false" tool="1" flavor2="0">
+      <item path="core/PruneTree.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="core/PathFinderContext.h" ex="false" tool="3" flavor2="0">
+      <item path="core/PruneTree.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="core/UpdateTree.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="core/UpdateTree.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="csv.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="csv.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="descriptor/BioChemLibDescriptors.cpp"
             ex="false"
@@ -2566,17 +1773,17 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="extensions/SAScore.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="extensions/SAScore.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="main.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="tests/MorphingTest.cpp" ex="false" tool="1" flavor2="0">
+      <item path="molpher_molecule.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="tests/MorphingTest.h" ex="false" tool="3" flavor2="0">
+      <item path="molpher_molecule.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="script_execution.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="script_execution.hpp" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

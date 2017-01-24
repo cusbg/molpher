@@ -23,7 +23,6 @@
 #include "simcoeff_selectors.h"
 #include "chemoper_selectors.h"
 #include "MolpherMolecule.h"
-#include "chem/scaffold/Scaffold.hpp"
 
 #ifndef MORPHING_REPORTING
 #define MORPHING_REPORTING 1
@@ -32,27 +31,8 @@
 void GenerateMorphs(
     MolpherMolecule &candidate,
     unsigned int morphAttempts,
-    FingerprintSelector fingerprintSelector,
-    SimCoeffSelector simCoeffSelector,
     std::vector<ChemOperSelector> &chemOperSelectors,
-    MolpherMolecule &target,
-    std::vector<MolpherMolecule> &decoys,
     tbb::task_group_context &tbbCtx,
     void *callerState,
     void (*deliver)(MolpherMolecule *, void *),
-    Scaffold* scaff = NULL
-    );
-
-void GenerateMorphs(
-    MolpherMolecule &candidate,
-    unsigned int morphAttempts,
-//    FingerprintSelector fingerprintSelector,
-//    SimCoeffSelector simCoeffSelector,
-    std::vector<ChemOperSelector> &chemOperSelectors,
-//    MolpherMolecule &target,
-    std::vector<MolpherMolecule> &decoys,
-    tbb::task_group_context &tbbCtx,
-    void *callerState,
-    void (*deliver)(MolpherMolecule *, void *),
-    Scaffold* scaff = NULL
-    );
+    int iteration);

@@ -25,6 +25,7 @@
 
 #include <tbb/atomic.h>
 #include <tbb/blocked_range.h>
+#include <tbb/concurrent_vector.h>
 
 #include "chemoper_selectors.h"
 #include "chem/fingerprintStrategy/FingerprintStrategy.h"
@@ -38,18 +39,18 @@ class CalculateDistances
 {
 public:
     CalculateDistances(
-        RDKit::RWMol **newMols,
-        SimCoefCalculator &scCalc,
-        Fingerprint *targetFp,
-        std::vector<Fingerprint *> &decoysFp,
-        double *distToTarget,
-        double *distToClosestDecoy,
-        int nextDecoy
-        );
+            RDKit::RWMol **newMols,
+            SimCoefCalculator &scCalc,
+            Fingerprint *targetFp,
+            std::vector<Fingerprint *> &decoysFp,
+            double *distToTarget,
+            double *distToClosestDecoy,
+            int nextDecoy
+            );
 
     void operator()(const tbb::blocked_range<int> &r) const;
 
- private:
+private:
     RDKit::RWMol **mNewMols;
     SimCoefCalculator &mScCalc;
     Fingerprint *mTargetFp;
@@ -57,9 +58,36 @@ public:
 
     double *mDistToTarget;
     double *mDistToClosestDecoy;
-    
+
     /**
      * Determine next decoy to visit.
      */
     int mNextDecoy;
+};
+
+/**
+ * Use external script to calculate distances for given molecules.
+ *
+ * The call of external script is:
+ * {script_path} -i {input_file} -o {output_file}
+ *
+ * Where the {input_file} contains one SMILES per line.
+ * The {output_file} is created by the script, it must contains
+ * same number of lines as the {input_file} on each line must be distance
+ * to target for respective molecule.
+ */
+class CalculateDistancesScript
+{
+public:
+    CalculateDistancesScript(tbb::concurrent_vector<MolpherMolecule>& molecules,
+            const std::string& script,
+            const std::string& workingDirectory,
+            unsigned int iteration,
+            bool useDistance);
+    void operator()() const;
+private:
+    tbb::concurrent_vector<MolpherMolecule>& mMolecules;
+    const std::string& mScript;
+    std::string mWorkingDirectory;
+    bool mUseDistance;
 };

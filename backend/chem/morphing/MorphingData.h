@@ -24,35 +24,33 @@
 
 #include "global_types.h"
 #include "chemoper_selectors.h"
-#include "scaffold_selectors.hpp"
 
 class MorphingData
 {
 public:
     MorphingData(
-        RDKit::ROMol &molecule,
-        RDKit::ROMol &target,
-        std::vector<ChemOperSelector> &operators,
-        ScaffoldSelector scaffLevel
-        );
+            RDKit::ROMol &molecule,
+            RDKit::ROMol &target,
+            std::vector<ChemOperSelector> &operators);
     ~MorphingData();
 
 protected:
     void InitAddAtom();
     void InitAddBond();
-    void InitMutateAtom(ScaffoldSelector scaffLevel);
+    void InitMutateAtom();
     void InitRemoveAtom();
     void InitRemoveBond();
-    void InitInterlayAtom(ScaffoldSelector scaffLevel);
-    void InitBondReroute(ScaffoldSelector scaffLevel);
-    void InitBondContraction(ScaffoldSelector scaffLevel);
+    void InitInterlayAtom();
+    void InitBondReroute();
+    void InitBondContraction();
 
 public:
     RDKit::ROMol &mol;
     std::vector<MolpherAtom> atoms;
     std::vector<ChemOperSelector> operators;
 
-    typedef struct {
+    typedef struct
+    {
         BondIdx bondIdx;
         std::vector<AtomIdx> candidates[2];
     } RerouteCandidates;

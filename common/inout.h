@@ -31,14 +31,12 @@
 void SynchCout(const std::string &s);
 
 std::string GenerateSnaphostFilenameWithoutExtension(std::string &base,
-    JobId jobId, unsigned int iterIdx);
-std::string GenerateSmilesFilename(
-        std::string &base, unsigned int iterIdx);
-std::string GenerateFilename(std::string &base,
-    JobId jobId, std::string name);
-std::string GenerateDirname(std::string &base, JobId jobId);
+        unsigned int iterIdx);
+
+std::string GenerateFilename(std::string &base, boost::uint32_t iter);
+std::string GenerateFilename(std::string &base, std::string name);
+std::string GenerateDirname(std::string &base);
 std::string GenerateDirname(std::string &base, const std::string& targetId);
-std::string GenerateDirname(std::string &base, JobId jobId, const std::string& targetId);
 
 template<typename Number>
 std::string NumberToString(Number number);
@@ -66,8 +64,8 @@ void WriteMolphMolsToSDF(const std::string &file,
     const std::map<std::string, MolpherMolecule> &mols);
 void WriteMolphMolsToSDF(const std::string &file,
     const std::vector<MolpherMolecule> &mols);
-void ReadMolphMolsFromFile(const std::string &file,
-    std::vector<MolpherMolecule> &mols);
+//void ReadMolphMolsFromFile(const std::string &file,
+//    std::vector<MolpherMolecule> &mols);
 
 void WriteRWMolsToSDF(const std::string &file,
     std::vector<RDKit::RWMol *> &mols);

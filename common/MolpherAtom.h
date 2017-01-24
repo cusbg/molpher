@@ -1,26 +1,33 @@
-/*
- * File:   MolpherAtom.h
- * Author: Petyr
- *
- * Created on 3.04.2013, 12:34
- */
-
 #pragma once
 
 #include "GraphMol/Atom.h"
 
-// used type definition
 typedef int AtomicNum;
 
 /**
- * Molpher atom representation.
+ * Represent a single atom.
  */
 struct MolpherAtom
 {
-public:
+
     MolpherAtom(RDKit::Atom *atom) :
-        atomicNum(atom->getAtomicNum()), formalCharge(atom->getFormalCharge()),
-        isotope(atom->getIsotope())  { }
+    atomicNum(atom->getAtomicNum()),
+    formalCharge(atom->getFormalCharge()),
+    isotope(atom->getIsotope())
+    {
+    }
+
+    /**
+     * @param atom
+     * @return True if two atoms are equal.
+     */
+    bool equal(const MolpherAtom &atom)
+    {
+        return atomicNum == atom.atomicNum &&
+                formalCharge == atom.formalCharge &&
+                isotope == atom.formalCharge;
+    }
+
 public:
 
     AtomicNum atomicNum;
@@ -28,6 +35,7 @@ public:
     int formalCharge;
 
     double isotope;
+
 };
 
 

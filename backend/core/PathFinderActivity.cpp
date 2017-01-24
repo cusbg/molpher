@@ -5,6 +5,8 @@
  * Created on 11. říjen 2014, 15:27
  */
 
+#ifdef NOT_DEF
+
 #include <cassert>
 #include <cmath>
 #include <cfloat>
@@ -28,7 +30,6 @@
 
 #include "inout.h"
 #include "auxiliary/SynchRand.h"
-#include "coord/ReducerFactory.h"
 #include "chem/morphing/Morphing.hpp"
 #include "../chem/scaffold/Scaffold.hpp"
 #include "../chem/scaffold/ScaffoldDatabase.hpp"
@@ -96,7 +97,7 @@ mMorphs(morphs) {
 void PathFinderActivity::CollectMorphs::operator()(const MolpherMolecule &morph) {
     ++mCollectAttemptCount; // atomic
     SmileSet::const_accessor dummy;
-    if (mDuplicateChecker.insert(dummy, morph.smile)) {
+    if (mDuplicateChecker.insert(dummy, morph.smiles)) {
         mMorphs.push_back(morph);
     } else {
         // ignore duplicate
@@ -204,7 +205,7 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                         mCtx.params.maxAcceptableMolecularWeight);
                 if (badWeight) {
                     std::stringstream ss;
-                        ss << "\tBad weight: " << mMorphs[idx].smile << " : "
+                        ss << "\tBad weight: " << mMorphs[idx].smiles << " : "
                                 << mMorphs[idx].molecularWeight;
                     SynchCout( ss.str() );
                 }
@@ -219,7 +220,7 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                     // in case of badSascore print message
                     if (badSascore) {
                         std::stringstream ss;
-                        ss << "\tBad sasscore: " << mMorphs[idx].smile << " : "
+                        ss << "\tBad sasscore: " << mMorphs[idx].smiles << " : "
                                 << mMorphs[idx].sascore;
                         SynchCout( ss.str() );
                     }
@@ -232,7 +233,7 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
             if (!isDead) {
                 if (!mCtx.ScaffoldMode()) {
                     PathFinderContext::CandidateMap::const_accessor dummy;
-                    if (mCtx.candidates.find(dummy, mMorphs[idx].smile)) {
+                    if (mCtx.candidates.find(dummy, mMorphs[idx].smiles)) {
                         alreadyExists = true;
                     }
                 } else {
@@ -254,7 +255,7 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
                 PathFinderContext::CandidateMap::const_accessor ac;
                 if (mCtx.candidates.find(ac, mMorphs[idx].parentSmile)) {
                     alreadyTriedByParent = (
-                            ac->second.historicDescendants.find(mMorphs[idx].smile)
+                            ac->second.historicDescendants.find(mMorphs[idx].smiles)
                             !=
                             ac->second.historicDescendants.end());
                 } else {
@@ -268,7 +269,7 @@ void PathFinderActivity::FilterMorphs::operator()(const tbb::blocked_range<size_
 
             if (!isDead) {
                 PathFinderContext::MorphDerivationMap::const_accessor ac;
-                if (mCtx.morphDerivations.find(ac, mMorphs[idx].smile)) {
+                if (mCtx.morphDerivations.find(ac, mMorphs[idx].smiles)) {
                     tooManyProducedMorphs =
                             (ac->second > mCtx.params.cntMaxMorphs);
                 }
@@ -311,9 +312,11 @@ void PathFinderActivity::MOOPFilter::operator()(const tbb::blocked_range<size_t>
             for (size_t second_idx = 0; second_idx != mMorphCount; ++second_idx) {
                 MolpherMolecule second = mMorphs[second_idx];
                 if ((first.id.compare(second.id) != 0) && mNext[second_idx]) {
+
                     std::vector<double>::size_type all_features_count = first.etalonDistances.size();
                     std::vector<double>::size_type equal_features_count(0);
                     std::vector<double>::size_type bad_features_count(0);
+
                     for (std::vector<double>::size_type desc_idx = 0; desc_idx != first.etalonDistances.size(); desc_idx++) {
                         double f = first.etalonDistances[desc_idx];
                         double s = second.etalonDistances[desc_idx];
@@ -324,10 +327,14 @@ void PathFinderActivity::MOOPFilter::operator()(const tbb::blocked_range<size_t>
                             equal_features_count++;
                         }
                     }
+
                     if (bad_features_count == all_features_count && equal_features_count != all_features_count) {
                         isNotOptimal = true;
                         break;
                     }
+
+
+
                 }
             }
             mNext[idx] = isNotOptimal;
@@ -376,7 +383,7 @@ void PathFinderActivity::AcceptMorphs::operator()(
                 PathFinderContext::CandidateMap::accessor ac;
 
                 if (!mCtx.ScaffoldMode()) {
-                    mCtx.candidates.insert(ac, mMorphs[idx].smile);
+                    mCtx.candidates.insert(ac, mMorphs[idx].smiles);
                     ac->second = mMorphs[idx];
                     ac.release();
                 } else {
@@ -388,18 +395,18 @@ void PathFinderActivity::AcceptMorphs::operator()(
                         // that it does not happen when scaffold hopping is turned off)
                         continue;
                     }
-                    acScaff->second = mMorphs[idx].smile;
+                    acScaff->second = mMorphs[idx].smiles;
 
-                    mCtx.candidates.insert(ac, mMorphs[idx].smile);
+                    mCtx.candidates.insert(ac, mMorphs[idx].smiles);
                     ac->second = mMorphs[idx];
                     ac.release();
                 }
 
                 if (mCtx.candidates.find(ac, mMorphs[idx].parentSmile)) {
-                    ac->second.descendants.insert(mMorphs[idx].smile);
-                    ac->second.historicDescendants.insert(mMorphs[idx].smile);
+                    ac->second.descendants.insert(mMorphs[idx].smiles);
+                    ac->second.historicDescendants.insert(mMorphs[idx].smiles);
                     SmileSet::const_accessor dummy;
-                    mModifiedParents.insert(dummy, ac->second.smile);
+                    mModifiedParents.insert(dummy, ac->second.smiles);
                 } else {
                     assert(false);
                 }
@@ -627,15 +634,15 @@ void acceptMorph2(
         PathFinderContext &ctx,
         PathFinderActivity::SmileSet &modifiedParents) {
     PathFinderContext::CandidateMap::accessor ac;
-    ctx.candidates.insert(ac, morphs[idx].smile);
+    ctx.candidates.insert(ac, morphs[idx].smiles);
     ac->second = morphs[idx];
     ac.release();
 
     if (ctx.candidates.find(ac, morphs[idx].parentSmile)) {
-        ac->second.descendants.insert(morphs[idx].smile);
-        ac->second.historicDescendants.insert(morphs[idx].smile);
+        ac->second.descendants.insert(morphs[idx].smiles);
+        ac->second.historicDescendants.insert(morphs[idx].smiles);
         PathFinderActivity::SmileSet::const_accessor dummy;
-        modifiedParents.insert(dummy, ac->second.smile);
+        modifiedParents.insert(dummy, ac->second.smiles);
     } else {
         assert(false);
     }
@@ -688,8 +695,8 @@ std::pair<double, double> PathFinderActivity::SaveIterationData::getClosestTestA
         RDKit::RWMol *mol = NULL;
         RDKit::RWMol *test = NULL;
         try {
-            mol = RDKit::SmilesToMol(inputMol.smile);
-            test = RDKit::SmilesToMol(testIt->second.smile);
+            mol = RDKit::SmilesToMol(inputMol.smiles);
+            test = RDKit::SmilesToMol(testIt->second.smiles);
             if (mol && test) {
                 RDKit::MolOps::Kekulize(*mol);
                 RDKit::MolOps::Kekulize(*test);
@@ -773,7 +780,6 @@ void PathFinderActivity::operator()() {
     bool canContinueCurrentJob = false;
     bool pathFound = false;
     std::vector<std::string> startMols;
-    CSVparse::CSV morphingData;
 
     while (true) {
 
@@ -787,13 +793,8 @@ void PathFinderActivity::operator()() {
                     assert(mCtx.iterIdx == 0);
                     assert(mCtx.candidateScaffoldMolecules.empty());
 
-                    if (mCtx.params.startMolMaxCount == 0) {
-                        mCtx.params.startMolMaxCount = mCtx.sourceMols.size();
-                    }
-
                     PathFinderContext::CandidateMap::accessor ac;
                     if (!mCtx.ScaffoldMode()) {
-                        int counter = 1;
                         for (PathFinderContext::CandidateMap::iterator it = mCtx.sourceMols.begin(); it != mCtx.sourceMols.end(); it++) {
                             mCtx.candidates.insert(ac, it->first);
                             startMols.push_back(it->first);
@@ -801,48 +802,44 @@ void PathFinderActivity::operator()() {
                             ac->second = it->second;
 
                             // @TODO Save candidate molecules (ID, SMILES, EthalonDistance, Parent, ...)
-
-                            ++counter;
-                            if (counter > mCtx.params.startMolMaxCount) {
-                                break;
-                            }
                         }
-
                     } else {
-                        assert(mCtx.scaffoldSelector == SF_MOST_GENERAL);
+                        // We do not support scaffolds for now.
+                        assert(false);
 
-                        Scaffold *scaff = ScaffoldDatabase::Get(mCtx.scaffoldSelector);
-
-                        std::string scaffSource;
-                        scaff->GetScaffold(mCtx.source.smile, &scaffSource);
-                        mCtx.tempSource.scaffoldSmile = scaffSource;
-                        std::string scaffTarget;
-                        scaff->GetScaffold(mCtx.target.smile, &scaffTarget);
-                        mCtx.target.scaffoldSmile = scaffTarget;
-
-                        mCtx.candidates.insert(ac, mCtx.tempSource.smile);
-                        ac->second = mCtx.tempSource;
-
-                        PathFinderContext::ScaffoldSmileMap::accessor acScaff;
-                        mCtx.candidateScaffoldMolecules.insert(acScaff, scaffSource);
-                        acScaff->second = mCtx.source.smile;
-                        acScaff.release();
-
-                        mCtx.pathScaffoldMolecules.insert(acScaff, scaffSource);
-                        acScaff->second = mCtx.source.smile;
-                        acScaff.release();
-                        mCtx.pathScaffoldMolecules.insert(acScaff, scaffTarget);
-                        acScaff->second = mCtx.target.smile;
-
-                        std::string scaffDecoy;
-                        std::vector<MolpherMolecule>::iterator it;
-                        for (it = mCtx.decoys.begin(); it != mCtx.decoys.end(); ++it) {
-                            scaff->GetScaffold(it->smile, &scaffDecoy);
-                            it->scaffoldSmile = scaffDecoy;
-                            it->scaffoldLevelCreation = mCtx.scaffoldSelector;
-                        }
-
-                        delete scaff;
+//                        assert(mCtx.scaffoldSelector == SF_MOST_GENERAL);
+//                        Scaffold *scaff = ScaffoldDatabase::Get(mCtx.scaffoldSelector);
+//
+//                        std::string scaffSource;
+//                        scaff->GetScaffold(mCtx.source.smile, &scaffSource);
+//                        mCtx.tempSource.scaffoldSmile = scaffSource;
+//                        std::string scaffTarget;
+//                        scaff->GetScaffold(mCtx.target.smile, &scaffTarget);
+//                        mCtx.target.scaffoldSmile = scaffTarget;
+//
+//                        mCtx.candidates.insert(ac, mCtx.tempSource.smile);
+//                        ac->second = mCtx.tempSource;
+//
+//                        PathFinderContext::ScaffoldSmileMap::accessor acScaff;
+//                        mCtx.candidateScaffoldMolecules.insert(acScaff, scaffSource);
+//                        acScaff->second = mCtx.source.smile;
+//                        acScaff.release();
+//
+//                        mCtx.pathScaffoldMolecules.insert(acScaff, scaffSource);
+//                        acScaff->second = mCtx.source.smile;
+//                        acScaff.release();
+//                        mCtx.pathScaffoldMolecules.insert(acScaff, scaffTarget);
+//                        acScaff->second = mCtx.target.smile;
+//
+//                        std::string scaffDecoy;
+//                        std::vector<MolpherMolecule>::iterator it;
+//                        for (it = mCtx.decoys.begin(); it != mCtx.decoys.end(); ++it) {
+//                            scaff->GetScaffold(it->smile, &scaffDecoy);
+//                            it->scaffoldSmile = scaffDecoy;
+//                            it->scaffoldLevelCreation = mCtx.scaffoldSelector;
+//                        }
+//
+//                        delete scaff;
                     }
                 }
             } else {
@@ -899,10 +896,10 @@ void PathFinderActivity::operator()() {
                             scaff);
                     PathFinderContext::MorphDerivationMap::accessor ac;
 
-                    if (mCtx.morphDerivations.find(ac, candidate.smile)) {
+                    if (mCtx.morphDerivations.find(ac, candidate.smiles)) {
                         ac->second += collectMorphs.WithdrawCollectAttemptCount();
                     } else {
-                        mCtx.morphDerivations.insert(ac, candidate.smile);
+                        mCtx.morphDerivations.insert(ac, candidate.smiles);
                         ac->second = collectMorphs.WithdrawCollectAttemptCount();
                     }
                 }
@@ -935,8 +932,8 @@ void PathFinderActivity::operator()() {
             }
 
             // prepare directory for descriptor computation
-            std::string output_dir(mJobManager->GetStorageDir());
-            std::string storage_dir(GenerateDirname(output_dir, mCtx.jobId,
+            std::string output_dir = mCtx.storagePath;
+            std::string storage_dir(GenerateDirname(output_dir,
                     "_" + NumberToString(mCtx.iterIdx)));
             try {
                 boost::filesystem::create_directories(storage_dir);
@@ -954,14 +951,22 @@ void PathFinderActivity::operator()() {
 
                 for (unsigned int i = 0; i != steps; i++) {
 
-                    std::string storage_path(GenerateDirname(output_dir, mCtx.jobId,
+                    std::string storage_path(GenerateDirname(output_dir,
                             "_" + NumberToString(mCtx.iterIdx) + "/run_" + NumberToString(i)));
 
                     std::shared_ptr<DescriptorSource> calculator;
-                    calculator = DescriptorSource::createPaDEL(
+
+                    if (mCtx.descriptorScript.empty()) {
+                        calculator = DescriptorSource::createPaDEL(
                             mCtx.padelPath, storage_path
                             , mCtx.relevantDescriptorNames, mThreadCnt,
                             "/descriptors.csv");
+                    } else {
+                        // Use custom script.
+                        calculator = DescriptorSource::createScript(
+                                mCtx.descriptorScript, storage_path,
+                                mCtx.relevantDescriptorNames);
+                    }
 
                     bool mol_added = false;
                     for (unsigned int idx = i * mols_per_step; idx != i * mols_per_step + mols_per_step; idx++) {
@@ -998,7 +1003,10 @@ void PathFinderActivity::operator()() {
                         if (survivors[idx]) {
                             MolpherMolecule &morph = morphs[idx];
                             morph.SaveDescriptors(calculator->get(morph), mCtx.relevantDescriptorNames);
-                            morph.normalizeDescriptors(mCtx.normalizationCoefficients, mCtx.imputedValues);
+                            if (mCtx.descriptorScript == "") {
+                                // Normalize only if script is not used.
+                                morph.normalizeDescriptors(mCtx.normalizationCoefficients, mCtx.imputedValues);
+                            }
                             morph.ComputeEtalonDistances(mCtx.etalonValues, mCtx.descWeights);
                         }
                     }
@@ -1083,7 +1091,7 @@ void PathFinderActivity::operator()() {
                     << "The min. distance to etalon: " << distance;
             SynchCout(ss.str());
 
-            // @TODO Save candidates list.
+            // @TODO Save candidates list ?
 
             if (!Cancelled()) {
                 mCtx.iterIdx += 1;
@@ -1125,3 +1133,5 @@ void PathFinderActivity::operator()() {
 
     SynchCout(std::string("PathFinder thread terminated."));
 }
+
+#endif

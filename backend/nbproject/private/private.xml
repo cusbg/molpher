@@ -4,7 +4,16 @@
         <activeConfTypeElem>1</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="9">
+        <file>
+            <url>core/JobManager.cpp</url>
+            <bookmark id="1">
+                <name/>
+                <line>45</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/martin/temp/diplomka/Molpher/backend/core/PathFinderContext.h</file>
@@ -18,5 +27,9 @@
             <file>file:/home/martin/temp/diplomka/Molpher/backend/core/PathFinderActivity.cpp</file>
         </group>
         <group name="Molpher MOO"/>
+        <group name="Molpher">
+            <file>file:/D:/Projects/Molpher/backend/core/PathFinder.cpp</file>
+            <file>file:/D:/Projects/Molpher/backend/core/PathFinderActivity.cpp</file>
+        </group>
     </open-files>
 </project-private>

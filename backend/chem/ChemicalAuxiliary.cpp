@@ -51,7 +51,8 @@ void GetAtomTypesFromMol(RDKit::ROMol &mol, std::vector<MolpherAtom> &atoms)
         for (int i = 0; i < atoms.size(); ++i) {
             if (atom->getAtomicNum() == atoms[i].atomicNum &&
                     atom->getFormalCharge() == atoms[i].formalCharge &&
-                    atom->getIsotope() == atoms[i].isotope) {
+                    atom->getIsotope() == atoms[i].isotope
+                    ) {
                 found = true;
                 break;
             }
@@ -70,7 +71,6 @@ MolpherAtomIdx GetRandomAtom(const std::vector<MolpherAtom> &atoms, RDKit::Atom 
     atom.setAtomicNum(atoms[idx].atomicNum);
     atom.setFormalCharge(atoms[idx].formalCharge);
     atom.setIsotope(atoms[idx].isotope);
-
     return idx;
 }
 

@@ -28,131 +28,144 @@
 
 struct MolpherParam
 {
-    MolpherParam() :
-        cntCandidatesToKeep(40),        // accept
-        cntCandidatesToKeepMax(150),    // acceptMax
-        cntMorphs(90),                  // farProduce
-        cntMorphsInDepth(200),          // closepPoduce
-        distToTargetDepthSwitch(0.1),   // farCloseThreashold
-        cntMaxMorphs(5000),             // maxMorhpsTotal
-        itThreshold(6),                 // nonProducingSurvive
-        decayThreshold(12),
-        cntIterations(500),             // maxIter
-        timeMaxSeconds(21600000),       // maxTime
-        minAcceptableMolecularWeight(0.0),
-        maxAcceptableMolecularWeight(500.0),
-        useSyntetizedFeasibility(true),
-        useSubstructureRestriction(false),
-        decoyRange(0.2),
-        useVisualisation(true),
-        activityMorphing(false),
-        startMolMaxCount(0),
-        maxAcceptableEtalonDistance(DBL_MAX),
-        maxMOOPruns(10)
-    {
-    }
-
     friend class boost::serialization::access;
+
     template<typename Archive>
     void serialize(Archive &ar, const unsigned int version)
     {
-        // usage of BOOST_SERIALIZATION_NVP enable us to use xml serialisation
-        ar & BOOST_SERIALIZATION_NVP(cntCandidatesToKeep);
         ar & BOOST_SERIALIZATION_NVP(cntCandidatesToKeepMax);
         ar & BOOST_SERIALIZATION_NVP(cntMorphs);
         ar & BOOST_SERIALIZATION_NVP(cntMorphsInDepth);
-        ar & BOOST_SERIALIZATION_NVP(distToTargetDepthSwitch);
-        ar & BOOST_SERIALIZATION_NVP(cntMaxMorphs);
-        ar & BOOST_SERIALIZATION_NVP(itThreshold);
+        ar & BOOST_SERIALIZATION_NVP(scoreToTargetDepthSwitch);
+        ar & BOOST_SERIALIZATION_NVP(iterationThreshold);
         ar & BOOST_SERIALIZATION_NVP(cntIterations);
         ar & BOOST_SERIALIZATION_NVP(timeMaxSeconds);
         ar & BOOST_SERIALIZATION_NVP(minAcceptableMolecularWeight);
         ar & BOOST_SERIALIZATION_NVP(maxAcceptableMolecularWeight);
-        ar & BOOST_SERIALIZATION_NVP(useSyntetizedFeasibility);
-        ar & BOOST_SERIALIZATION_NVP(activityMorphing);
-        ar & BOOST_SERIALIZATION_NVP(maxAcceptableEtalonDistance);
-        ar & BOOST_SERIALIZATION_NVP(useSubstructureRestriction);
-        ar & BOOST_SERIALIZATION_NVP(decoyRange);
+
+        ar & BOOST_SERIALIZATION_NVP(mooopPruns);
+        ar & BOOST_SERIALIZATION_NVP(chemOperSelectors);
+        ar & BOOST_SERIALIZATION_NVP(filterScriptCommand);
+        ar & BOOST_SERIALIZATION_NVP(scoreScriptCommand);
+        ar & BOOST_SERIALIZATION_NVP(descriptorsScriptCommand);
+        ar & BOOST_SERIALIZATION_NVP(scoreIsDistance);
+
     }
 
-    bool IsValid()
+    MolpherParam() {
+        chemOperSelectors.push_back(OP_ADD_ATOM);
+        chemOperSelectors.push_back(OP_REMOVE_ATOM);
+        chemOperSelectors.push_back(OP_ADD_BOND);
+        chemOperSelectors.push_back(OP_REMOVE_BOND);
+        chemOperSelectors.push_back(OP_MUTATE_ATOM);
+        chemOperSelectors.push_back(OP_INTERLAY_ATOM);
+        chemOperSelectors.push_back(OP_BOND_REROUTE);
+        chemOperSelectors.push_back(OP_BOND_CONTRACTION);
+    }
+
+    bool isValid()
     {
-        return (cntCandidatesToKeepMax > 0) &&
-            (cntCandidatesToKeepMax >= cntCandidatesToKeep) &&
-            (cntMorphs > 0) &&
-            (cntMorphsInDepth > 0) &&
-            (distToTargetDepthSwitch >= 0.0) &&
-            (distToTargetDepthSwitch <= 1.0) &&
-            (cntMaxMorphs > 0) &&
-            (itThreshold > 0) &&
-            (cntIterations > 0) &&
-            (timeMaxSeconds > 0) &&
-            (minAcceptableMolecularWeight >= 0.0) &&
-            (minAcceptableMolecularWeight <= maxAcceptableMolecularWeight) &&
-            (maxAcceptableMolecularWeight > 0.0) &&
-            (decoyRange >= 0) && (decoyRange <= 1.0)
-                && (startMolMaxCount >=0) && (maxAcceptableEtalonDistance > 0);
+        return (cntMorphs > 0) &&
+                (cntMorphsInDepth > 0) &&
+                (iterationThreshold > 0) &&
+                (cntIterations > 0) &&
+                (timeMaxSeconds > 0) &&
+                (minAcceptableMolecularWeight >= 0.0) &&
+                (minAcceptableMolecularWeight <= maxAcceptableMolecularWeight) &&
+                (maxAcceptableMolecularWeight > 0.0);
     }
 
-    // Molpher BIBE2011 parameters (do not rename)
-    boost::uint32_t cntCandidatesToKeep;
-	boost::uint32_t cntCandidatesToKeepMax;
-	boost::uint32_t cntMorphs;
-	boost::uint32_t cntMorphsInDepth;
-	double distToTargetDepthSwitch;
-    boost::uint32_t cntMaxMorphs;
-	boost::uint32_t itThreshold;
-    boost::uint32_t decayThreshold;
-    boost::uint32_t cntIterations;
-	boost::uint32_t timeMaxSeconds;
+    /**
+     * Maximum number of candidates to accept in a single iteration.
+     * Use -1 to accept all.
+     */
+    boost::uint32_t cntCandidatesToKeepMax = 150;
 
-    // newly added parameters to improve Molpher behaviour
+    /**
+     * Number of morphs to generate from a single leave.
+     */
+    boost::uint32_t cntMorphs = 90;
+
+    /**
+     * Number of morphs to generate from a single leave in depth.
+     * The depth is defined by scoreToTargetDepthSwitch.
+     */
+    boost::uint32_t cntMorphsInDepth = 200;
+
+    /**
+     * Where to switch from cntMorphs to cntMorphsInDepth.
+     */
+    double scoreToTargetDepthSwitch = 0.1;
+
+    /**
+     * Number of iterations after which the molecule is removed from tree.
+     * Use -1 to disable this feature.
+     *
+     * Can be used to limit the in-memory exploration tree depth.
+     */
+    boost::uint32_t iterationThreshold = -1;
+
+    /**
+     * Maximum number of iterations.
+     */
+    boost::uint32_t cntIterations = 100;
+
+    /**
+     * Time limit of execution.
+     */
+    boost::uint32_t timeMaxSeconds = -1;
+
+    /**
+     * Definition of filter for molecular filtering.
+     */
     double minAcceptableMolecularWeight;
+
     double maxAcceptableMolecularWeight;
 
     /**
-     * Filter molecules based on syntetized feasibility?
+     * Number of MOOP runs to execute. Use -1 to disable MOOP filter.
+     * The molecule.descriptors are used in the filter.
      */
-    bool useSyntetizedFeasibility;
+    boost::uint32_t mooopPruns = -1;
 
     /**
-     * Use substructure filter? Added in version 1.
+     * Vector or used mophing operators.
      */
-    bool useSubstructureRestriction;
+    std::vector<boost::int32_t> chemOperSelectors;
 
     /**
-     * Decoy range. Ie. how close muse candidate be to the
-     * decoy to get over it. Must be from interval (1,0).
+     * Path to the script that compute filter value for molecules.
+     *
+     * The value 1 means that the molecule pass the filter.
+     *
+     * CSV-like file is used to transfer the data.
      */
-    double decoyRange;
+    std::string filterScriptCommand = "";
 
     /**
-     * If false no visualisation is computed.
+     * Path to script that computes molecule score.
+     *
+     * CSV-like file is used to transfer the data.
      */
-    bool useVisualisation;
+    std::string scoreScriptCommand = "";
 
     /**
-     * Use the PathFinderActivity class
+     * Path to script that computes molecule descriptors.
+     *
+     * CSV-like file is used to transfer the data.
      */
-    bool activityMorphing;
+    std::string descriptorsScriptCommand = "";
 
     /**
-     * While morphing with activity information, this is the maximum number of active
-     * molecules to use for morphing initilization.
-     * Value of 0 means use all active molecules.
+     * If true molecule.score is a distance (default value) - ie. the smaller
+     * the closer. This is the default behaviour.
+     *
+     * If it is false the distToTarget represent a similarity and thus the
+     * greater the value the close to the target.
      */
-    boost::uint32_t startMolMaxCount;
+    bool scoreIsDistance = true;
 
-    double maxAcceptableEtalonDistance;
-
-    boost::uint32_t maxMOOPruns;
 };
 
-// add information about version to archive
-//BOOST_CLASS_IMPLEMENTATION(MolpherParam, object_class_info)
-// turn off versioning
 BOOST_CLASS_IMPLEMENTATION(MolpherParam, object_serializable)
-// turn off tracking
 BOOST_CLASS_TRACKING(MolpherParam, track_never)
-//  set version
-//BOOST_CLASS_VERSION(MolpherParam, 1)

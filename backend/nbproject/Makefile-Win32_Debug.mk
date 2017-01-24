@@ -37,11 +37,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/b4460d1a/activity_data_processing.o \
 	${OBJECTDIR}/_ext/b4460d1a/chemoper_selectors.o \
-	${OBJECTDIR}/_ext/b4460d1a/dimred_selectors.o \
 	${OBJECTDIR}/_ext/b4460d1a/fingerprint_selectors.o \
 	${OBJECTDIR}/_ext/b4460d1a/inout.o \
 	${OBJECTDIR}/_ext/b4460d1a/iteration_serializer.o \
-	${OBJECTDIR}/_ext/b4460d1a/scaffold_selectors.o \
 	${OBJECTDIR}/_ext/b4460d1a/simcoeff_selectors.o \
 	${OBJECTDIR}/auxiliary/SynchRand.o \
 	${OBJECTDIR}/chem/ChemicalAuxiliary.o \
@@ -49,10 +47,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/chem/fingerprintStrategy/AtomPairsFngpr.o \
 	${OBJECTDIR}/chem/fingerprintStrategy/FingerprintStrategy.o \
 	${OBJECTDIR}/chem/fingerprintStrategy/MorganFngpr.o \
-	${OBJECTDIR}/chem/fingerprintStrategy/TopolLayeredFngpr1.o \
-	${OBJECTDIR}/chem/fingerprintStrategy/TopolLayeredFngpr2.o \
-	${OBJECTDIR}/chem/fingerprintStrategy/TopolSingleFngpr.o \
 	${OBJECTDIR}/chem/fingerprintStrategy/TopolTorsFngpr.o \
+	${OBJECTDIR}/chem/morphing/CalculateDistances.o \
+	${OBJECTDIR}/chem/morphing/FilterScript.o \
 	${OBJECTDIR}/chem/morphing/Morphing.o \
 	${OBJECTDIR}/chem/morphing/MorphingData.o \
 	${OBJECTDIR}/chem/morphing/MorphingFtors.o \
@@ -64,41 +61,25 @@ OBJECTFILES= \
 	${OBJECTDIR}/chem/morphingStrategy/OpMutateAtom.o \
 	${OBJECTDIR}/chem/morphingStrategy/OpRemoveAtom.o \
 	${OBJECTDIR}/chem/morphingStrategy/OpRemoveBond.o \
-	${OBJECTDIR}/chem/scaffold/Murcko2Scaffold.o \
-	${OBJECTDIR}/chem/scaffold/Oprea1Scaffold.o \
-	${OBJECTDIR}/chem/scaffold/OriginalMoleculeScaffold.o \
-	${OBJECTDIR}/chem/scaffold/RingsWithLinkers1Scaffold.o \
-	${OBJECTDIR}/chem/scaffold/Scaffold.o \
-	${OBJECTDIR}/chem/scaffold/ScaffoldDatabase.o \
-	${OBJECTDIR}/chem/simCoefStrategy/AllBitSimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/AsymmetricSimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/BraunBlanquetSimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/CosineSimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/DiceSimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/KulczynskiSimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/McConnaugheySimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/OnBitSimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/RusselSimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/SokalSimCoef.o \
 	${OBJECTDIR}/chem/simCoefStrategy/TanimotoSimCoef.o \
-	${OBJECTDIR}/chem/simCoefStrategy/TverskySimCoef.o \
-	${OBJECTDIR}/coord/KamadaKawaiReducer.o \
-	${OBJECTDIR}/coord/PcaReducer.o \
-	${OBJECTDIR}/coord/ReducerFactory.o \
-	${OBJECTDIR}/core/JobManager.o \
-	${OBJECTDIR}/core/NeighborhoodGenerator.o \
-	${OBJECTDIR}/core/NeighborhoodTaskQueue.o \
+	${OBJECTDIR}/core/AcceptMorphs.o \
+	${OBJECTDIR}/core/CollectMorphs.o \
+	${OBJECTDIR}/core/CompareMorphs.o \
+	${OBJECTDIR}/core/FilterMorphs.o \
+	${OBJECTDIR}/core/FindLeaves.o \
 	${OBJECTDIR}/core/PathFinder.o \
 	${OBJECTDIR}/core/PathFinderActivity.o \
-	${OBJECTDIR}/core/PathFinderContext.o \
+	${OBJECTDIR}/core/PruneTree.o \
+	${OBJECTDIR}/core/UpdateTree.o \
+	${OBJECTDIR}/csv.o \
 	${OBJECTDIR}/descriptor/BioChemLibDescriptors.o \
 	${OBJECTDIR}/descriptor/CSV.o \
 	${OBJECTDIR}/descriptor/DataConverter.o \
 	${OBJECTDIR}/descriptor/DescriptorSource.o \
 	${OBJECTDIR}/descriptor/PaDELDescriptorCalculator.o \
-	${OBJECTDIR}/extensions/SAScore.o \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/tests/MorphingTest.o
+	${OBJECTDIR}/molpher_molecule.o \
+	${OBJECTDIR}/script_execution.o
 
 
 # C Compiler Flags
@@ -225,11 +206,6 @@ ${OBJECTDIR}/_ext/b4460d1a/chemoper_selectors.o: ../common/chemoper_selectors.cp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/b4460d1a/chemoper_selectors.o ../common/chemoper_selectors.cpp
 
-${OBJECTDIR}/_ext/b4460d1a/dimred_selectors.o: ../common/dimred_selectors.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/b4460d1a
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/b4460d1a/dimred_selectors.o ../common/dimred_selectors.cpp
-
 ${OBJECTDIR}/_ext/b4460d1a/fingerprint_selectors.o: ../common/fingerprint_selectors.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/b4460d1a
 	${RM} "$@.d"
@@ -244,11 +220,6 @@ ${OBJECTDIR}/_ext/b4460d1a/iteration_serializer.o: ../common/iteration_serialize
 	${MKDIR} -p ${OBJECTDIR}/_ext/b4460d1a
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/b4460d1a/iteration_serializer.o ../common/iteration_serializer.cpp
-
-${OBJECTDIR}/_ext/b4460d1a/scaffold_selectors.o: ../common/scaffold_selectors.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/b4460d1a
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/b4460d1a/scaffold_selectors.o ../common/scaffold_selectors.cpp
 
 ${OBJECTDIR}/_ext/b4460d1a/simcoeff_selectors.o: ../common/simcoeff_selectors.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/b4460d1a
@@ -285,25 +256,20 @@ ${OBJECTDIR}/chem/fingerprintStrategy/MorganFngpr.o: chem/fingerprintStrategy/Mo
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/fingerprintStrategy/MorganFngpr.o chem/fingerprintStrategy/MorganFngpr.cpp
 
-${OBJECTDIR}/chem/fingerprintStrategy/TopolLayeredFngpr1.o: chem/fingerprintStrategy/TopolLayeredFngpr1.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/fingerprintStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/fingerprintStrategy/TopolLayeredFngpr1.o chem/fingerprintStrategy/TopolLayeredFngpr1.cpp
-
-${OBJECTDIR}/chem/fingerprintStrategy/TopolLayeredFngpr2.o: chem/fingerprintStrategy/TopolLayeredFngpr2.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/fingerprintStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/fingerprintStrategy/TopolLayeredFngpr2.o chem/fingerprintStrategy/TopolLayeredFngpr2.cpp
-
-${OBJECTDIR}/chem/fingerprintStrategy/TopolSingleFngpr.o: chem/fingerprintStrategy/TopolSingleFngpr.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/fingerprintStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/fingerprintStrategy/TopolSingleFngpr.o chem/fingerprintStrategy/TopolSingleFngpr.cpp
-
 ${OBJECTDIR}/chem/fingerprintStrategy/TopolTorsFngpr.o: chem/fingerprintStrategy/TopolTorsFngpr.cpp 
 	${MKDIR} -p ${OBJECTDIR}/chem/fingerprintStrategy
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/fingerprintStrategy/TopolTorsFngpr.o chem/fingerprintStrategy/TopolTorsFngpr.cpp
+
+${OBJECTDIR}/chem/morphing/CalculateDistances.o: chem/morphing/CalculateDistances.cpp 
+	${MKDIR} -p ${OBJECTDIR}/chem/morphing
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/morphing/CalculateDistances.o chem/morphing/CalculateDistances.cpp
+
+${OBJECTDIR}/chem/morphing/FilterScript.o: chem/morphing/FilterScript.cpp 
+	${MKDIR} -p ${OBJECTDIR}/chem/morphing
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/morphing/FilterScript.o chem/morphing/FilterScript.cpp
 
 ${OBJECTDIR}/chem/morphing/Morphing.o: chem/morphing/Morphing.cpp 
 	${MKDIR} -p ${OBJECTDIR}/chem/morphing
@@ -360,125 +326,35 @@ ${OBJECTDIR}/chem/morphingStrategy/OpRemoveBond.o: chem/morphingStrategy/OpRemov
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/morphingStrategy/OpRemoveBond.o chem/morphingStrategy/OpRemoveBond.cpp
 
-${OBJECTDIR}/chem/scaffold/Murcko2Scaffold.o: chem/scaffold/Murcko2Scaffold.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/scaffold
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/scaffold/Murcko2Scaffold.o chem/scaffold/Murcko2Scaffold.cpp
-
-${OBJECTDIR}/chem/scaffold/Oprea1Scaffold.o: chem/scaffold/Oprea1Scaffold.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/scaffold
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/scaffold/Oprea1Scaffold.o chem/scaffold/Oprea1Scaffold.cpp
-
-${OBJECTDIR}/chem/scaffold/OriginalMoleculeScaffold.o: chem/scaffold/OriginalMoleculeScaffold.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/scaffold
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/scaffold/OriginalMoleculeScaffold.o chem/scaffold/OriginalMoleculeScaffold.cpp
-
-${OBJECTDIR}/chem/scaffold/RingsWithLinkers1Scaffold.o: chem/scaffold/RingsWithLinkers1Scaffold.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/scaffold
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/scaffold/RingsWithLinkers1Scaffold.o chem/scaffold/RingsWithLinkers1Scaffold.cpp
-
-${OBJECTDIR}/chem/scaffold/Scaffold.o: chem/scaffold/Scaffold.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/scaffold
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/scaffold/Scaffold.o chem/scaffold/Scaffold.cpp
-
-${OBJECTDIR}/chem/scaffold/ScaffoldDatabase.o: chem/scaffold/ScaffoldDatabase.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/scaffold
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/scaffold/ScaffoldDatabase.o chem/scaffold/ScaffoldDatabase.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/AllBitSimCoef.o: chem/simCoefStrategy/AllBitSimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/AllBitSimCoef.o chem/simCoefStrategy/AllBitSimCoef.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/AsymmetricSimCoef.o: chem/simCoefStrategy/AsymmetricSimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/AsymmetricSimCoef.o chem/simCoefStrategy/AsymmetricSimCoef.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/BraunBlanquetSimCoef.o: chem/simCoefStrategy/BraunBlanquetSimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/BraunBlanquetSimCoef.o chem/simCoefStrategy/BraunBlanquetSimCoef.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/CosineSimCoef.o: chem/simCoefStrategy/CosineSimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/CosineSimCoef.o chem/simCoefStrategy/CosineSimCoef.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/DiceSimCoef.o: chem/simCoefStrategy/DiceSimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/DiceSimCoef.o chem/simCoefStrategy/DiceSimCoef.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/KulczynskiSimCoef.o: chem/simCoefStrategy/KulczynskiSimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/KulczynskiSimCoef.o chem/simCoefStrategy/KulczynskiSimCoef.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/McConnaugheySimCoef.o: chem/simCoefStrategy/McConnaugheySimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/McConnaugheySimCoef.o chem/simCoefStrategy/McConnaugheySimCoef.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/OnBitSimCoef.o: chem/simCoefStrategy/OnBitSimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/OnBitSimCoef.o chem/simCoefStrategy/OnBitSimCoef.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/RusselSimCoef.o: chem/simCoefStrategy/RusselSimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/RusselSimCoef.o chem/simCoefStrategy/RusselSimCoef.cpp
-
-${OBJECTDIR}/chem/simCoefStrategy/SokalSimCoef.o: chem/simCoefStrategy/SokalSimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/SokalSimCoef.o chem/simCoefStrategy/SokalSimCoef.cpp
-
 ${OBJECTDIR}/chem/simCoefStrategy/TanimotoSimCoef.o: chem/simCoefStrategy/TanimotoSimCoef.cpp 
 	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/TanimotoSimCoef.o chem/simCoefStrategy/TanimotoSimCoef.cpp
 
-${OBJECTDIR}/chem/simCoefStrategy/TverskySimCoef.o: chem/simCoefStrategy/TverskySimCoef.cpp 
-	${MKDIR} -p ${OBJECTDIR}/chem/simCoefStrategy
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/chem/simCoefStrategy/TverskySimCoef.o chem/simCoefStrategy/TverskySimCoef.cpp
-
-${OBJECTDIR}/coord/KamadaKawaiReducer.o: coord/KamadaKawaiReducer.cpp 
-	${MKDIR} -p ${OBJECTDIR}/coord
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/coord/KamadaKawaiReducer.o coord/KamadaKawaiReducer.cpp
-
-${OBJECTDIR}/coord/PcaReducer.o: coord/PcaReducer.cpp 
-	${MKDIR} -p ${OBJECTDIR}/coord
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/coord/PcaReducer.o coord/PcaReducer.cpp
-
-${OBJECTDIR}/coord/ReducerFactory.o: coord/ReducerFactory.cpp 
-	${MKDIR} -p ${OBJECTDIR}/coord
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/coord/ReducerFactory.o coord/ReducerFactory.cpp
-
-${OBJECTDIR}/core/JobManager.o: core/JobManager.cpp 
+${OBJECTDIR}/core/AcceptMorphs.o: core/AcceptMorphs.cpp 
 	${MKDIR} -p ${OBJECTDIR}/core
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/JobManager.o core/JobManager.cpp
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/AcceptMorphs.o core/AcceptMorphs.cpp
 
-${OBJECTDIR}/core/NeighborhoodGenerator.o: core/NeighborhoodGenerator.cpp 
+${OBJECTDIR}/core/CollectMorphs.o: core/CollectMorphs.cpp 
 	${MKDIR} -p ${OBJECTDIR}/core
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/NeighborhoodGenerator.o core/NeighborhoodGenerator.cpp
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/CollectMorphs.o core/CollectMorphs.cpp
 
-${OBJECTDIR}/core/NeighborhoodTaskQueue.o: core/NeighborhoodTaskQueue.cpp 
+${OBJECTDIR}/core/CompareMorphs.o: core/CompareMorphs.cpp 
 	${MKDIR} -p ${OBJECTDIR}/core
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/NeighborhoodTaskQueue.o core/NeighborhoodTaskQueue.cpp
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/CompareMorphs.o core/CompareMorphs.cpp
+
+${OBJECTDIR}/core/FilterMorphs.o: core/FilterMorphs.cpp 
+	${MKDIR} -p ${OBJECTDIR}/core
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/FilterMorphs.o core/FilterMorphs.cpp
+
+${OBJECTDIR}/core/FindLeaves.o: core/FindLeaves.cpp 
+	${MKDIR} -p ${OBJECTDIR}/core
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/FindLeaves.o core/FindLeaves.cpp
 
 ${OBJECTDIR}/core/PathFinder.o: core/PathFinder.cpp 
 	${MKDIR} -p ${OBJECTDIR}/core
@@ -490,10 +366,20 @@ ${OBJECTDIR}/core/PathFinderActivity.o: core/PathFinderActivity.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/PathFinderActivity.o core/PathFinderActivity.cpp
 
-${OBJECTDIR}/core/PathFinderContext.o: core/PathFinderContext.cpp 
+${OBJECTDIR}/core/PruneTree.o: core/PruneTree.cpp 
 	${MKDIR} -p ${OBJECTDIR}/core
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/PathFinderContext.o core/PathFinderContext.cpp
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/PruneTree.o core/PruneTree.cpp
+
+${OBJECTDIR}/core/UpdateTree.o: core/UpdateTree.cpp 
+	${MKDIR} -p ${OBJECTDIR}/core
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/core/UpdateTree.o core/UpdateTree.cpp
+
+${OBJECTDIR}/csv.o: csv.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/csv.o csv.cpp
 
 ${OBJECTDIR}/descriptor/BioChemLibDescriptors.o: descriptor/BioChemLibDescriptors.cpp 
 	${MKDIR} -p ${OBJECTDIR}/descriptor
@@ -520,20 +406,20 @@ ${OBJECTDIR}/descriptor/PaDELDescriptorCalculator.o: descriptor/PaDELDescriptorC
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/descriptor/PaDELDescriptorCalculator.o descriptor/PaDELDescriptorCalculator.cpp
 
-${OBJECTDIR}/extensions/SAScore.o: extensions/SAScore.cpp 
-	${MKDIR} -p ${OBJECTDIR}/extensions
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/extensions/SAScore.o extensions/SAScore.cpp
-
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
-${OBJECTDIR}/tests/MorphingTest.o: tests/MorphingTest.cpp 
-	${MKDIR} -p ${OBJECTDIR}/tests
+${OBJECTDIR}/molpher_molecule.o: molpher_molecule.cpp 
+	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/tests/MorphingTest.o tests/MorphingTest.cpp
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/molpher_molecule.o molpher_molecule.cpp
+
+${OBJECTDIR}/script_execution.o: script_execution.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DBOOST_ALL_NO_LIB -DBOOST_THREAD_USE_LIB -DNETBEANS_HACK -DTBB_USE_DEBUG=0 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_WIN32_WINNT=0x0501 -I./. -I../common -I../dependencies/boost -I../dependencies/rcf/include -I../dependencies/zlib -I../dependencies/rdkit/Code -I../dependencies/tbb/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/script_execution.o script_execution.cpp
 
 # Subprojects
 .build-subprojects:

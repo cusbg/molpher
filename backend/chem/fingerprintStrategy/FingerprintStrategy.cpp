@@ -20,9 +20,6 @@
 // include strategies ..
 #include "AtomPairsFngpr.hpp"
 #include "MorganFngpr.hpp"
-#include "TopolLayeredFngpr1.hpp"
-#include "TopolLayeredFngpr2.hpp"
-#include "TopolSingleFngpr.hpp"
 #include "TopolTorsFngpr.hpp"
 
 Fingerprint *GetFingerprint(RDKit::ROMol *mol, FingerprintSelector fp)
@@ -31,14 +28,6 @@ Fingerprint *GetFingerprint(RDKit::ROMol *mol, FingerprintSelector fp)
 
     FingerprintStrategy *strategy;
     switch (fp) {
-    case FP_TOPOLOGICAL:
-        strategy = new TopolSingleFngpr();
-        break;
-    case FP_TOPOLOGICAL_LAYERED_1:
-        strategy = new TopolLayeredFngpr1();
-        break;
-    case FP_TOPOLOGICAL_LAYERED_2:
-        strategy = new TopolLayeredFngpr2();
         break;
     case FP_ATOM_PAIRS:
         strategy = new AtomPairsFngpr();

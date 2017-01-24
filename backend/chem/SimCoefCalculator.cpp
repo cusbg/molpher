@@ -23,26 +23,12 @@
 // include strategies ..
 #include "chem/fingerprintStrategy/AtomPairsFngpr.hpp"
 #include "chem/fingerprintStrategy/MorganFngpr.hpp"
-#include "chem/fingerprintStrategy/TopolLayeredFngpr1.hpp"
-#include "chem/fingerprintStrategy/TopolLayeredFngpr2.hpp"
-#include "chem/fingerprintStrategy/TopolSingleFngpr.hpp"
 #include "chem/fingerprintStrategy/TopolTorsFngpr.hpp"
 #include "chem/SimCoefCalculator.hpp"
 
 // TODO: merge into one?
 // include similarities
-#include "chem/simCoefStrategy/AllBitSimCoef.hpp"
-#include "chem/simCoefStrategy/AsymmetricSimCoef.hpp"
-#include "chem/simCoefStrategy/BraunBlanquetSimCoef.hpp"
-#include "chem/simCoefStrategy/CosineSimCoef.hpp"
-#include "chem/simCoefStrategy/DiceSimCoef.hpp"
-#include "chem/simCoefStrategy/KulczynskiSimCoef.hpp"
-#include "chem/simCoefStrategy/McConnaugheySimCoef.hpp"
-#include "chem/simCoefStrategy/OnBitSimCoef.hpp"
-#include "chem/simCoefStrategy/RusselSimCoef.hpp"
-#include "chem/simCoefStrategy/SokalSimCoef.hpp"
 #include "chem/simCoefStrategy/TanimotoSimCoef.hpp"
-#include "chem/simCoefStrategy/TverskySimCoef.hpp"
 
 // TODO: Remove use factory insted
 SimCoefCalculator::SimCoefCalculator(
@@ -67,68 +53,12 @@ SimCoefCalculator::SimCoefCalculator(
     case SC_TANIMOTO:
         mScStrategy = new TanimotoSimCoef();
         break;
-    case SC_COSINE:
-        mScStrategy = new CosineSimCoef();
-        break;
-    case SC_KULCZYNSKI:
-        mScStrategy = new KulczynskiSimCoef();
-        break;
-    case SC_DICE:
-        mScStrategy = new DiceSimCoef();
-        break;
-    case SC_TVERSKY_SUPERSTRUCTURE:
-        /* Setting the weighting of prototype (in our case either target or
-           neighborhood center) features to 90% (a=0.9) and variant (i.e. morph)
-           features to 10% (b=0.1) means that mainly the prototype features
-           are important, i.e., this produces a "superstucture-likeness" measure.
-           In this case, a Tversky similarity value of 1.0 means that almost all
-           prototype features are represented in the variant, 0.0 that almost
-           none are. */
-        mScStrategy = new TverskySimCoef(0.9, 0.1);
-        break;
-    case SC_TVERSKY_SUBSTRUCTURE:
-        /* Conversely, setting the weights to 10% prototype (a=0.1) and
-           90% variant (b=0.9) produces a "substructure-likeness" measure,
-           where variants almost completely embedded into prototype have
-           have values near 1.0. */
-        mScStrategy = new TverskySimCoef(0.1, 0.9);
-        break;
-    case SC_SOKAL:
-        mScStrategy = new SokalSimCoef();
-        break;
-    case SC_MC_CONNAUGHEY:
-        mScStrategy = new McConnaugheySimCoef();
-        break;
-    case SC_ASYMMETRIC:
-        mScStrategy = new AsymmetricSimCoef();
-        break;
-    case SC_BRAUN_BLANQUET:
-        mScStrategy = new BraunBlanquetSimCoef();
-        break;
-    case SC_RUSSEL:
-        mScStrategy = new RusselSimCoef();
-        break;
-    case SC_ON_BIT:
-        mScStrategy = new OnBitSimCoef();
-        break;
-    case SC_ALL_BIT:
-        mScStrategy = new AllBitSimCoef();
-        break;
     default:
         mScStrategy = new TanimotoSimCoef();
         break;
     }
 
     switch (fp) {
-    case FP_TOPOLOGICAL:
-        mFpStrategy = new TopolSingleFngpr();
-        break;
-    case FP_TOPOLOGICAL_LAYERED_1:
-        mFpStrategy = new TopolLayeredFngpr1();
-        break;
-    case FP_TOPOLOGICAL_LAYERED_2:
-        mFpStrategy = new TopolLayeredFngpr2();
-        break;
     case FP_ATOM_PAIRS:
         mFpStrategy = new AtomPairsFngpr();
         break;

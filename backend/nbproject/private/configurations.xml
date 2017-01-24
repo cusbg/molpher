@@ -24,12 +24,21 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/466/AID_466_model_01/task-00-synt.json -I 5</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/466/AID_466_model_01/task-00-synt.json -I 1</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/data/task_all_actives_00.json -I 25</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/data/task_all_actives_00-synth.json -I 25</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/data/task_source_actives.json -I 25</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/data/test -I 5</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/data/test.json -I 50</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/data/test.json -I 20</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/data/test.json -I 5</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/data/test.json -I 1</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <runcommand>"${OUTPUT_PATH}" -J D:/Projects/Molpher-Experiments/data/test.json -I 1</runcommand>
         <rundir></rundir>
         <buildfirst>false</buildfirst>
-        <console-type>1</console-type>
+        <console-type>2</console-type>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>
